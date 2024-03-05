@@ -221,13 +221,16 @@ const Contact = () => {
 					{(formikProps) => (
 						<ContactForm>
 							<ContactTitle>Email Me 🚀</ContactTitle>
-							<ContactInput placeholder="Name" name="user_name" />
+							<ContactInput
+								placeholder="Name *"
+								name="user_name"
+							/>
 							<ErrorMessageStyled
 								name="user_name"
 								component="div"
 							/>
 							<ContactInput
-								placeholder="Email"
+								placeholder="Email *"
 								name="user_email"
 							/>
 							<ErrorMessageStyled
@@ -235,7 +238,7 @@ const Contact = () => {
 								component="div"
 							/>
 							<ContactInput
-								placeholder="Phone"
+								placeholder="Phone *"
 								name="user_phone"
 							/>
 							<ErrorMessageStyled
@@ -243,7 +246,7 @@ const Contact = () => {
 								component="div"
 							/>
 							<ContactInput
-								placeholder="Company"
+								placeholder="Company *"
 								name="user_company"
 							/>
 							<ErrorMessageStyled
@@ -251,7 +254,7 @@ const Contact = () => {
 								component="div"
 							/>
 							<ContactInput
-								placeholder="Subject"
+								placeholder="Subject *"
 								name="subject"
 							/>
 							<ErrorMessageStyled
@@ -260,7 +263,7 @@ const Contact = () => {
 							/>
 							<ContactInputMessage
 								component="textarea"
-								placeholder="Message"
+								placeholder="Message *"
 								name="message"
 								rows={10}
 							/>
