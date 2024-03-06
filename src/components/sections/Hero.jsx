@@ -253,7 +253,7 @@ const Hero = () => {
 
 							<ResumeButton
 								href={process.env.PUBLIC_URL + "/" + bio.resume}
-								download /*target="_blank"*/
+								download
 							>
 								Download Resume
 							</ResumeButton>

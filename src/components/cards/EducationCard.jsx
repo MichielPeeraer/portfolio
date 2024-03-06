@@ -8,6 +8,7 @@ const Top = styled.div`
 	max-width: 100%;
 	gap: 12px;
 `;
+
 const Image = styled.img`
 	height: 50px;
 	border-radius: 10px;
@@ -17,6 +18,7 @@ const Image = styled.img`
 		height: 40px;
 	}
 `;
+
 const Body = styled.div`
 	width: 100%;
 	display: flex;
@@ -32,6 +34,7 @@ const Name = styled.div`
 		font-size: 14px;
 	}
 `;
+
 const Degree = styled.div`
 	font-size: 14px;
 	font-weight: 500px;
@@ -41,6 +44,7 @@ const Degree = styled.div`
 		font-size: 12px;
 	}
 `;
+
 const Date = styled.div`
 	font-size: 12px;
 	font-weight: 400px;
@@ -50,6 +54,7 @@ const Date = styled.div`
 		font-size: 10px;
 	}
 `;
+
 const Grade = styled.div`
 	font-size: 14px;
 	font-weight: 500;
@@ -69,6 +74,7 @@ const Description = styled.div`
 		font-size: 12px;
 	}
 `;
+
 const Span = styled.div``;
 
 const EducationCard = ({ education }) => {
