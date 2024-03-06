@@ -235,7 +235,8 @@ const ProjectDetails = ({ openModal, setOpenModal }) => {
 										{member.github && (
 											<a
 												href={member.github}
-												target="new"
+												target="_blank"
+												rel="noreferrer"
 												style={{
 													textDecoration: "none",
 													color: "inherit",
@@ -247,7 +248,8 @@ const ProjectDetails = ({ openModal, setOpenModal }) => {
 										{member.linkedin && (
 											<a
 												href={member.linkedin}
-												target="new"
+												target="_blank"
+												rel="noreferrer"
 												style={{
 													textDecoration: "none",
 													color: "inherit",
@@ -263,12 +265,21 @@ const ProjectDetails = ({ openModal, setOpenModal }) => {
 					)}
 					<ButtonGroup>
 						{project?.github && (
-							<Button $dull href={project?.github} target="new">
+							<Button
+								$dull
+								href={project?.github}
+								target="_blank"
+								rel="noreferrer"
+							>
 								View Code
 							</Button>
 						)}
 						{project?.webapp && (
-							<Button href={project?.webapp} target="new">
+							<Button
+								href={project?.webapp}
+								target="_blank"
+								rel="noreferrer"
+							>
 								View Live App
 							</Button>
 						)}

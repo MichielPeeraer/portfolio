@@ -133,19 +133,18 @@ const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const theme = useTheme();
 
-	const handleResize = () => {
-		if (window.innerWidth > 900 && isOpen) {
-			setIsOpen(false);
-		}
-	};
-
 	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth > 900 && isOpen) {
+				setIsOpen(false);
+			}
+		};
+
 		window.addEventListener("resize", handleResize);
 
 		return () => {
 			window.removeEventListener("resize", handleResize);
 		};
-		// eslint-disable-next-line
 	}, [isOpen]);
 
 	return (
@@ -206,7 +205,8 @@ const Navbar = () => {
 						</NavLink>
 						<GithubButton
 							href={bio.github}
-							target="_Blank"
+							target="_blank"
+							rel="noreferrer"
 							style={{
 								background: theme.primary,
 								color: theme.text_primary,
@@ -217,7 +217,11 @@ const Navbar = () => {
 					</MobileMenu>
 				)}
 				<ButtonContainer>
-					<GithubButton href={bio.github} target="_Blank">
+					<GithubButton
+						href={bio.github}
+						target="_blank"
+						rel="noreferrer"
+					>
 						Github Profile
 					</GithubButton>
 				</ButtonContainer>
