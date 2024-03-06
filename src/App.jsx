@@ -12,8 +12,9 @@ import Projects from "./components/sections/Projects";
 import Contact from "./components/sections/Contact";
 import Footer from "./components/sections/Footer";
 import ProjectDetails from "./components/lightbox/ProjectDetails";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
+import ArrowUp from "@mui/icons-material/ArrowUpwardRounded";
 import "react-toastify/dist/ReactToastify.css";
 
 const Body = styled.div`
@@ -39,8 +40,66 @@ const Wrapper = styled.div`
 	clip-path: polygon(0 0, 100% 0, 100% 100%, 30% 98%, 0 100%);
 `;
 
+const ScrollTopButton = styled.button`
+	position: fixed;
+	right: 30px;
+	bottom: 30px;
+	padding: 15px;
+	z-index: 999;
+	cursor: pointer;
+	transition: all 0.6s ease-in-out;
+	display: flex;
+	border-radius: 50px;
+	border: 2px solid ${({ theme }) => theme.primary};
+	color: ${({ theme }) => theme.primary};
+	background: transparent;
+	opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+	visibility: ${({ $visible }) => ($visible ? "visible" : "hidden")};
+	& > svg {
+		scale: 1.2;
+	}
+	&:hover {
+		color: ${({ theme }) => theme.text_primary};
+		background: ${({ theme }) => theme.primary};
+	}
+	@media (max-width: 768px) {
+		right: 20px;
+		bottom: 20px;
+		padding: 10px;
+		& > svg {
+			scale: 1.1;
+		}
+	}
+	@media (max-width: 425px) {
+		right: 10px;
+		bottom: 10px;
+		padding: 5px;
+		& > svg {
+			scale: 1;
+		}
+	}
+`;
+
 function App() {
 	const [openModal, setOpenModal] = useState({ state: false, project: null });
+	const [showButton, setShowButton] = useState(false);
+
+	useEffect(() => {
+		const handleScrollButtonVisiblity = () => {
+			setShowButton(window.scrollY > 600);
+		};
+
+		window.addEventListener("scroll", handleScrollButtonVisiblity);
+
+		return () => {
+			window.removeEventListener("scroll", handleScrollButtonVisiblity);
+		};
+	}, []);
+
+	const handleScrollToTop = () => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
 	return (
 		<ThemeProvider theme={darkTheme}>
 			<BrowserRouter>
@@ -78,6 +137,12 @@ function App() {
 						</div>
 					</AnimatePresence>
 				</Body>
+				<ScrollTopButton
+					$visible={showButton}
+					onClick={handleScrollToTop}
+				>
+					<ArrowUp />
+				</ScrollTopButton>
 			</BrowserRouter>
 		</ThemeProvider>
 	);
