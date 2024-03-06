@@ -26,6 +26,7 @@ import GitKraken from "../icons/gitkraken.svg";
 import Kaggle from "../icons/kaggle.svg";
 import Pandas from "../icons/pandas.svg";
 import SKlearn from "../icons/sklearn.png";
+import OpenCV from "../icons/opencv.svg";
 import Jupyter from "../icons/jupyter.png";
 import C from "../icons/c.svg";
 import Csharp from "../icons/csharp.svg";
@@ -54,19 +55,18 @@ import SMCB from "../images/SMCB.png";
 import MichielPeeraer from "../images/HeroImage.jpg";
 import JarmoCluyse from "../images/JarmoCluyse.jpg";
 import NickyFieu from "../images/NickyFieu.jpg";
-import YannickCouteau from "../images/YannickCouteau.jpg";
 import LeendertVB from "../images/LeendertVB.jpg";
 
 import Portfolio from "../images/Portfolio.png";
 import WorkxIN from "../images/WorkxIN.png";
 import Atlas2D from "../images/Atlas2D.png";
 import SpotMicro from "../images/SpotMicroESP32.jpg";
-import TelloDrone from "../images/TelloDrone.jpg";
 import MRFireExtinguisher from "../images/MRFireExtinguisher.jpg";
+import RubiksCubeSolver from "../videos/RubiksCubeSolver.mp4";
 
 export const bio = {
 	name: "Michiel Peeraer",
-	roles: ["Full Stack Web Dev", "Programmer", "Digital Creative"],
+	roles: ["Full Stack Web Dev", "Programmer", "Digital Creative", "Maker"],
 	description:
 		"I am a motivated and versatile individual, always eager to take on new challenges. With a passion for learning I am dedicated to delivering high-quality results. With a positive attitude and a growth mindset, I am ready to make a meaningful contribution and achieve great things.",
 	resume: "CV_Michiel_Peeraer_ENG.pdf",
@@ -199,12 +199,16 @@ export const skills = [
 				image: Pandas,
 			},
 			{
-				name: "Jupyter",
-				image: Jupyter,
+				name: "OpenCV",
+				image: OpenCV,
 			},
 			{
-				name: "Sci-Kit Learn",
+				name: "SK Learn",
 				image: SKlearn,
+			},
+			{
+				name: "Jupyter",
+				image: Jupyter,
 			},
 		],
 	},
@@ -419,23 +423,20 @@ export const Nicky_Fieu = {
 	linkedin: "https://www.linkedin.com/in/nicky-f-986552195/",
 	github: "https://github.com/nickyfieu",
 };
-export const Yannick_Couteau = {
-	name: "Yannick Couteau",
-	img: YannickCouteau,
-	linkedin: "https://www.linkedin.com/in/yannick-couteau-0a0227222/",
-	github: "https://github.com/yalcon",
-};
+
+export const categories = ["all", "web", "robotics & iot"];
 
 export const projects = [
 	{
 		title: "Portfolio Website",
-		date: "Jan 2024 - Mar 2024",
+		date: "Feb 2024 - Mar 2024",
 		description:
-			"Made my own portfolio website using ReactJS and useful libraries such as emailjs and react-google-recaptcha for the contact form, react-three for animations, mui for icons etc...",
+			"Made my own portfolio website using ReactJS and useful libraries such as emailjs and react-google-recaptcha for the contact form, react-three for 3D-animations, mui for icons etc...",
 		image: Portfolio,
 		tags: ["HTML", "SCSS", "JavaScript", "JSX", "ReactJS"],
 		category: "web",
 		github: "https://github.com/MichielPeeraer/portfolio",
+		webapp: "/",
 		member: [Michiel_Peeraer],
 	},
 	{
@@ -467,5 +468,61 @@ export const projects = [
 		],
 		category: "web",
 		member: [Michiel_Peeraer, Jarmo_Cluyse],
+	},
+	{
+		title: "MR Fire Extinguisher",
+		date: "Mar 2021 - Jun 2021",
+		description:
+			"Designed and developed a mixed reality fire extinguisher for OneBonsai that can connect with a VR Oculus headset and is equipped with sensors, a microcontroller and 3D-printed parts for housing the electronics. Executed a functional analysis afterwards (testing and documentation). Worked together with Nicky Fieu (Unreal Engine Developer) for Bluetooth implementation.",
+		image: MRFireExtinguisher,
+		tags: [
+			"IoT",
+			"PlatformIO",
+			"Fusion 360",
+			"Ultimaker Cura",
+			"ESP32",
+			"C",
+		],
+		category: "robotics & iot",
+		github: "https://github.com/MichielPeeraer/mixed-reality-fire-extinguisher",
+		member: [Michiel_Peeraer, Nicky_Fieu],
+	},
+	{
+		title: "SpotMicroESP32",
+		date: "Dec 2020 - Sep 2021",
+		description:
+			"A 3D-printed quadruped robot, based on Spot from Boston Dynamics. I made this open source project for my bachelor thesis, with my own creative adaptations and improvements.",
+		image: SpotMicro,
+		tags: [
+			"Robotics",
+			"IoT",
+			"PlatformIO",
+			"Fusion 360",
+			"Ultimaker Cura",
+			"ESP32",
+			"C",
+		],
+		category: "robotics & iot",
+		github: "https://github.com/michaelkubina/SpotMicroESP32",
+		member: [Michiel_Peeraer],
+	},
+	{
+		title: "Rubik's Cube Solver",
+		date: "Sep 2019 - Jun 2020",
+		description:
+			"A 3D-printed robot that can solve a Rubik's Cube with 2 gripper hands, powered by a Raspberry Pi and Pi Cam. This was an open source project that I did for the 'Robotics' course of my study, with my own creative adaptations and improvements.",
+		video: RubiksCubeSolver,
+		tags: [
+			"Robotics",
+			"IoT",
+			"PlatformIO",
+			"Fusion 360",
+			"Ultimaker Cura",
+			"Raspberry Pi",
+			"Python",
+		],
+		category: "robotics & iot",
+		github: "https://github.com/DrVoHo/Rubik_solver",
+		member: [Michiel_Peeraer],
 	},
 ];
