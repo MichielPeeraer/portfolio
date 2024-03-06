@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { descriptions, projects } from "../../data/Constants";
+import { descriptions, projects, categories } from "../../data/Constants";
 import ProjectCard from "../cards/ProjectCard";
 
 const Container = styled.div`
@@ -108,33 +108,17 @@ const Projects = ({ openModal, setOpenModal }) => {
 					{descriptions.projects}
 				</Desc>
 				<ToggleButtonGroup>
-					<ToggleButton
-						$active={toggle === "all"}
-						onClick={() => setToggle("all")}
-					>
-						ALL
-					</ToggleButton>
-					<Divider />
-					<ToggleButton
-						$active={toggle === "web"}
-						onClick={() => setToggle("web")}
-					>
-						WEB
-					</ToggleButton>
-					<Divider />
-					<ToggleButton
-						$active={toggle === "robotics & IoT"}
-						onClick={() => setToggle("rob_iot")}
-					>
-						ROBOTICS & IOT
-					</ToggleButton>
-					<Divider />
-					<ToggleButton
-						$active={toggle === "machine learning"}
-						onClick={() => setToggle("ml_ai")}
-					>
-						MACHINE LEARNING
-					</ToggleButton>
+					{categories.map((category, index) => (
+						<React.Fragment key={`toggle-${index}`}>
+							<ToggleButton
+								$active={toggle === category}
+								onClick={() => setToggle(category)}
+							>
+								{category.toUpperCase()}
+							</ToggleButton>
+							{index !== categories.length - 1 && <Divider />}
+						</React.Fragment>
+					))}
 				</ToggleButtonGroup>
 				<CardContainer>
 					{toggle === "all" &&
