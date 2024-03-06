@@ -48,7 +48,7 @@ const NavItems = styled.ul`
 	gap: 32px;
 	padding: 0 6px;
 	list-style: none;
-	@media screen and (max-width: 899px) {
+	@media screen and (max-width: 900px) {
 		display: none;
 	}
 `;
@@ -69,7 +69,7 @@ const ButtonContainer = styled.div`
 	display: flex;
 	align-items: center;
 	padding: 0 6px;
-	@media screen and (max-width: 899px) {
+	@media screen and (max-width: 900px) {
 		display: none;
 	}
 `;
@@ -80,7 +80,7 @@ const GithubButton = styled.a`
 	justify-content: center;
 	display: flex;
 	align-items: center;
-	border-radius: 20px;
+	border-radius: 50px;
 	cursor: pointer;
 	padding: 10px 20px;
 	font-size: 16px;
@@ -103,7 +103,7 @@ const MobileIcon = styled.div`
 			cursor: pointer;
 		}
 	}
-	@media screen and (max-width: 899px) {
+	@media screen and (max-width: 900px) {
 		display: block;
 	}
 `;
@@ -124,7 +124,7 @@ const MobileMenu = styled(({ isOpen, ...rest }) => <ul {...rest} />)`
 	right: 0;
 	border-radius: 0 0 20px 20px;
 	box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-	@media screen and (max-width: 899px) {
+	@media screen and (max-width: 900px) {
 		display: flex;
 	}
 `;
@@ -134,7 +134,7 @@ const Navbar = () => {
 	const theme = useTheme();
 
 	const handleResize = () => {
-		if (window.innerWidth > 899 && isOpen) {
+		if (window.innerWidth > 900 && isOpen) {
 			setIsOpen(false);
 		}
 	};

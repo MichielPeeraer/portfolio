@@ -114,7 +114,7 @@ const ContactInputMessage = styled(Field)`
 `;
 
 const RecaptchaContainer = styled.div`
-	@media (max-width: 389px) {
+	@media (max-width: 390px) {
 		transform: scale(0.78);
 		transform-origin: 0;
 	}
@@ -142,13 +142,15 @@ const ContactButton = styled.button`
 	);
 	padding: 13px 16px;
 	margin-top: 2px;
-	border-radius: 12px;
+	border-radius: 50px;
 	border: none;
 	color: ${({ theme }) => theme.text_primary};
 	font-size: 18px;
 	font-weight: 600;
 	&:hover {
 		cursor: pointer;
+		transform: scale(1.025);
+		transition: all 0.4s ease-in-out;
 	}
 `;
 
