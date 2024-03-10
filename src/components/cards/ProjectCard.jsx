@@ -27,6 +27,7 @@ const Image = styled.img`
 	background-color: ${({ theme }) => theme.white};
 	border-radius: 10px;
 	box-shadow: 0 0 16px 2px rgba(0, 0, 0, 0.3);
+	object-fit: cover;
 `;
 
 const Video = styled.video`
@@ -114,10 +115,10 @@ const Avatar = styled.img`
 	border: 3px solid ${({ theme }) => theme.card};
 `;
 
-const ProjectCard = ({ project, setOpenModal, openModal }) => {
+const ProjectCard = ({ project, setOpenModal }) => {
 	return (
 		<Card onClick={() => setOpenModal({ state: true, project: project })}>
-			{project.image && <Image src={project.image} />}
+			{project.image && <Image src={project.image} alt={project.title} />}
 			{project.video && (
 				<Video muted controls>
 					<source src={project.video}></source>
@@ -138,6 +139,7 @@ const ProjectCard = ({ project, setOpenModal, openModal }) => {
 					<Avatar
 						key={`projectcard-member-${index}`}
 						src={member.img}
+						alt={member.name}
 					/>
 				))}
 			</Members>

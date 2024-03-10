@@ -208,7 +208,9 @@ const ProjectDetails = ({ openModal, setOpenModal }) => {
 							setOpenModal({ state: false, project: null })
 						}
 					/>
-					{project?.image && <Image src={project?.image} />}
+					{project?.image && (
+						<Image src={project?.image} alt={project?.title} />
+					)}
 					{project?.video && (
 						<Video muted controls>
 							<source src={project?.video}></source>
@@ -230,7 +232,10 @@ const ProjectDetails = ({ openModal, setOpenModal }) => {
 									<Member
 										key={`projectdetails-member-${index}`}
 									>
-										<MemberImage src={member.img} />
+										<MemberImage
+											src={member.img}
+											alt={member.name}
+										/>
 										<MemberName>{member.name}</MemberName>
 										{member.github && (
 											<a
