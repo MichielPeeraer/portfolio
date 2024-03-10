@@ -64,6 +64,8 @@ import SpotMicro from "../assets/images/SpotMicroESP32.webp";
 import MRFireExtinguisher from "../assets/images/MRFireExtinguisher.webp";
 import RubiksCubeSolver from "../assets/videos/RubiksCubeSolver.mp4";
 
+export const languages = ["en", "nl"];
+
 export const bio = {
 	name: "Michiel Peeraer",
 	roles: ["Full Stack Web Dev", "Programmer", "Digital Creative", "Maker"],

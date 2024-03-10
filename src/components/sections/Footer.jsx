@@ -1,9 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { bio } from "../../data/Constants";
+import { bio, languages } from "../../data/Constants";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import { useTranslation } from "react-i18next";
 
 const FooterContainer = styled.div`
 	width: 100%;
@@ -84,7 +85,46 @@ const Copyright = styled.p`
 	text-align: center;
 `;
 
+const LanguageSwitcher = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+`;
+
+const Language = styled.button`
+	font-size: 1.2rem;
+	transition: color 0.2s ease-in-out;
+	color: ${({ theme }) => theme.text_primary};
+	background: none;
+	border: none;
+	padding: 0 10px;
+	cursor: pointer;
+	&:hover {
+		color: ${({ theme }) => theme.primary};
+	}
+	@media (max-width: 768px) {
+		font-size: 1rem;
+	}
+	${({ $active, theme }) =>
+		$active &&
+		`
+        color:  ${theme.primary};
+    `}
+`;
+
+const Divider = styled.span`
+	height: 2px;
+	width: 8px;
+	background: ${({ theme }) => theme.text_primary};
+`;
+
 const Footer = () => {
+	const { t, i18n } = useTranslation();
+	const changeLang = (lang) => {
+		i18n.changeLanguage(lang);
+		console.log(lang);
+	};
+
 	return (
 		<FooterContainer>
 			<FooterWrapper>
@@ -119,6 +159,19 @@ const Footer = () => {
 						<FacebookIcon />
 					</SocialMediaIcon>
 				</SocialMediaIcons>
+				<LanguageSwitcher>
+					{languages.map((lang, index) => (
+						<React.Fragment key={`lang-${lang}`}>
+							<Language
+								$active={lang === i18n.language}
+								onClick={() => changeLang(lang)}
+							>
+								{lang.toUpperCase()}
+							</Language>
+							{index !== languages.length - 1 && <Divider />}
+						</React.Fragment>
+					))}
+				</LanguageSwitcher>
 				<Copyright>
 					&copy; {new Date().getFullYear()} {bio.name}
 				</Copyright>
