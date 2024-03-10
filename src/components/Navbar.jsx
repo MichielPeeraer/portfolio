@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link as LinkR } from "react-router-dom";
 import styled, { useTheme } from "styled-components";
 import { bio } from "../data/Constants";
-import { Squash as Hamburger } from "hamburger-react";
+import { Squash as MobileIcon } from "hamburger-react";
 
 const Nav = styled.div`
 	background-color: ${({ theme }) => theme.bg};
@@ -75,7 +75,7 @@ const ButtonContainer = styled.div`
 `;
 
 const GithubButton = styled.a`
-	border: 1px solid ${({ theme }) => theme.primary};
+	border: 2px solid ${({ theme }) => theme.primary};
 	color: ${({ theme }) => theme.primary};
 	justify-content: center;
 	display: flex;
@@ -93,7 +93,7 @@ const GithubButton = styled.a`
 	}
 `;
 
-const MobileIcon = styled.div`
+const MobileIconContainer = styled.div`
 	height: 100%;
 	align-items: center;
 	color: ${({ theme }) => theme.text_primary};
@@ -159,9 +159,13 @@ const Navbar = () => {
 					<ColorText>&gt;</ColorText>
 				</NavLogo>
 
-				<MobileIcon onClick={() => setIsOpen(!isOpen)}>
-					<Hamburger size={20} toggled={isOpen} />
-				</MobileIcon>
+				<MobileIconContainer onClick={() => setIsOpen(!isOpen)}>
+					<MobileIcon
+						size={20}
+						toggled={isOpen}
+						label="Mobile Menu Icon"
+					/>
+				</MobileIconContainer>
 
 				<NavItems>
 					<NavLink href="#About">About</NavLink>
