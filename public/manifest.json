@@ -3,9 +3,9 @@
 	"name": "Portfolio Website",
 	"icons": [
 		{
-			"src": "HeroImage.jpg",
+			"src": "HeroImage.webp",
 			"sizes": "2500x2500",
-			"type": "image/jpg"
+			"type": "image/webp"
 		}
 	],
 	"start_url": ".",
