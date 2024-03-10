@@ -122,7 +122,6 @@ const Footer = () => {
 	const { t, i18n } = useTranslation();
 	const changeLang = (lang) => {
 		i18n.changeLanguage(lang);
-		console.log(lang);
 	};
 
 	return (
