@@ -1,75 +1,75 @@
-import HTML from "../icons/html.svg";
-import CSS from "../icons/css.svg";
-import SASS from "../icons/sass.svg";
-import Bootstrap from "../icons/bootstrap.svg";
-import JavaScript from "../icons/javascript.svg";
-import ReactJS from "../icons/react.svg";
-import TypeScript from "../icons/typescript.svg";
-import jQuery from "../icons/jquery.svg";
-import Ajax from "../icons/ajax.svg";
-import PHP from "../icons/php.svg";
-import Python from "../icons/python.svg";
-import Flask from "../icons/flask.svg";
-import MySQL from "../icons/mysql.svg";
-import NodeJS from "../icons/nodejs.svg";
-import WordPress from "../icons/wordpress.svg";
-import Laravel from "../icons/laravel.svg";
-import JSON from "../icons/json.svg";
-import XML from "../icons/xml.svg";
-import CSV from "../icons/csv.svg";
-import YAML from "../icons/yaml.svg";
-import VSCode from "../icons/vscode.svg";
-import VisualStudio from "../icons/visualstudio.svg";
-import Git from "../icons/git.svg";
-import GitHub from "../icons/github.svg";
-import GitKraken from "../icons/gitkraken.svg";
-import Kaggle from "../icons/kaggle.svg";
-import Pandas from "../icons/pandas.svg";
-import SKlearn from "../icons/sklearn.png";
-import OpenCV from "../icons/opencv.svg";
-import Jupyter from "../icons/jupyter.png";
-import C from "../icons/c.svg";
-import Csharp from "../icons/csharp.svg";
-import DotNet from "../icons/dotnet.svg";
-import Office365 from "../icons/office365.svg";
-import Jira from "../icons/jira.svg";
-import Trello from "../icons/trello.svg";
-import Asana from "../icons/asana.svg";
-import PlatformIO from "../icons/platformio.svg";
-import Arduino from "../icons/arduino.svg";
-import Espressif from "../icons/espressif.svg";
-import RaspberryPi from "../icons/raspberrypi.svg";
-import Fusion360 from "../icons/fusion360.png";
-import Blender from "../icons/blender.svg";
-import Cura from "../icons/cura.png";
-import Prusa from "../icons/prusa.png";
-import Unity from "../icons/unity.svg";
+import HTML from "../assets/icons/html.svg";
+import CSS from "../assets/icons/css.svg";
+import SASS from "../assets/icons/sass.svg";
+import Bootstrap from "../assets/icons/bootstrap.svg";
+import JavaScript from "../assets/icons/javascript.svg";
+import ReactJS from "../assets/icons/react.svg";
+import TypeScript from "../assets/icons/typescript.svg";
+import jQuery from "../assets/icons/jquery.svg";
+import Ajax from "../assets/icons/ajax.svg";
+import PHP from "../assets/icons/php.svg";
+import Python from "../assets/icons/python.svg";
+import Flask from "../assets/icons/flask.svg";
+import MySQL from "../assets/icons/mysql.svg";
+import NodeJS from "../assets/icons/nodejs.svg";
+import WordPress from "../assets/icons/wordpress.svg";
+import Laravel from "../assets/icons/laravel.svg";
+import JSON from "../assets/icons/json.svg";
+import XML from "../assets/icons/xml.svg";
+import CSV from "../assets/icons/csv.svg";
+import YAML from "../assets/icons/yaml.svg";
+import VSCode from "../assets/icons/vscode.svg";
+import VisualStudio from "../assets/icons/visualstudio.svg";
+import Git from "../assets/icons/git.svg";
+import GitHub from "../assets/icons/github.svg";
+import GitKraken from "../assets/icons/gitkraken.svg";
+import Kaggle from "../assets/icons/kaggle.svg";
+import Pandas from "../assets/icons/pandas.svg";
+import SKlearn from "../assets/icons/sklearn.png";
+import OpenCV from "../assets/icons/opencv.svg";
+import Jupyter from "../assets/icons/jupyter.png";
+import C from "../assets/icons/c.svg";
+import Csharp from "../assets/icons/csharp.svg";
+import DotNet from "../assets/icons/dotnet.svg";
+import Office365 from "../assets/icons/office365.svg";
+import Jira from "../assets/icons/jira.svg";
+import Trello from "../assets/icons/trello.svg";
+import Asana from "../assets/icons/asana.svg";
+import PlatformIO from "../assets/icons/platformio.svg";
+import Arduino from "../assets/icons/arduino.svg";
+import Espressif from "../assets/icons/espressif.svg";
+import RaspberryPi from "../assets/icons/raspberrypi.svg";
+import Fusion360 from "../assets/icons/fusion360.png";
+import Blender from "../assets/icons/blender.svg";
+import Cura from "../assets/icons/cura.png";
+import Prusa from "../assets/icons/prusa.png";
+import Unity from "../assets/icons/unity.svg";
 
-import iSide from "../images/iSide.jpg";
-import Movu from "../images/Movu.jpg";
-import ABB from "../images/ABB.png";
-import OneBonsai from "../images/OneBonsai.png";
-import KdG from "../images/KdG.jpg";
-import SMCB from "../images/SMCB.png";
+import iSide from "../assets/images/iSide.webp";
+import Movu from "../assets/images/Movu.webp";
+import ABB from "../assets/images/ABB.webp";
+import OneBonsai from "../assets/images/OneBonsai.webp";
+import KdG from "../assets/images/KdG.webp";
+import SMCB from "../assets/images/SMCB.webp";
 
-import MichielPeeraer from "../images/HeroImage.jpg";
-import JarmoCluyse from "../images/JarmoCluyse.jpg";
-import NickyFieu from "../images/NickyFieu.jpg";
-import LeendertVB from "../images/LeendertVB.jpg";
+import MichielPeeraer from "../assets/images/HeroImage.webp";
+import JarmoCluyse from "../assets/images/JarmoCluyse.webp";
+import NickyFieu from "../assets/images/NickyFieu.webp";
+import LeendertVB from "../assets/images/LeendertVB.webp";
 
-import Portfolio from "../images/Portfolio.png";
-import WorkxIN from "../images/WorkxIN.png";
-import Atlas2D from "../images/Atlas2D.png";
-import SpotMicro from "../images/SpotMicroESP32.jpg";
-import MRFireExtinguisher from "../images/MRFireExtinguisher.jpg";
-import RubiksCubeSolver from "../videos/RubiksCubeSolver.mp4";
+import Portfolio from "../assets/images/Portfolio.webp";
+import WorkxIN from "../assets/images/WorkxIN.webp";
+import Atlas2D from "../assets/images/Atlas2D.webp";
+import SpotMicro from "../assets/images/SpotMicroESP32.webp";
+import MRFireExtinguisher from "../assets/images/MRFireExtinguisher.webp";
+import RubiksCubeSolver from "../assets/videos/RubiksCubeSolver.mp4";
 
 export const bio = {
 	name: "Michiel Peeraer",
 	roles: ["Full Stack Web Dev", "Programmer", "Digital Creative", "Maker"],
 	description:
 		"I am a motivated and versatile individual, always eager to take on new challenges. With a passion for learning I am dedicated to delivering high-quality results. With a positive attitude and a growth mindset, I am ready to make a meaningful contribution and achieve great things.",
-	resume: "CV_Michiel_Peeraer_ENG.pdf",
+	resume: "CV_Michiel_Peeraer_ENG",
 	linkedin: "https://www.linkedin.com/in/michiel-herman-peeraer",
 	facebook: "https://www.facebook.com/michiel.peeraer",
 	github: "https://github.com/MichielPeeraer",
