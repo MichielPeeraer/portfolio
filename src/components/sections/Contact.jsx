@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import styled, { useTheme } from "styled-components";
 import emailjs from "@emailjs/browser";
-import EarthCanvas from "../canvas/Earth";
+import RocketCanvas from "../canvas/Rocket";
 import { descriptions } from "../../data/Constants";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -11,6 +11,7 @@ import "yup-phone-lite";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const Container = styled.div`
+	margin-top: 100px;
 	display: flex;
 	justify-content: center;
 	gap: 12px;
@@ -54,8 +55,8 @@ const Desc = styled.div`
 	max-width: 600px;
 	color: ${({ theme }) => theme.text_secondary};
 	@media (max-width: 768px) {
-		margin-top: 12px;
 		font-size: 16px;
+		padding: 0 10px;
 	}
 `;
 
@@ -212,7 +213,7 @@ const Contact = () => {
 	return (
 		<Container>
 			<Wrapper>
-				<EarthCanvas />
+				<RocketCanvas />
 				<Title>Contact</Title>
 				<Desc>{descriptions.contact}</Desc>
 				<Formik
