@@ -2,16 +2,18 @@ import React from "react";
 import styled from "styled-components";
 import { bio } from "../../data/Constants";
 import Typewriter from "typewriter-effect";
-import HeroImg from "../../images/HeroImage.jpg";
+import HeroImg from "../../assets/images/HeroImage.webp";
 import HeroBgAnimation from "../animation/HeroBgAnimation";
 import { Tilt } from "react-tilt";
-import { motion } from "framer-motion";
-import {
+//import { motion } from "framer-motion";
+/*import {
 	headContainerAnimation,
 	headContentAnimation,
 	headTextAnimation,
-} from "../../utils/Motion";
+} from "../../utils/Motion";*/
 import StarCanvas from "../canvas/Stars";
+import { isBrowser } from "react-device-detect";
+import CV from "../../assets/pdf/CV.pdf";
 
 const HeroContainer = styled.div`
 	display: flex;
@@ -221,52 +223,53 @@ const Hero = () => {
 	return (
 		<div id="About">
 			<HeroContainer>
-				<HeroBg>
-					<StarCanvas />
-					<HeroBgAnimation />
-				</HeroBg>
+				{isBrowser && (
+					<HeroBg>
+						<StarCanvas />
+						<HeroBgAnimation />
+					</HeroBg>
+				)}
+				{/*<motion.div {...headContainerAnimation}>*/}
+				<HeroInnerContainer>
+					<HeroLeftContainer>
+						{/*<motion.div {...headTextAnimation}>*/}
+						<Title>
+							Hi, I am <br /> {bio.name}
+						</Title>
+						<TextLoop>
+							I am a
+							<Span>
+								<Typewriter
+									options={{
+										strings: bio.roles,
+										autoStart: true,
+										loop: true,
+									}}
+								/>
+							</Span>
+						</TextLoop>
+						{/*</motion.div>*/}
 
-				<motion.div {...headContainerAnimation}>
-					<HeroInnerContainer>
-						<HeroLeftContainer>
-							<motion.div {...headTextAnimation}>
-								<Title>
-									Hi, I am <br /> {bio.name}
-								</Title>
-								<TextLoop>
-									I am a
-									<Span>
-										<Typewriter
-											options={{
-												strings: bio.roles,
-												autoStart: true,
-												loop: true,
-											}}
-										/>
-									</Span>
-								</TextLoop>
-							</motion.div>
+						{/*<motion.div {...headContentAnimation}>*/}
+						<SubTitle>{bio.description}</SubTitle>
+						{/*</motion.div>*/}
 
-							<motion.div {...headContentAnimation}>
-								<SubTitle>{bio.description}</SubTitle>
-							</motion.div>
-
-							<ResumeButton
-								href={process.env.PUBLIC_URL + "/" + bio.resume}
-								download
-							>
-								Download Resume
-							</ResumeButton>
-						</HeroLeftContainer>
-						<HeroRightContainer>
-							<motion.div {...headContentAnimation}>
-								<Tilt>
-									<Img src={HeroImg} alt="Michiel Peeraer" />
-								</Tilt>
-							</motion.div>
-						</HeroRightContainer>
-					</HeroInnerContainer>
-				</motion.div>
+						<ResumeButton href={CV} download={bio.resume}>
+							Download Resume
+						</ResumeButton>
+					</HeroLeftContainer>
+					<HeroRightContainer>
+						{/*<motion.div {...headContentAnimation}>*/}
+						{isBrowser && (
+							<Tilt>
+								<Img src={HeroImg} alt={bio.name} />
+							</Tilt>
+						)}
+						{!isBrowser && <Img src={HeroImg} alt={bio.name} />}
+						{/*</motion.div>*/}
+					</HeroRightContainer>
+				</HeroInnerContainer>
+				{/*</motion.div>*/}
 			</HeroContainer>
 		</div>
 	);

@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { descriptions, skills } from "../../data/Constants";
 import { Tilt } from "react-tilt";
+import { isBrowser } from "react-device-detect";
 
 const Container = styled.div`
     display: flex;
@@ -45,6 +46,7 @@ const Desc = styled.div`
 	color: ${({ theme }) => theme.text_secondary};
 	@media (max-width: 768px) {
 		font-size: 16px;
+		padding: 0 10px;
 	}
 `;
 
@@ -121,6 +123,20 @@ const SkillImage = styled.img`
 `;
 
 const Skills = () => {
+	const renderSkillContent = (skill) => (
+		<Skill>
+			<SkillTitle>{skill.title}</SkillTitle>
+			<SkillList>
+				{skill.skills.map((item, index_x) => (
+					<SkillItem key={`skill-x-${index_x}`}>
+						<SkillImage src={item.image} alt={item.name} />
+						{item.name}
+					</SkillItem>
+				))}
+			</SkillList>
+		</Skill>
+	);
+
 	return (
 		<Container id="Skills">
 			<Wrapper>
@@ -135,19 +151,15 @@ const Skills = () => {
 
 				<SkillsContainer>
 					{skills.map((skill, index) => (
-						<Tilt key={`tilt-${index}`}>
-							<Skill key={`skill-${index}`}>
-								<SkillTitle>{skill.title}</SkillTitle>
-								<SkillList>
-									{skill.skills.map((item, index_x) => (
-										<SkillItem key={`skill-x-${index_x}`}>
-											<SkillImage src={item.image} />
-											{item.name}
-										</SkillItem>
-									))}
-								</SkillList>
-							</Skill>
-						</Tilt>
+						<React.Fragment key={`skill-${index}`}>
+							{isBrowser ? (
+								<Tilt key={`tilt-${index}`}>
+									{renderSkillContent(skill)}
+								</Tilt>
+							) : (
+								renderSkillContent(skill)
+							)}
+						</React.Fragment>
 					))}
 				</SkillsContainer>
 			</Wrapper>

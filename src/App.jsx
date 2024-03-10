@@ -15,6 +15,7 @@ import ProjectDetails from "./components/lightbox/ProjectDetails";
 import { useEffect, useState } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 import ArrowUp from "@mui/icons-material/ArrowUpwardRounded";
+import { isBrowser } from "react-device-detect";
 import "react-toastify/dist/ReactToastify.css";
 
 const Body = styled.div`
@@ -111,7 +112,7 @@ function App() {
 				/>
 				<Navbar />
 				<Body>
-					<StarCanvas />
+					{isBrowser && <StarCanvas />}
 					<AnimatePresence>
 						<div>
 							<Hero />
