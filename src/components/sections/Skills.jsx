@@ -123,12 +123,12 @@ const SkillImage = styled.img`
 `;
 
 const Skills = () => {
-	const renderSkillContent = (skill) => (
+	const renderSkillContent = (list) => (
 		<Skill>
-			<SkillTitle>{skill.title}</SkillTitle>
+			<SkillTitle>{list.title}</SkillTitle>
 			<SkillList>
-				{skill.skills.map((item, index_x) => (
-					<SkillItem key={`skill-x-${index_x}`}>
+				{list.skills.map((item) => (
+					<SkillItem key={item.name}>
 						<SkillImage src={item.image} alt={item.name} />
 						{item.name}
 					</SkillItem>
@@ -150,12 +150,10 @@ const Skills = () => {
 				</Desc>
 
 				<SkillsContainer>
-					{skills.map((skill, index) => (
-						<React.Fragment key={`skill-${index}`}>
+					{skills.map((skill) => (
+						<React.Fragment key={skill.title}>
 							{isBrowser ? (
-								<Tilt key={`tilt-${index}`}>
-									{renderSkillContent(skill)}
-								</Tilt>
+								<Tilt>{renderSkillContent(skill)}</Tilt>
 							) : (
 								renderSkillContent(skill)
 							)}

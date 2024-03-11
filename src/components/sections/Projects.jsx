@@ -110,7 +110,7 @@ const Projects = ({ openModal, setOpenModal }) => {
 				</Desc>
 				<ToggleButtonGroup>
 					{categories.map((category, index) => (
-						<React.Fragment key={`toggle-${index}`}>
+						<React.Fragment key={category}>
 							<ToggleButton
 								$active={toggle === category}
 								onClick={() => setToggle(category)}
@@ -123,9 +123,9 @@ const Projects = ({ openModal, setOpenModal }) => {
 				</ToggleButtonGroup>
 				<CardContainer>
 					{toggle === "all" &&
-						projects.map((project, index) => (
+						projects.map((project) => (
 							<ProjectCard
-								key={`project-${index}`}
+								key={project.title}
 								project={project}
 								openModal={openModal}
 								setOpenModal={setOpenModal}
@@ -133,9 +133,9 @@ const Projects = ({ openModal, setOpenModal }) => {
 						))}
 					{projects
 						.filter((item) => item.category === toggle)
-						.map((project, index) => (
+						.map((project) => (
 							<ProjectCard
-								key={`project-${index}`}
+								key={project.title}
 								project={project}
 								openModal={openModal}
 								setOpenModal={setOpenModal}

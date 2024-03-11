@@ -66,9 +66,9 @@ const Education = () => {
 				</Desc>
 
 				<VerticalTimeline>
-					{education.map((education, index) => (
+					{education.map((education) => (
 						<EducationCard
-							key={`education-${index}`}
+							key={education.school}
 							education={education}
 						/>
 					))}

@@ -160,7 +160,7 @@ const Footer = () => {
 				</SocialMediaIcons>
 				<LanguageSwitcher>
 					{languages.map((lang, index) => (
-						<React.Fragment key={`lang-${lang}`}>
+						<React.Fragment key={lang}>
 							<Language
 								$active={lang === i18n.language}
 								onClick={() => changeLang(lang)}

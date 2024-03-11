@@ -66,9 +66,9 @@ const Experience = () => {
 				</Desc>
 
 				<VerticalTimeline>
-					{experiences.map((experience, index) => (
+					{experiences.map((experience) => (
 						<ExperienceCard
-							key={`experience-${index}`}
+							key={experience.company}
 							experience={experience}
 						/>
 					))}

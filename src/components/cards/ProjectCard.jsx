@@ -125,8 +125,8 @@ const ProjectCard = ({ project, setOpenModal }) => {
 				</Video>
 			)}
 			<Tags>
-				{project.tags?.map((tag, index) => (
-					<Tag key={`projectcard-tag-${index}`}>{tag}</Tag>
+				{project.tags?.map((tag) => (
+					<Tag key={tag}>{tag}</Tag>
 				))}
 			</Tags>
 			<Details>
@@ -135,9 +135,9 @@ const ProjectCard = ({ project, setOpenModal }) => {
 				<Description>{project.description}</Description>
 			</Details>
 			<Members>
-				{project.member?.map((member, index) => (
+				{project.member?.map((member) => (
 					<Avatar
-						key={`projectcard-member-${index}`}
+						key={member.name}
 						src={member.img}
 						alt={member.name}
 					/>
