@@ -6,7 +6,7 @@ import { DirectionalLight, AmbientLight } from "three";
 
 const ambientLight = new AmbientLight("#fff", 0.1);
 const directionalLight = new DirectionalLight("#fff", 2);
-directionalLight.position.set(-10, 10, 4);
+directionalLight.position.set(-10, 4, 2);
 directionalLight.castShadow = true;
 
 const Earth = () => {
@@ -17,7 +17,7 @@ const Earth = () => {
 const EarthCanvas = () => {
 	return (
 		<Canvas
-			style={{ height: "250px" }}
+			style={{ height: "250px", zIndex: -1 }}
 			shadows
 			frameloop="demand"
 			dpr={[1, 2]}
@@ -39,8 +39,9 @@ const EarthCanvas = () => {
 					autoRotateSpeed={1}
 					enablePan={false}
 					enableZoom={false}
-					//maxPolarAngle={Math.PI / 2}
-					//minPolarAngle={Math.PI / 2}
+					enableRotate={false}
+					maxPolarAngle={Math.PI / 3}
+					minPolarAngle={Math.PI / 3}
 				/>
 				<Earth />
 				<Preload all />
