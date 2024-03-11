@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import styled, { useTheme } from "styled-components";
 import emailjs from "@emailjs/browser";
-import RocketCanvas from "../canvas/Rocket";
+import EarthCanvas from "../canvas/Earth";
 import { descriptions } from "../../data/Constants";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -41,7 +41,6 @@ const Title = styled.div`
 	font-size: 52px;
 	text-align: center;
 	font-weight: 600;
-	margin-top: 20px;
 	color: ${({ theme }) => theme.text_primary};
 	@media (max-width: 768px) {
 		margin-top: 12px;
@@ -213,7 +212,7 @@ const Contact = () => {
 	return (
 		<Container>
 			<Wrapper>
-				<RocketCanvas />
+				<EarthCanvas />
 				<Title>Contact</Title>
 				<Desc>{descriptions.contact}</Desc>
 				<Formik
