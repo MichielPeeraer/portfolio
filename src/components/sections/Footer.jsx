@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { bio, languages } from "../../data/Constants";
+import { bio, languages, navlinks } from "../../data/Constants";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -125,15 +125,15 @@ const Footer = () => {
 	};
 
 	return (
-		<FooterContainer>
+		<FooterContainer id="footer">
 			<FooterWrapper>
 				<Logo>{bio.name}</Logo>
 				<Nav>
-					<NavLink href="#About">About</NavLink>
-					<NavLink href="#Skills">Skills</NavLink>
-					<NavLink href="#Experience">Experience</NavLink>
-					<NavLink href="#Projects">Projects</NavLink>
-					<NavLink href="#Education">Education</NavLink>
+					{navlinks.map((link) => (
+						<NavLink key={link} href={`#${link}`}>
+							{t(`nav.${link}`)}
+						</NavLink>
+					))}
 				</Nav>
 				<SocialMediaIcons>
 					<SocialMediaIcon
