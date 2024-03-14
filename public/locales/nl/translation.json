@@ -1,1 +1,18 @@
-{}
+{
+	"nav.about": "Over mij",
+	"nav.skills": "Skills",
+	"nav.experience": "Ervaring",
+	"nav.projects": "Projecten",
+	"nav.education": "Opleiding",
+	"nav.github": "GitHub Profiel",
+	"nav.contact": "Contact",
+	"hero.title": "Hey, ik ben",
+	"hero.subtitle": "Ik ben een",
+	"hero.download": "Download CV",
+	"hero.desc": "Ik ben een gemotiveerd en veelzijdig persoon, die altijd graag nieuwe uitdagingen aangaat. Met een passie voor leren ben ik toegewijd aan het leveren van kwalitatief hoogwaardige resultaten. Met een positieve instelling en een groeimindset ben ik klaar om een ​​betekenisvolle bijdrage te leveren en geweldige dingen te bereiken.",
+	"skills.desc": "Hier zijn enkele van mijn skills waar ik aan heb gewerkt.",
+	"experience.desc": "Mijn werkervaring als web en software developer.",
+	"projects.desc": "Enkele van mijn projecten tijdens mijn studies en werkervaringen.",
+	"education.desc": "Mijn gevolgde studies en cursussen tot nu.",
+	"contact.desc": "Neem gerust contact met mij op voor vragen of opportuniteiten!"
+}

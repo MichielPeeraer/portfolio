@@ -1,1 +1,18 @@
-{}
+{
+	"nav.about": "About",
+	"nav.skills": "Skills",
+	"nav.experience": "Experience",
+	"nav.projects": "Projects",
+	"nav.education": "Education",
+	"nav.github": "GitHub Profile",
+	"nav.contact": "Contact",
+	"hero.title": "Hi, I am",
+	"hero.subtitle": "I am a",
+	"hero.download": "Download CV",
+	"hero.desc": "I am a motivated and versatile individual, always eager to take on new challenges. With a passion for learning I am dedicated to delivering high-quality results. With a positive attitude and a growth mindset, I am ready to make a meaningful contribution and achieve great things.",
+	"skills.desc": "Here are some of my skills I have been working on.",
+	"experience.desc": "My work experience as web and software developer.",
+	"projects.desc": "Some of my projects during my studies and work experiences.",
+	"education.desc": "My followed studies and courses so far.",
+	"contact.desc": "Feel free to reach out to me for any questions or opportunities!"
+}
