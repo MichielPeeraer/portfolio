@@ -65,24 +65,23 @@ import MRFireExtinguisher from "../assets/images/MRFireExtinguisher.webp";
 import RubiksCubeSolver from "../assets/videos/RubiksCubeSolver.mp4";
 
 export const languages = ["en", "nl"];
+export const categories = ["all", "web", "robotics & iot"];
+
+export const navlinks = [
+	"about",
+	"skills",
+	"experience",
+	"projects",
+	"education",
+];
 
 export const bio = {
 	name: "Michiel Peeraer",
 	roles: ["Full Stack Web Dev", "Programmer", "Digital Creative", "Maker"],
-	description:
-		"I am a motivated and versatile individual, always eager to take on new challenges. With a passion for learning I am dedicated to delivering high-quality results. With a positive attitude and a growth mindset, I am ready to make a meaningful contribution and achieve great things.",
-	resume: "CV_Michiel_Peeraer_ENG",
-	linkedin: "https://www.linkedin.com/in/michiel-herman-peeraer",
-	facebook: "https://www.facebook.com/michiel.peeraer",
+	linkedin: "https://linkedin.com/in/michiel-herman-peeraer",
+	facebook: "https://facebook.com/michiel.peeraer",
 	github: "https://github.com/MichielPeeraer",
-};
-
-export const descriptions = {
-	skills: "Here are some of my skills on which I have been working on.",
-	experiences: "My work experience as a software developer.",
-	projects: "Some of my projects during my studies and work experiences.",
-	education: "My studies from secondary school to now.",
-	contact: "Feel free to reach out to me for any questions or opportunities!",
+	resume: "/CV_Michiel_Peeraer.pdf",
 };
 
 export const skills = [
@@ -323,7 +322,7 @@ export const skills = [
 export const education = [
 	{
 		img: KdG,
-		school: "Karel de Grote Hogeschool, Antwerp",
+		school: "Karel de Grote Hogeschool, Antwerpen",
 		date: "Sep 2016 - Feb 2022",
 		grade: "magna cum laude",
 		desc: "Learned the potential of the digital world and worked with VR, 3D, prototyping, web & app development, robotics, AI and IoT. Through hands-on projects and experimentation, I gained a deeper understanding of digital technology and the potential to transform industries and improve lives. From immersive virtual experiences to innovative digital solutions, each endeavor represents a step forward in my ongoing exploration of technology and its transformative potential.",
@@ -425,8 +424,6 @@ export const Nicky_Fieu = {
 	linkedin: "https://www.linkedin.com/in/nicky-f-986552195/",
 	github: "https://github.com/nickyfieu",
 };
-
-export const categories = ["all", "web", "robotics & iot"];
 
 export const projects = [
 	{
