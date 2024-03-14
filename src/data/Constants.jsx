@@ -81,7 +81,7 @@ export const bio = {
 	linkedin: "https://linkedin.com/in/michiel-herman-peeraer",
 	facebook: "https://facebook.com/michiel.peeraer",
 	github: "https://github.com/MichielPeeraer",
-	resume: "/CV_Michiel_Peeraer.pdf",
+	cv: "/CV_Michiel_Peeraer.pdf",
 };
 
 export const skills = [
