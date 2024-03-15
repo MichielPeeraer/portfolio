@@ -77,7 +77,13 @@ export const navlinks = [
 
 export const bio = {
 	name: "Michiel Peeraer",
-	roles: ["Full Stack Web Dev", "Programmer", "Digital Creative", "Maker"],
+	roles: [
+		"Full Stack Web Dev",
+		"Programmer",
+		"Digital Creative",
+		"3D Enthusiast",
+		"Maker",
+	],
 	linkedin: "https://linkedin.com/in/michiel-herman-peeraer",
 	facebook: "https://facebook.com/michiel.peeraer",
 	github: "https://github.com/MichielPeeraer",
