@@ -16,16 +16,16 @@ export default function HeroSection({ data }: HeroSectionProps) {
             id="hero"
             className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4"
         >
-            <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1 }}
-                className="text-center"
-            >
+            <div className="text-center">
                 <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
+                    initial={{ scale: 0.72, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                        type: 'spring',
+                        stiffness: 180,
+                        damping: 18,
+                        delay: 0.1,
+                    }}
                     className="mb-8"
                 >
                     <div className="crt-lines rounded-full w-32 h-32 sm:w-48 sm:h-48 mx-auto">
@@ -41,27 +41,39 @@ export default function HeroSection({ data }: HeroSectionProps) {
                 </motion.div>
 
                 <motion.h1
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1, duration: 1 }}
+                    initial={{ opacity: 0, y: 22 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.55,
+                        delay: 0.35,
+                        ease: [0.22, 1, 0.36, 1],
+                    }}
                     className="text-3xl sm:text-5xl md:text-6xl font-bold mb-4 text-green-300"
                 >
                     {data.name}
                 </motion.h1>
 
                 <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.5, duration: 1 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.5,
+                        delay: 0.5,
+                        ease: [0.22, 1, 0.36, 1],
+                    }}
                     className="text-base sm:text-lg md:text-xl mb-8"
                 >
                     {data.title}
                 </motion.p>
 
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 2, duration: 1 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.45,
+                        delay: 0.65,
+                        ease: [0.22, 1, 0.36, 1],
+                    }}
                     className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 justify-center items-center"
                 >
                     <a
@@ -95,7 +107,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                             })}
                     </div>
                 </motion.div>
-            </motion.div>
+            </div>
         </section>
     )
 }

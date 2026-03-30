@@ -1,5 +1,3 @@
-'use client'
-
 interface SkillCardProps {
     skill: string
     index?: number

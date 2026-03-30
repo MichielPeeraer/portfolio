@@ -12,7 +12,8 @@ export default function ExperienceCard({
 }: ExperienceCardProps) {
     return (
         <Reveal y={16} delay={delay}>
-            <div className="relative border border-green-400/60 p-6 rounded transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-green-300 hover:shadow-[0_0_30px_rgba(74,222,128,0.14)]">
+            <div className="relative border border-green-400/60 p-6 rounded overflow-hidden transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-green-300 hover:shadow-[0_0_30px_rgba(74,222,128,0.14)] group">
+                <span className="absolute left-0 top-0 w-0.5 h-0 bg-green-400 transition-all duration-300 group-hover:h-full" />
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-3 sm:gap-0">
                     <div className="flex-1">
                         <h3 className="text-xl font-semibold text-green-300">
