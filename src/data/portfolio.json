@@ -151,11 +151,11 @@
             "details": "In progress, 900+ lessons"
         },
         {
-            "degree": "Bachelor: Multimedia & Creative Technology",
-            "institution": "Karel de Grote Hogeschool",
-            "location": "Hoboken, Belgium",
+            "degree": "Certificate: PLC programming (TIA PRO1 & PRO2)",
+            "institution": "Siemens - Sitrain",
+            "location": "Huizingen, Belgium",
             "year": "2022",
-            "details": "Graduated magna cum laude"
+            "details": ""
         },
         {
             "degree": "Certificate: VCA Safety for Operational Supervisors",
@@ -165,11 +165,25 @@
             "details": "Valid until May 2032"
         },
         {
-            "degree": "Certificate: PLC programming (TIA PRO1 & PRO2)",
-            "institution": "Siemens - Sitrain",
-            "location": "Huizingen, Belgium",
+            "degree": "Bachelor: Multimedia & Creative Technology",
+            "institution": "Karel de Grote Hogeschool",
+            "location": "Hoboken, Belgium",
             "year": "2022",
-            "details": ""
+            "details": "Graduated magna cum laude"
         }
-    ]
+    ],
+    "learning": {
+        "heading": "Continuous Learning",
+        "description": "Currently grinding through Boot.dev - back-end development, algorithms, and computer science fundamentals. Also building my language streak on Duolingo.",
+        "languages": ["French", "German", "Spanish"],
+        "bootDevEmbed": {
+            "src": "https://api.boot.dev/v1/users/public/196f7e84-b6b7-4b3a-b28c-a0d5f98f60d2/thumbnail",
+            "alt": "Boot.dev progress"
+        },
+        "duolingoEmbed": {
+            "src": "https://duolingo-stats-card.vercel.app/api?username=MichielPee3&theme=dark",
+            "alt": "Duolingo Stats",
+            "unoptimized": true
+        }
+    }
 }

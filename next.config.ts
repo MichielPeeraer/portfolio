@@ -72,6 +72,10 @@ const nextConfig: NextConfig = {
                 protocol: 'https',
                 hostname: 'api.boot.dev',
             },
+            {
+                protocol: 'https',
+                hostname: 'duolingo-stats-card.vercel.app',
+            },
         ],
     },
 }

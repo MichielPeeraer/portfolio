@@ -38,12 +38,27 @@ export interface PersonalInfo {
     contact: ContactInfo
 }
 
+export interface LearningEmbed {
+    src: string
+    alt: string
+    unoptimized?: boolean
+}
+
+export interface LearningInfo {
+    heading: string
+    description: string
+    languages: string[]
+    bootDevEmbed: LearningEmbed
+    duolingoEmbed: LearningEmbed
+}
+
 export interface PortfolioData {
     personal: PersonalInfo
     experience: Experience[]
     skillCategories: SkillCategory[]
     devPractices: string[]
     education: Education[]
+    learning: LearningInfo
 }
 
 export interface SkillCategory {

@@ -63,7 +63,7 @@ export default function Home() {
                 devPractices={data.devPractices}
             />
             <EducationSection education={data.education} />
-            <LearningSection />
+            <LearningSection data={data.learning} />
             <ContactSection contact={data.personal.contact} />
             <Footer />
             <BackToTopButton />
