@@ -21,7 +21,7 @@ export default function LearningSection() {
 
                 <Reveal y={24} delay={0.2}>
                     <div className="transition-transform duration-300 hover:-translate-y-1">
-                        <div className="crt-lines rounded-lg inline-block">
+                        <div className="crt-lines rounded-lg block w-full max-w-md">
                             <Image
                                 src="https://api.boot.dev/v1/users/public/196f7e84-b6b7-4b3a-b28c-a0d5f98f60d2/thumbnail"
                                 alt="Boot.dev progress"

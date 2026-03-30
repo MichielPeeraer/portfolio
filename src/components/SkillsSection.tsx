@@ -45,7 +45,6 @@ export default function SkillsSection({
                                     <SkillCard
                                         key={`${category.label}-${skill}`}
                                         skill={skill}
-                                        index={skillIdx}
                                     />
                                 ))}
                             </div>
@@ -69,7 +68,6 @@ export default function SkillsSection({
                             <SkillCard
                                 key={practice}
                                 skill={practice}
-                                index={practiceIdx}
                             />
                         ))}
                     </div>
