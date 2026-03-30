@@ -1,4 +1,4 @@
-const SITE_URL_FALLBACK = 'https://michielpeeraer-portfolio.vercel.app'
+const SITE_URL_FALLBACK = 'https://michiel-peeraer.vercel.app'
 
 export const siteConfig = {
     name: 'Michiel Peeraer',
