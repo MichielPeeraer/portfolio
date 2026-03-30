@@ -18,7 +18,12 @@ export default function ExperienceCard({
                         <h3 className="text-xl font-semibold text-green-300">
                             {experience.title}
                         </h3>
-                        <p className="text-green-200">{experience.company}</p>
+                        <p className="text-green-200">
+                            {experience.company}{' '}
+                            <span className="text-green-300/70">
+                                · {experience.location}
+                            </span>
+                        </p>
                     </div>
                     <span className="text-sm text-green-500 whitespace-nowrap">
                         {experience.period}

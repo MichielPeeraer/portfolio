@@ -20,7 +20,10 @@ export default function EducationCard({
                             {education.degree}
                         </h3>
                         <p className="text-green-200">
-                            {education.institution}
+                            {education.institution}{' '}
+                            <span className="text-green-300/70">
+                                · {education.location}
+                            </span>
                         </p>
                     </div>
                     <span className="text-sm text-green-500 whitespace-nowrap">

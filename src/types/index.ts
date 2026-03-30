@@ -2,6 +2,7 @@ export interface Experience {
     period: string
     title: string
     company: string
+    location: string
     points: string[]
 }
 
@@ -13,6 +14,7 @@ export interface Skill {
 export interface Education {
     degree: string
     institution: string
+    location: string
     year: string
     details: string
 }
