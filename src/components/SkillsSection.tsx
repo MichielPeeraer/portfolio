@@ -65,10 +65,7 @@ export default function SkillsSection({
                     </h3>
                     <div className="flex flex-wrap gap-2">
                         {devPractices.map((practice, practiceIdx) => (
-                            <SkillCard
-                                key={practice}
-                                skill={practice}
-                            />
+                            <SkillCard key={practice} skill={practice} />
                         ))}
                     </div>
                 </motion.div>
