@@ -17,7 +17,7 @@
                 },
                 {
                     "name": "Website",
-                    "url": "https://michiel.peeraer-vanmoorsel.be"
+                    "url": "https://michielpeeraer-portfolio.vercel.app"
                 }
             ]
         }
@@ -113,7 +113,8 @@
                 "CI/CD with GitHub Actions",
                 "Kubernetes (basics)",
                 "E2E Testing (Jest, Playwright)",
-                "Postman"
+                "Postman",
+                "Vercel"
             ]
         }
     ],

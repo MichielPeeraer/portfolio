@@ -33,28 +33,38 @@ export default function FloatingNavbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     useEffect(() => {
-        const handleScroll = () => {
-            const scrollPosition = window.scrollY + 100
+        const sectionElements = sections
+            .map((section) => document.getElementById(section.id))
+            .filter((el): el is HTMLElement => Boolean(el))
 
-            for (const section of sections) {
-                const element = document.getElementById(section.id)
-                if (element) {
-                    const { offsetTop, offsetHeight } = element
-                    if (
-                        scrollPosition >= offsetTop &&
-                        scrollPosition < offsetTop + offsetHeight
-                    ) {
-                        setActiveSection(section.id)
-                        break
-                    }
-                }
-            }
+        if (sectionElements.length === 0) {
+            return
         }
 
-        window.addEventListener('scroll', handleScroll)
-        handleScroll()
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries
+                    .filter((entry) => entry.isIntersecting)
+                    .sort(
+                        (a, b) =>
+                            b.intersectionRatio - a.intersectionRatio ||
+                            a.boundingClientRect.top - b.boundingClientRect.top
+                    )
 
-        return () => window.removeEventListener('scroll', handleScroll)
+                if (visible[0]) {
+                    setActiveSection(visible[0].target.id)
+                }
+            },
+            {
+                root: null,
+                rootMargin: '-25% 0px -55% 0px',
+                threshold: [0.1, 0.25, 0.5, 0.75],
+            }
+        )
+
+        sectionElements.forEach((element) => observer.observe(element))
+
+        return () => observer.disconnect()
     }, [])
 
     const scrollToSection = (sectionId: string) => {

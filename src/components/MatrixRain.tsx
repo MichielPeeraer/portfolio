@@ -9,74 +9,98 @@ export default function MatrixRain() {
         const canvas = canvasRef.current
         if (!canvas) return
 
-        const ctx = canvas.getContext('2d')
-        if (!ctx) return
-
-        canvas.width = window.innerWidth
-        canvas.height = window.innerHeight
+        const context = canvas.getContext('2d')
+        if (!context) return
+        const ctx: CanvasRenderingContext2D = context
 
         const matrix =
             'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         const matrixArray = matrix.split('')
 
         const fontSize = 16
-        const columns = canvas.width / fontSize
-        const drops: number[] = []
+        const frameIntervalMs = 1000 / 30
+        let drops: number[] = []
+        let width = 0
+        let height = 0
+        let rafId: number | null = null
+        let lastFrameTime = 0
 
-        for (let x = 0; x < columns; x++) {
-            drops[x] = 1
+        const setupCanvas = () => {
+            width = window.innerWidth
+            height = window.innerHeight
+
+            const dpr = Math.min(window.devicePixelRatio || 1, 2)
+            canvas.width = Math.floor(width * dpr)
+            canvas.height = Math.floor(height * dpr)
+            canvas.style.width = `${width}px`
+            canvas.style.height = `${height}px`
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+            const columns = Math.max(1, Math.floor(width / fontSize))
+            drops = Array.from({ length: columns }, () =>
+                Math.floor(Math.random() * (height / fontSize))
+            )
         }
 
         function draw() {
-            if (!ctx || !canvas) return
-
             ctx.fillStyle = 'rgba(0, 0, 0, 0.04)'
-            ctx.fillRect(0, 0, canvas.width, canvas.height)
+            ctx.fillRect(0, 0, width, height)
 
             ctx.fillStyle = '#0f0'
-            ctx.font = fontSize + 'px monospace'
+            ctx.font = `${fontSize}px monospace`
 
             for (let i = 0; i < drops.length; i++) {
                 const text =
                     matrixArray[Math.floor(Math.random() * matrixArray.length)]
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize)
 
-                if (
-                    drops[i] * fontSize > canvas.height &&
-                    Math.random() > 0.975
-                ) {
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
                     drops[i] = 0
                 }
                 drops[i]++
             }
         }
 
-        let intervalId: ReturnType<typeof setInterval> | null = setInterval(
-            draw,
-            35
-        )
+        const animate = (timestamp: number) => {
+            if (timestamp - lastFrameTime >= frameIntervalMs) {
+                lastFrameTime = timestamp
+                draw()
+            }
+
+            rafId = window.requestAnimationFrame(animate)
+        }
+
+        const startAnimation = () => {
+            if (rafId !== null) return
+            rafId = window.requestAnimationFrame(animate)
+        }
+
+        const stopAnimation = () => {
+            if (rafId === null) return
+            window.cancelAnimationFrame(rafId)
+            rafId = null
+        }
 
         const handleResize = () => {
-            canvas.width = window.innerWidth
-            canvas.height = window.innerHeight
+            setupCanvas()
         }
 
         const handleVisibility = () => {
             if (document.hidden) {
-                if (intervalId) {
-                    clearInterval(intervalId)
-                    intervalId = null
-                }
+                stopAnimation()
             } else {
-                if (!intervalId) intervalId = setInterval(draw, 35)
+                startAnimation()
             }
         }
 
-        window.addEventListener('resize', handleResize)
+        setupCanvas()
+        startAnimation()
+
+        window.addEventListener('resize', handleResize, { passive: true })
         document.addEventListener('visibilitychange', handleVisibility)
 
         return () => {
-            if (intervalId) clearInterval(intervalId)
+            stopAnimation()
             window.removeEventListener('resize', handleResize)
             document.removeEventListener('visibilitychange', handleVisibility)
         }

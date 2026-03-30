@@ -1,8 +1,5 @@
-'use client'
-
-import { motion } from 'framer-motion'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
-import ContactForm from './ContactForm'
+import DeferredContactForm from './DeferredContactForm'
 import type { ContactInfo } from '@/types'
 
 interface ContactSectionProps {
@@ -13,21 +10,11 @@ export default function ContactSection({ contact }: ContactSectionProps) {
     return (
         <section id="contact" className="relative z-10 py-20 px-4">
             <div className="max-w-4xl mx-auto text-center">
-                <motion.h2
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="text-4xl font-bold mb-8 text-green-300"
-                >
+                <h2 className="text-4xl font-bold mb-8 text-green-300">
                     Contact
-                </motion.h2>
+                </h2>
 
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="space-y-4"
-                >
+                <div className="space-y-4">
                     <a
                         href={`tel:${contact.phone}`}
                         className="text-lg hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
@@ -41,14 +28,7 @@ export default function ContactSection({ contact }: ContactSectionProps) {
                         {contact.email}
                     </a>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="mt-12"
-                    >
-                        <ContactForm />
-                    </motion.div>
+                    <DeferredContactForm />
 
                     <div className="flex space-x-8 justify-center mt-8">
                         {contact.socialLinks
@@ -72,7 +52,7 @@ export default function ContactSection({ contact }: ContactSectionProps) {
                                 )
                             })}
                     </div>
-                </motion.div>
+                </div>
             </div>
         </section>
     )
