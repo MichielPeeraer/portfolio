@@ -1,0 +1,155 @@
+{
+    "personal": {
+        "name": "Michiel Peeraer",
+        "title": "Full-Stack TypeScript Developer",
+        "about": "Full-stack TypeScript developer with expertise in MERN and PERN stacks, skilled in creating scalable, production-ready web applications. Proficient in frontend architecture, REST API integration, and backend services. Committed to performance optimization and clean software architecture, delivering tangible business value through software solutions. Seeking opportunities across the EU.",
+        "contact": {
+            "phone": "+32 484 77 37 52",
+            "email": "peeraer.michiel@gmail.com",
+            "socialLinks": [
+                {
+                    "name": "GitHub",
+                    "url": "https://github.com/MichielPeeraer"
+                },
+                {
+                    "name": "LinkedIn",
+                    "url": "https://linkedin.com/in/michiel-herman-peeraer"
+                },
+                {
+                    "name": "Website",
+                    "url": "https://michiel.peeraer-vanmoorsel.be"
+                }
+            ]
+        }
+    },
+    "experience": [
+        {
+            "period": "12/2022 - 04/2023",
+            "title": "Full-Stack Developer",
+            "company": "Movu Robotics | Spiere-Helkijn, Belgium",
+            "points": [
+                "Built internal tools using React, Node.js and Express.js",
+                "Integrated APIs with automated warehouse hardware systems",
+                "Developed tools for real-time monitoring and diagnostics",
+                "Created technical documentation for end users"
+            ]
+        },
+        {
+            "period": "03/2022 - 10/2022",
+            "title": "Robotics Support Engineer",
+            "company": "ABB Robotics | Huizingen, Belgium",
+            "points": [
+                "Troubleshot software and hardware issues in robotic systems",
+                "Performed system commissioning and debugging",
+                "Supported critical deployments to reduce downtime",
+                "Collaborated with engineering teams to resolve technical issues"
+            ]
+        },
+        {
+            "period": "02/2021 - 06/2021",
+            "title": "Software Developer & Prototype Engineer",
+            "company": "OneBonsai VR | Vilvoorde, Belgium",
+            "points": [
+                "Developed VR training prototypes with sensors and microcontrollers",
+                "Integrated hardware components with VR software environments",
+                "Built custom VR hardware setups and integrated systems",
+                "Tested VR solutions for enhanced user experiences"
+            ]
+        },
+        {
+            "period": "06/2019 - 02/2021",
+            "title": "Full-Stack Web Developer",
+            "company": "iSide Web & SEO | Sint-Pieters-Leeuw, Belgium",
+            "points": [
+                "Built and maintained CMS-based websites using JS, PHP and MySQL",
+                "Developed React-based Gutenberg components in WordPress",
+                "Improved SEO and performance for client websites",
+                "Translated designs into responsive web interfaces"
+            ]
+        }
+    ],
+    "skillCategories": [
+        {
+            "label": "Frontend",
+            "skills": [
+                "React.js",
+                "Next.js",
+                "TypeScript",
+                "Tailwind CSS",
+                "SCSS / SASS",
+                "UI Animations (Motion)",
+                "UI Libraries (Mantine UI)"
+            ]
+        },
+        {
+            "label": "Backend",
+            "skills": [
+                "Node.js",
+                "Express.js",
+                "Python",
+                "Flask",
+                "FastAPI",
+                "REST APIs"
+            ]
+        },
+        {
+            "label": "Data & Auth",
+            "skills": [
+                "MongoDB",
+                "PostgreSQL",
+                "SQL",
+                "SQLAlchemy",
+                "JWT Auth (Bearer)",
+                "Input Validation (Zod, Yup)",
+                "State Management (Redux)"
+            ]
+        },
+        {
+            "label": "Tooling & DevOps",
+            "skills": [
+                "Git",
+                "GitHub",
+                "Docker",
+                "CI/CD with GitHub Actions",
+                "Kubernetes (basics)",
+                "E2E Testing (Jest, Playwright)",
+                "Postman"
+            ]
+        }
+    ],
+    "devPractices": [
+        "Agile methodologies",
+        "Responsive Design (Mobile First)",
+        "Component-Based Architecture",
+        "Performance Optimization",
+        "Secure API Design",
+        "Documentation (e.g. Swagger)",
+        "SEO"
+    ],
+    "education": [
+        {
+            "degree": "Certificate: Back-end Developer Path (Python & TypeScript)",
+            "institution": "Boot.dev | Online",
+            "year": "2026",
+            "details": "In progress, 900+ lessons"
+        },
+        {
+            "degree": "Bachelor: Multimedia & Creative Technology",
+            "institution": "Karel de Grote Hogeschool | Hoboken",
+            "year": "2022",
+            "details": ""
+        },
+        {
+            "degree": "Certificate: VCA Safety for Operational Supervisors",
+            "institution": "Syntra MVL | Asse",
+            "year": "2022",
+            "details": "Valid until May 2032"
+        },
+        {
+            "degree": "Certificate: PLC programming (TIA PRO1 & PRO2)",
+            "institution": "Siemens - Sitrain | Huizingen",
+            "year": "2022",
+            "details": ""
+        }
+    ]
+}

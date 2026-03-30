@@ -1,26 +1,260 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #000000;
+    --foreground: #00ff00;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Courier New', monospace;
+    position: relative;
+}
+
+@layer base {
+    button,
+    [role='button'],
+    a {
+        cursor: pointer;
+    }
+}
+
+/* CRT Effect */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 255, 0, 0.03) 0%,
+        rgba(0, 255, 0, 0.01) 50%,
+        rgba(0, 255, 0, 0.03) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Scanlines */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+    animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+    0% {
+        transform: translateY(-100%);
+    }
+    10% {
+        transform: translateY(100vh);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+/* Flicker effect - reduced */
+@keyframes flicker {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.995;
+    }
+}
+
+body {
+    animation: flicker 8s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* CRT scanlines for profile picture */
+.crt-lines {
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 18px 5px rgba(0, 255, 80, 0.2);
+}
+
+/* Green phosphor tint */
+.crt-lines::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 200, 50, 0.07);
+    mix-blend-mode: color;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Thin subtle green scanlines */
+.crt-lines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 180, 60, 0.18) 0px,
+        rgba(0, 180, 60, 0.18) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.matrix-toast {
+    background: linear-gradient(
+        145deg,
+        rgba(0, 18, 0, 0.96),
+        rgba(0, 8, 0, 0.96)
+    );
+    color: #9dffb2;
+    border: 1px solid rgba(74, 222, 128, 0.55);
+    box-shadow:
+        0 0 0 1px rgba(74, 222, 128, 0.25),
+        0 0 20px rgba(74, 222, 128, 0.2);
+    font-family: 'Courier New', monospace;
+}
+
+.matrix-toast-title {
+    color: #d8ffe2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.matrix-toast-description {
+    color: rgba(178, 255, 197, 0.95);
+    font-size: 0.85rem;
+}
+
+.matrix-toast-success {
+    border-color: rgba(34, 197, 94, 0.7);
+}
+
+.matrix-toast-error {
+    border-color: rgba(248, 113, 113, 0.75);
+}
+
+.matrix-toaster [data-sonner-toast] {
+    background: linear-gradient(
+        145deg,
+        rgba(0, 12, 0, 0.96),
+        rgba(0, 6, 0, 0.96)
+    ) !important;
+    color: #b2ffc5 !important;
+    border: 1px solid rgba(74, 222, 128, 0.55) !important;
+    box-shadow:
+        0 0 0 1px rgba(74, 222, 128, 0.25),
+        0 0 20px rgba(74, 222, 128, 0.2) !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+.matrix-toaster [data-sonner-toast][data-type='success'] {
+    border-color: rgba(34, 197, 94, 0.75) !important;
+}
+
+.matrix-toaster [data-sonner-toast][data-type='error'] {
+    border-color: rgba(248, 113, 113, 0.8) !important;
+}
+
+.matrix-toaster [data-sonner-toast][data-type='warning'] {
+    border-color: rgba(250, 204, 21, 0.8) !important;
+}
+
+.matrix-toaster [data-sonner-toast][data-type='info'] {
+    border-color: rgba(56, 189, 248, 0.8) !important;
+}
+
+.matrix-toaster [data-sonner-toast] [data-title] {
+    color: #d8ffe2 !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.matrix-toaster [data-sonner-toast] [data-description] {
+    color: rgba(178, 255, 197, 0.95) !important;
+}
+
+.matrix-phone-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: #000;
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    color: #4ade80;
+    border-radius: 0.25rem;
+    padding: 0.6rem 0.75rem;
+    transition:
+        border-color 200ms ease,
+        box-shadow 200ms ease;
+}
+
+.matrix-phone-input:focus-within {
+    border-color: #4ade80;
+    box-shadow:
+        0 0 0 1px rgba(74, 222, 128, 0.35),
+        0 0 18px rgba(74, 222, 128, 0.15);
+}
+
+.matrix-phone-input .PhoneInputCountrySelect {
+    background: #000;
+    color: #4ade80;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+}
+
+.matrix-phone-input .PhoneInputCountryIcon {
+    box-shadow: none;
+}
+
+.matrix-phone-input .PhoneInputInput {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    color: #4ade80;
+    outline: none;
+}
+
+.matrix-phone-input .PhoneInputInput::placeholder {
+    color: #16a34a;
 }

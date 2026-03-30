@@ -1,0 +1,79 @@
+'use client'
+
+import { motion } from 'framer-motion'
+import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import ContactForm from './ContactForm'
+import type { ContactInfo } from '@/types'
+
+interface ContactSectionProps {
+    contact: ContactInfo
+}
+
+export default function ContactSection({ contact }: ContactSectionProps) {
+    return (
+        <section id="contact" className="relative z-10 py-20 px-4">
+            <div className="max-w-4xl mx-auto text-center">
+                <motion.h2
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-4xl font-bold mb-8 text-green-300"
+                >
+                    Contact
+                </motion.h2>
+
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="space-y-4"
+                >
+                    <a
+                        href={`tel:${contact.phone}`}
+                        className="text-lg hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
+                    >
+                        {contact.phone}
+                    </a>
+                    <a
+                        href={`mailto:${contact.email}`}
+                        className="text-lg hover:text-green-300 transition-colors block focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
+                    >
+                        {contact.email}
+                    </a>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="mt-12"
+                    >
+                        <ContactForm />
+                    </motion.div>
+
+                    <div className="flex space-x-8 justify-center mt-8">
+                        {contact.socialLinks
+                            .filter((link) => link.name !== 'Website')
+                            .map((link) => {
+                                const Icon =
+                                    link.name === 'GitHub'
+                                        ? FaGithub
+                                        : FaLinkedin
+                                return (
+                                    <a
+                                        key={link.name}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="transition-all duration-200 hover:text-green-300 hover:-translate-y-0.5 hover:drop-shadow-[0_0_10px_rgba(74,222,128,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
+                                        aria-label={link.name}
+                                    >
+                                        <Icon size={32} />
+                                    </a>
+                                )
+                            })}
+                    </div>
+                </motion.div>
+            </div>
+        </section>
+    )
+}
