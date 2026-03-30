@@ -267,7 +267,7 @@ export default function ContactForm() {
             onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
             noValidate
             aria-busy={isSubmitting}
-            className="max-w-2xl mx-auto space-y-6"
+            className="max-w-2xl mx-auto space-y-6 text-left"
         >
             <p className="text-xs text-green-500/90 text-left">
                 * Required fields
@@ -296,8 +296,11 @@ export default function ContactForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label htmlFor="firstname" className="sr-only">
-                        First name
+                    <label
+                        htmlFor="firstname"
+                        className="block text-sm text-green-300 mb-2"
+                    >
+                        First name *
                     </label>
                     <input
                         id="firstname"
@@ -322,8 +325,11 @@ export default function ContactForm() {
                 </div>
 
                 <div>
-                    <label htmlFor="lastname" className="sr-only">
-                        Last name
+                    <label
+                        htmlFor="lastname"
+                        className="block text-sm text-green-300 mb-2"
+                    >
+                        Last name *
                     </label>
                     <input
                         id="lastname"
@@ -350,8 +356,11 @@ export default function ContactForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label htmlFor="email" className="sr-only">
-                        Email
+                    <label
+                        htmlFor="email"
+                        className="block text-sm text-green-300 mb-2"
+                    >
+                        Email *
                     </label>
                     <input
                         id="email"
@@ -376,7 +385,10 @@ export default function ContactForm() {
                 </div>
 
                 <div>
-                    <label htmlFor="phone" className="sr-only">
+                    <label
+                        htmlFor="phone"
+                        className="block text-sm text-green-300 mb-2"
+                    >
                         Phone
                     </label>
                     <Controller
@@ -414,7 +426,10 @@ export default function ContactForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label htmlFor="company" className="sr-only">
+                    <label
+                        htmlFor="company"
+                        className="block text-sm text-green-300 mb-2"
+                    >
                         Company
                     </label>
                     <input
@@ -440,7 +455,10 @@ export default function ContactForm() {
                 </div>
 
                 <div>
-                    <label htmlFor="linkedin" className="sr-only">
+                    <label
+                        htmlFor="linkedin"
+                        className="block text-sm text-green-300 mb-2"
+                    >
                         LinkedIn
                     </label>
                     <input
@@ -467,8 +485,11 @@ export default function ContactForm() {
             </div>
 
             <div>
-                <label htmlFor="message" className="sr-only">
-                    Message
+                <label
+                    htmlFor="message"
+                    className="block text-sm text-green-300 mb-2"
+                >
+                    Message *
                 </label>
                 <textarea
                     id="message"
@@ -491,32 +512,34 @@ export default function ContactForm() {
                 )}
             </div>
 
-            <div className="flex justify-center" aria-live="polite">
-                {TURNSTILE_SITE_KEY ? (
-                    <Turnstile
-                        key={turnstileKey}
-                        siteKey={TURNSTILE_SITE_KEY}
-                        options={{ language: 'en' }}
-                        onSuccess={(token) => {
-                            setValue('turnstile', token, {
-                                shouldDirty: true,
-                                shouldValidate: true,
-                            })
-                        }}
-                        onExpire={resetTurnstile}
-                        onError={() => {
-                            resetTurnstile()
-                            toast.error('CAPTCHA failed', {
-                                description:
-                                    'Could not complete CAPTCHA. Please try again.',
-                            })
-                        }}
-                    />
-                ) : (
-                    <p className="text-sm text-red-400">
-                        Turnstile site key is not configured.
-                    </p>
-                )}
+            <div className="space-y-2" aria-live="polite">
+                <div className="flex justify-center">
+                    {TURNSTILE_SITE_KEY ? (
+                        <Turnstile
+                            key={turnstileKey}
+                            siteKey={TURNSTILE_SITE_KEY}
+                            options={{ language: 'en' }}
+                            onSuccess={(token) => {
+                                setValue('turnstile', token, {
+                                    shouldDirty: true,
+                                    shouldValidate: true,
+                                })
+                            }}
+                            onExpire={resetTurnstile}
+                            onError={() => {
+                                resetTurnstile()
+                                toast.error('CAPTCHA failed', {
+                                    description:
+                                        'Could not complete CAPTCHA. Please try again.',
+                                })
+                            }}
+                        />
+                    ) : (
+                        <p className="text-sm text-red-400">
+                            Turnstile site key is not configured.
+                        </p>
+                    )}
+                </div>
             </div>
 
             {errors.turnstile && (
