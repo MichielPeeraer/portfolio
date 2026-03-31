@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Download } from 'lucide-react'
@@ -10,7 +11,28 @@ interface HeroSectionProps {
     data: PersonalInfo
 }
 
+type MatrixLoaderWindow = Window & {
+    __matrixLoaderReady?: boolean
+}
+
 export default function HeroSection({ data }: HeroSectionProps) {
+    const [canAnimate, setCanAnimate] = useState(false)
+
+    useEffect(() => {
+        if ((window as MatrixLoaderWindow).__matrixLoaderReady) {
+            setCanAnimate(true)
+            return
+        }
+
+        const handleLoaderDone = () => setCanAnimate(true)
+
+        window.addEventListener('matrix-loader:done', handleLoaderDone)
+
+        return () => {
+            window.removeEventListener('matrix-loader:done', handleLoaderDone)
+        }
+    }, [])
+
     return (
         <section
             id="hero"
@@ -19,7 +41,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
             <div className="text-center">
                 <motion.div
                     initial={{ scale: 0.72, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
+                    animate={canAnimate ? { scale: 1, opacity: 1 } : undefined}
                     transition={{
                         type: 'spring',
                         stiffness: 180,
@@ -42,7 +64,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
                 <motion.h1
                     initial={{ opacity: 0, y: 22 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
                     transition={{
                         duration: 0.55,
                         delay: 0.35,
@@ -55,7 +77,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
                 <motion.p
                     initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
                     transition={{
                         duration: 0.5,
                         delay: 0.5,
@@ -68,7 +90,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
                     transition={{
                         duration: 0.45,
                         delay: 0.65,

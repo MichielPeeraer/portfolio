@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const LINES = [
@@ -20,8 +20,22 @@ export default function MatrixLoader() {
     const [show, setShow] = useState(true)
     const [completedLines, setCompletedLines] = useState<string[]>([])
     const [typingLine, setTypingLine] = useState('')
+    const hasEmittedReady = useRef(false)
+
+    const emitReady = () => {
+        if (hasEmittedReady.current) return
+        hasEmittedReady.current = true
+        ;(
+            window as Window & {
+                __matrixLoaderReady?: boolean
+            }
+        ).__matrixLoaderReady = true
+
+        window.dispatchEvent(new Event('matrix-loader:done'))
+    }
 
     const dismiss = () => {
+        emitReady()
         document.body.style.overflow = ''
         setShow(false)
     }
