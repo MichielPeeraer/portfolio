@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Download } from 'lucide-react'
@@ -17,14 +17,24 @@ type MatrixLoaderWindow = Window & {
 
 export default function HeroSection({ data }: HeroSectionProps) {
     const [canAnimate, setCanAnimate] = useState(false)
+    const loaderCheckDoneRef = useRef(false)
 
     useEffect(() => {
-        if ((window as MatrixLoaderWindow).__matrixLoaderReady) {
+        // Check on mount if loader is already ready
+        if (
+            !loaderCheckDoneRef.current &&
+            (window as MatrixLoaderWindow).__matrixLoaderReady
+        ) {
+            loaderCheckDoneRef.current = true
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setCanAnimate(true)
             return
         }
 
-        const handleLoaderDone = () => setCanAnimate(true)
+        const handleLoaderDone = () => {
+            loaderCheckDoneRef.current = true
+            setCanAnimate(true)
+        }
 
         window.addEventListener('matrix-loader:done', handleLoaderDone)
 

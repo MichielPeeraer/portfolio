@@ -88,58 +88,66 @@
         {
             "label": "Frontend",
             "skills": [
-                "React.js",
-                "Next.js",
-                "TypeScript",
-                "Tailwind CSS",
-                "SCSS / SASS",
-                "Motion (Framer Motion)",
-                "Mantine UI"
+                { "label": "React.js", "icon": "react" },
+                { "label": "Next.js", "icon": "nextdotjs" },
+                { "label": "TypeScript", "icon": "typescript" },
+                { "label": "Tailwind CSS", "icon": "tailwindcss" },
+                { "label": "SCSS / SASS", "icon": "sass" },
+                { "label": "Motion (Framer Motion)", "icon": "framer" },
+                { "label": "Mantine UI", "icon": "mantine" }
             ]
         },
         {
             "label": "Backend",
             "skills": [
-                "Node.js",
-                "Express.js",
-                "Python",
-                "Flask",
-                "FastAPI",
-                "REST APIs"
+                { "label": "Node.js", "icon": "nodedotjs" },
+                { "label": "Express.js", "icon": "express" },
+                { "label": "Python", "icon": "python" },
+                { "label": "Flask", "icon": "flask" },
+                { "label": "FastAPI", "icon": "fastapi" }
             ]
         },
         {
-            "label": "Data & Auth",
+            "label": "Databases & ORM",
             "skills": [
-                "MongoDB",
-                "PostgreSQL",
-                "SQLAlchemy",
-                "JWT Auth",
-                "Zod",
-                "Redux Toolkit"
+                { "label": "PostgreSQL", "icon": "postgresql" },
+                { "label": "MongoDB", "icon": "mongodb" },
+                { "label": "Prisma", "icon": "prisma" },
+                { "label": "SQLAlchemy", "icon": "sqlalchemy" }
+            ]
+        },
+        {
+            "label": "State & Validation",
+            "skills": [
+                { "label": "Redux Toolkit", "icon": "redux" },
+                { "label": "Formik", "icon": "formik" },
+                { "label": "Zod", "icon": "zod" },
+                { "label": "JWT Auth", "icon": "jwt" }
             ]
         },
         {
             "label": "Tooling & DevOps",
             "skills": [
-                "Git / GitHub",
-                "Docker",
-                "GitHub Actions",
-                "Kubernetes",
-                "Jest",
-                "Playwright",
-                "Postman",
-                "Vercel"
+                { "label": "Git / GitHub", "icon": "github" },
+                { "label": "Docker", "icon": "docker" },
+                { "label": "GitHub Actions", "icon": "githubactions" },
+                { "label": "Kubernetes", "icon": "kubernetes" },
+                { "label": "Jest", "icon": "jest" },
+                { "label": "Vitest", "icon": "vitest" },
+                { "label": "ESLint", "icon": "eslint" },
+                { "label": "Prettier", "icon": "prettier" },
+                { "label": "Postman", "icon": "postman" },
+                { "label": "Vercel", "icon": "vercel" }
             ]
         }
     ],
     "devPractices": [
         "Agile methodologies",
-        "Mobile-First Design",
         "Component-Based Architecture",
         "Performance Optimization",
         "Secure API Design",
-        "Swagger / OpenAPI",
+        "Clean Code & SOLID Principles",
+        "Database Design & Optimization",
         "SEO"
     ],
     "education": [

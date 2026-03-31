@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 const LINES = [
@@ -34,11 +34,11 @@ export default function MatrixLoader() {
         window.dispatchEvent(new Event('matrix-loader:done'))
     }
 
-    const dismiss = () => {
+    const dismiss = useCallback(() => {
         emitReady()
         document.body.style.overflow = ''
         setShow(false)
-    }
+    }, [])
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -75,7 +75,7 @@ export default function MatrixLoader() {
             cancelled = true
             document.body.style.overflow = ''
         }
-    }, [])
+    }, [dismiss])
 
     return (
         <AnimatePresence>

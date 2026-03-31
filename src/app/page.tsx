@@ -10,6 +10,7 @@ import {
     SkillsSection,
 } from '@/components/sections'
 import portfolioData from '@/data/portfolio.json'
+import { getSkillLabel } from '@/lib/skill-icons'
 import { siteConfig } from '@/lib/site'
 import type { PortfolioData } from '@/types'
 
@@ -36,7 +37,9 @@ const structuredData = {
                 .filter((link) => link.name !== 'Website')
                 .map((link) => link.url),
             knowsAbout: [
-                ...data.skillCategories.flatMap((category) => category.skills),
+                ...data.skillCategories.flatMap((category) =>
+                    category.skills.map((skill) => getSkillLabel(skill))
+                ),
                 ...data.devPractices,
             ],
         },
