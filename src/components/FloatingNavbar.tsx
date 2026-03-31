@@ -34,37 +34,25 @@ export default function FloatingNavbar() {
 
     useEffect(() => {
         const sectionElements = sections
-            .map((section) => document.getElementById(section.id))
-            .filter((el): el is HTMLElement => Boolean(el))
+            .map((s) => ({ id: s.id, el: document.getElementById(s.id) }))
+            .filter((s): s is { id: string; el: HTMLElement } => Boolean(s.el))
 
-        if (sectionElements.length === 0) {
-            return
+        if (sectionElements.length === 0) return
+
+        const handleScroll = () => {
+            const triggerY = window.scrollY + window.innerHeight * 0.35
+            let active = sectionElements[0].id
+            for (const { id, el } of sectionElements) {
+                if (el.offsetTop <= triggerY) {
+                    active = id
+                }
+            }
+            setActiveSection(active)
         }
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const visible = entries
-                    .filter((entry) => entry.isIntersecting)
-                    .sort(
-                        (a, b) =>
-                            b.intersectionRatio - a.intersectionRatio ||
-                            a.boundingClientRect.top - b.boundingClientRect.top
-                    )
-
-                if (visible[0]) {
-                    setActiveSection(visible[0].target.id)
-                }
-            },
-            {
-                root: null,
-                rootMargin: '-25% 0px -55% 0px',
-                threshold: [0.1, 0.25, 0.5, 0.75],
-            }
-        )
-
-        sectionElements.forEach((element) => observer.observe(element))
-
-        return () => observer.disconnect()
+        handleScroll()
+        window.addEventListener('scroll', handleScroll, { passive: true })
+        return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
     const scrollToSection = (sectionId: string) => {
