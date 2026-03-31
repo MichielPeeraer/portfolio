@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { siteConfig } from '@/lib/site'
 import MatrixToaster from '@/components/MatrixToaster'
+import MatrixLoader from '@/components/MatrixLoader'
 import './globals.css'
 
 const geistSans = Geist({
@@ -60,6 +61,7 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
+                <MatrixLoader />
                 {children}
                 <MatrixToaster />
                 <Analytics />

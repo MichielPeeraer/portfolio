@@ -34,7 +34,7 @@ export default function LearningSection({ data }: LearningSectionProps) {
                                     width={500}
                                     height={150}
                                     sizes="(max-width: 767px) 100vw, 50vw"
-                                    className="rounded-lg grayscale block"
+                                    className="rounded-lg block"
                                     style={{ width: '100%', height: 'auto' }}
                                 />
                             </div>

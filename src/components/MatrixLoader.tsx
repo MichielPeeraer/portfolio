@@ -1,0 +1,99 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+
+const LINES = [
+    'Hey, glad you stopped by.',
+    'My name is Michiel.',
+    'I turn ideas into software.',
+    'Welcome to my portfolio.',
+]
+
+const CHAR_DELAY = 55
+const LINE_PAUSE = 500
+const END_PAUSE = 1200
+
+const delay = (ms: number) => new Promise<void>((res) => setTimeout(res, ms))
+
+export default function MatrixLoader() {
+    const [show, setShow] = useState(true)
+    const [completedLines, setCompletedLines] = useState<string[]>([])
+    const [typingLine, setTypingLine] = useState('')
+
+    const dismiss = () => {
+        document.body.style.overflow = ''
+        setShow(false)
+    }
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden'
+
+        let cancelled = false
+
+        const run = async () => {
+            await delay(400)
+
+            for (let i = 0; i < LINES.length; i++) {
+                if (cancelled) return
+                const line = LINES[i]
+
+                for (let c = 1; c <= line.length; c++) {
+                    if (cancelled) return
+                    setTypingLine(line.slice(0, c))
+                    await delay(CHAR_DELAY)
+                }
+
+                if (cancelled) return
+                setCompletedLines((prev) => [...prev, line])
+                setTypingLine('')
+
+                if (i < LINES.length - 1) await delay(LINE_PAUSE)
+            }
+
+            await delay(END_PAUSE)
+            if (!cancelled) dismiss()
+        }
+
+        run()
+
+        return () => {
+            cancelled = true
+            document.body.style.overflow = ''
+        }
+    }, [])
+
+    return (
+        <AnimatePresence>
+            {show && (
+                <motion.div
+                    key="matrix-loader"
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8 }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Loading screen — click or press any key to skip"
+                    className="fixed inset-0 z-200 bg-black flex items-center justify-center cursor-pointer outline-none"
+                    onClick={dismiss}
+                    onKeyDown={dismiss}
+                >
+                    <div className="font-mono text-base md:text-xl px-8 max-w-xl w-full space-y-2">
+                        {completedLines.map((line, i) => (
+                            <p key={i} className="text-green-400/50">
+                                {line}
+                            </p>
+                        ))}
+                        <p className="text-green-300 drop-shadow-[0_0_8px_rgba(74,222,128,0.8)]">
+                            {typingLine}
+                            <span className="animate-pulse">▌</span>
+                        </p>
+                    </div>
+                    <p className="absolute bottom-6 right-6 text-green-400/30 text-xs font-mono select-none">
+                        click to skip
+                    </p>
+                </motion.div>
+            )}
+        </AnimatePresence>
+    )
+}
