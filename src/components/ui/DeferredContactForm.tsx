@@ -1,9 +1,9 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import InViewMount from './InViewMount'
+import InViewMount from '@/components/ui/InViewMount'
 
-const ContactForm = dynamic(() => import('./ContactForm'), {
+const ContactForm = dynamic(() => import('@/components/ui/ContactForm'), {
     ssr: false,
     loading: () => (
         <div className="text-green-500 text-sm">

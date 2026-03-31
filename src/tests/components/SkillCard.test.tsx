@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import SkillCard from '@/components/SkillCard'
+import { SkillCard } from '@/components/cards'
 
 describe('SkillCard', () => {
     it('renders the skill label', () => {

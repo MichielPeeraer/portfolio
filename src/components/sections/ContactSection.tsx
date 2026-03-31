@@ -1,5 +1,5 @@
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
-import DeferredContactForm from './DeferredContactForm'
+import { DeferredContactForm } from '@/components/ui'
 import type { ContactInfo } from '@/types'
 
 interface ContactSectionProps {

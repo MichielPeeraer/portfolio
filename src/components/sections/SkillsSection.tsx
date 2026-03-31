@@ -1,8 +1,8 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import SkillCard from './SkillCard'
-import Reveal from './Reveal'
+import { SkillCard } from '@/components/cards'
+import { Reveal } from '@/components/ui'
 import type { SkillCategory } from '@/types'
 
 interface SkillsSectionProps {

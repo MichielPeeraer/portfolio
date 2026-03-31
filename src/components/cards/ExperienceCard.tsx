@@ -1,5 +1,5 @@
 import type { Experience } from '@/types'
-import Reveal from './Reveal'
+import { Reveal } from '@/components/ui'
 
 interface ExperienceCardProps {
     experience: Experience

@@ -1,5 +1,5 @@
-import ExperienceCard from './ExperienceCard'
-import Reveal from './Reveal'
+import { ExperienceCard } from '@/components/cards'
+import { Reveal } from '@/components/ui'
 import type { Experience } from '@/types'
 
 interface ExperienceSectionProps {

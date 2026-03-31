@@ -1,5 +1,5 @@
-import EducationCard from './EducationCard'
-import Reveal from './Reveal'
+import { EducationCard } from '@/components/cards'
+import { Reveal } from '@/components/ui'
 import type { Education } from '@/types'
 
 interface EducationSectionProps {

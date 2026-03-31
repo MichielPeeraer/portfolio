@@ -1,14 +1,14 @@
-import MatrixRain from '@/components/MatrixRain'
-import FloatingNavbar from '@/components/FloatingNavbar'
-import HeroSection from '@/components/HeroSection'
-import AboutSection from '@/components/AboutSection'
-import ExperienceSection from '@/components/ExperienceSection'
-import SkillsSection from '@/components/SkillsSection'
-import EducationSection from '@/components/EducationSection'
-import LearningSection from '@/components/LearningSection'
-import ContactSection from '@/components/ContactSection'
-import Footer from '@/components/Footer'
-import BackToTopButton from '@/components/BackToTopButton'
+import { MatrixRain } from '@/components/effects'
+import { BackToTopButton, FloatingNavbar, Footer } from '@/components/layout'
+import {
+    AboutSection,
+    ContactSection,
+    EducationSection,
+    ExperienceSection,
+    HeroSection,
+    LearningSection,
+    SkillsSection,
+} from '@/components/sections'
 import portfolioData from '@/data/portfolio.json'
 import { siteConfig } from '@/lib/site'
 import type { PortfolioData } from '@/types'

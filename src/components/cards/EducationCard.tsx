@@ -1,5 +1,5 @@
 import type { Education } from '@/types'
-import Reveal from './Reveal'
+import { Reveal } from '@/components/ui'
 
 interface EducationCardProps {
     education: Education
