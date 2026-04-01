@@ -6,9 +6,9 @@ import { track } from '@vercel/analytics'
 import { Controller, type FieldErrors, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Turnstile } from '@marsidev/react-turnstile'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
+import { ShieldCheck } from 'lucide-react'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
@@ -44,17 +44,12 @@ const contactSchema = z.object({
         ),
     message: z.string().min(1, '* Required'),
     website: z.string().optional(),
-    turnstile: z.string().min(1, '* Required'),
 })
 
 type ContactFormValues = z.infer<typeof contactSchema>
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-const FORMSPARK_FORM_ID = process.env.NEXT_PUBLIC_FORMSPARK_FORM_ID
-
 export default function ContactForm() {
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [turnstileKey, setTurnstileKey] = useState(0)
     const [formError, setFormError] = useState<string | null>(null)
     const startedAtRef = useRef<number>(Date.now())
     const trackedStartRef = useRef(false)
@@ -64,7 +59,6 @@ export default function ContactForm() {
         control,
         handleSubmit,
         setFocus,
-        setValue,
         formState: { errors, isDirty, isValid },
         reset,
     } = useForm<ContactFormValues>({
@@ -73,7 +67,6 @@ export default function ContactForm() {
         defaultValues: {
             phone: '',
             website: '',
-            turnstile: '',
         },
     })
 
@@ -83,11 +76,6 @@ export default function ContactForm() {
             trackedStartRef.current = true
         }
     }, [isDirty])
-
-    const resetTurnstile = () => {
-        setValue('turnstile', '')
-        setTurnstileKey((k) => k + 1)
-    }
 
     const normalizeLinkedIn = (value?: string) => {
         if (!value) return ''
@@ -107,14 +95,13 @@ export default function ContactForm() {
             'company',
             'linkedin',
             'message',
-            'turnstile',
         ]
 
         const firstInvalidField = fieldOrder.find((key) =>
             Boolean(formErrors[key])
         )
 
-        if (firstInvalidField && firstInvalidField !== 'turnstile') {
+        if (firstInvalidField) {
             setFocus(firstInvalidField)
         }
 
@@ -134,7 +121,6 @@ export default function ContactForm() {
                     'Message sent successfully. I will get back to you soon.',
             })
             reset()
-            resetTurnstile()
             startedAtRef.current = Date.now()
             trackedStartRef.current = false
             return
@@ -146,14 +132,6 @@ export default function ContactForm() {
             setFormError(tooFastMessage)
             toast.error('Transmission failed', {
                 description: tooFastMessage,
-            })
-            return
-        }
-
-        if (!TURNSTILE_SITE_KEY || !FORMSPARK_FORM_ID) {
-            toast.error('Form misconfigured', {
-                description:
-                    'The contact form is missing required environment configuration.',
             })
             return
         }
@@ -170,7 +148,7 @@ export default function ContactForm() {
                 Company: data.company,
                 LinkedIn: normalizeLinkedIn(data.linkedin),
                 Message: data.message,
-                'cf-turnstile-response': data.turnstile,
+                Website: data.website,
             }
 
             let attempt = 0
@@ -182,18 +160,15 @@ export default function ContactForm() {
                 }, SUBMIT_TIMEOUT_MS)
 
                 try {
-                    const response = await fetch(
-                        `https://submit-form.com/${FORMSPARK_FORM_ID}`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Accept: 'application/json',
-                            },
-                            body: JSON.stringify(payload),
-                            signal: controller.signal,
-                        }
-                    )
+                    const response = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                        signal: controller.signal,
+                    })
 
                     if (!response.ok) {
                         const body = (await response
@@ -216,7 +191,6 @@ export default function ContactForm() {
                     })
                     track('contact_form_success')
                     reset()
-                    resetTurnstile()
                     setFormError(null)
                     startedAtRef.current = Date.now()
                     trackedStartRef.current = false
@@ -253,7 +227,6 @@ export default function ContactForm() {
             toast.error('Transmission failed', {
                 description: errorMessage,
             })
-            resetTurnstile()
         } finally {
             setIsSubmitting(false)
         }
@@ -512,54 +485,25 @@ export default function ContactForm() {
                 )}
             </div>
 
-            <div className="space-y-2" aria-live="polite">
-                <div className="flex justify-center">
-                    {TURNSTILE_SITE_KEY ? (
-                        <Turnstile
-                            key={turnstileKey}
-                            siteKey={TURNSTILE_SITE_KEY}
-                            options={{ language: 'en' }}
-                            onSuccess={(token) => {
-                                setValue('turnstile', token, {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                })
-                            }}
-                            onExpire={resetTurnstile}
-                            onError={() => {
-                                resetTurnstile()
-                                toast.error('CAPTCHA failed', {
-                                    description:
-                                        'Could not complete CAPTCHA. Please try again.',
-                                })
-                            }}
-                        />
-                    ) : (
-                        <p className="text-sm text-red-400">
-                            Turnstile site key is not configured.
-                        </p>
-                    )}
-                </div>
-            </div>
-
-            {errors.turnstile && (
-                <p className="text-red-400 text-sm mt-1 text-left">
-                    {errors.turnstile.message}
-                </p>
-            )}
-
-            <div className="text-center">
+            <div className="flex flex-col items-center gap-2 text-center">
                 <button
                     type="submit"
                     disabled={isSubmitting || !isValid}
-                    className="bg-green-400 text-black px-8 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                    className="min-w-[15.5rem] bg-green-400 text-black px-8 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                 >
                     {isSubmitting
-                        ? 'Sending...'
+                        ? 'Sending Secure Message...'
                         : isValid
-                          ? 'Send Message'
+                          ? 'Send Secure Message'
                           : 'Complete Required Fields'}
                 </button>
+                <div className="inline-flex items-center gap-2 rounded-full border border-green-300/35 bg-[linear-gradient(135deg,rgba(74,222,128,0.16),rgba(74,222,128,0.06))] px-3.5 py-1.5 text-[10px] font-medium tracking-[0.08em] text-green-100/90 shadow-[0_0_0_1px_rgba(74,222,128,0.12),0_0_10px_rgba(74,222,128,0.12)]">
+                    <ShieldCheck
+                        className="h-3.5 w-3.5 text-green-200/90"
+                        aria-hidden="true"
+                    />
+                    <span>Protected by Vercel BotID</span>
+                </div>
             </div>
         </motion.form>
     )

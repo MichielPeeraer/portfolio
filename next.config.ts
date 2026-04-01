@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withBotId } from 'botid/next/config'
 
 const isDev = process.env.NODE_ENV !== 'production'
 
@@ -6,14 +7,11 @@ const scriptSrc = [
     "'self'",
     "'unsafe-inline'",
     ...(isDev ? ["'unsafe-eval'"] : []),
-    'https://challenges.cloudflare.com',
     'https://va.vercel-scripts.com',
 ]
 
 const connectSrc = [
     "'self'",
-    'https://submit-form.com',
-    'https://challenges.cloudflare.com',
     'https://vitals.vercel-insights.com',
     'https://vitals.vercel-analytics.com',
     ...(isDev ? ['ws:', 'wss:', 'http://localhost:*'] : []),
@@ -31,7 +29,6 @@ const contentSecurityPolicy = [
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     `connect-src ${connectSrc.join(' ')}`,
-    'frame-src https://challenges.cloudflare.com',
     ...(isDev ? [] : ['upgrade-insecure-requests']),
 ].join('; ')
 
@@ -80,4 +77,4 @@ const nextConfig: NextConfig = {
     },
 }
 
-export default nextConfig
+export default withBotId(nextConfig)

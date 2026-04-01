@@ -8,7 +8,7 @@ A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
 - **Smooth Animations**: Framer Motion for entrance animations and interactions
 - **Retro Theme**: Black background with green text, monospace font
-- **Protected Contact Form**: Cloudflare Turnstile verification before form submission
+- **Protected Contact Form**: Vercel BotID verification before form submission
 - **SEO Ready**: Metadata, sitemap, robots.txt, and JSON-LD structured data
 - **Production Instrumentation**: Vercel Analytics and Speed Insights support
 - **Sections**: Hero, About, Experience, Skills, Education, Contact
@@ -40,14 +40,15 @@ Copy `.env.example` to `.env.local` and set these values:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=
-NEXT_PUBLIC_TURNSTILE_SITE_KEY=
-NEXT_PUBLIC_FORMSPARK_FORM_ID=
+FORMSPARK_FORM_ID=
 ```
 
 Notes:
 
-- Use the same real Turnstile site key in development and production. Make sure `localhost` is added to the Turnstile allowed hostnames in Cloudflare.
-- The contact form submits Turnstile token directly to Formspark as `cf-turnstile-response`.
+- BotID requires JavaScript-based form submission, which is already handled by the client-side `fetch` flow in the contact form.
+- The contact form now submits to `/api/contact`, where `checkBotId()` is run before forwarding the payload to Formspark.
+- BotID classification headers are attached by `src/instrumentation-client.ts` for `POST /api/contact`.
+- In development, the server logs a warning if `FORMSPARK_FORM_ID` is missing: `[contact-api] Missing FORMSPARK_FORM_ID. Contact submissions will fail until it is configured.`
 - For production, set the same variables in your hosting platform.
 
 ## Build for Production

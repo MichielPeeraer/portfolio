@@ -28,7 +28,6 @@ const contactSchema = z.object({
         ),
     message: z.string().min(1, '* Required'),
     website: z.string().optional(),
-    turnstile: z.string().min(1, '* Required'),
 })
 
 describe('contactSchema', () => {
@@ -37,7 +36,6 @@ describe('contactSchema', () => {
         lastname: 'Anderson',
         email: 'neo@zion.io',
         message: 'Hello from Zion',
-        turnstile: 'token123',
     }
 
     it('accepts a valid minimal payload', () => {
@@ -59,11 +57,6 @@ describe('contactSchema', () => {
 
     it('rejects missing message', () => {
         const result = contactSchema.safeParse({ ...valid, message: '' })
-        expect(result.success).toBe(false)
-    })
-
-    it('rejects missing turnstile token', () => {
-        const result = contactSchema.safeParse({ ...valid, turnstile: '' })
         expect(result.success).toBe(false)
     })
 

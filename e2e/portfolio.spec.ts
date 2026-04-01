@@ -43,4 +43,80 @@ test.describe('Portfolio smoke tests', () => {
         await expect(page.locator('input[name="email"]')).toBeVisible()
         await expect(page.locator('textarea[name="message"]')).toBeVisible()
     })
+
+    test('contact form submits to /api/contact (mocked)', async ({ page }) => {
+        let submittedPayload: Record<string, unknown> | null = null
+
+        await page.route('**/api/contact', async (route) => {
+            submittedPayload = route.request().postDataJSON() as Record<
+                string,
+                unknown
+            >
+
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true }),
+            })
+        })
+
+        await page.locator('#contact').scrollIntoViewIfNeeded()
+        await page.locator('input[name="firstname"]').fill('Neo')
+        await page.locator('input[name="lastname"]').fill('Anderson')
+        await page.locator('input[name="email"]').fill('neo@zion.io')
+        await page
+            .locator('input[name="linkedin"]')
+            .fill('linkedin.com/in/neo-anderson')
+        await page
+            .locator('textarea[name="message"]')
+            .fill('There is no spoon, only shipping.')
+
+        await page.waitForTimeout(2100)
+        await page.getByRole('button', { name: 'Send Message' }).click()
+
+        await expect
+            .poll(() => submittedPayload)
+            .toMatchObject({
+                FirstName: 'Neo',
+                LastName: 'Anderson',
+                Email: 'neo@zion.io',
+                LinkedIn: 'https://linkedin.com/in/neo-anderson',
+                Message: 'There is no spoon, only shipping.',
+                Website: '',
+            })
+
+        await expect(page.locator('input[name="firstname"]')).toHaveValue('')
+        await expect(page.locator('textarea[name="message"]')).toHaveValue('')
+    })
+
+    test('contact form shows API error when /api/contact fails (mocked)', async ({
+        page,
+    }) => {
+        await page.route('**/api/contact', async (route) => {
+            await route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Server unavailable' }),
+            })
+        })
+
+        await page.locator('#contact').scrollIntoViewIfNeeded()
+        await page.locator('input[name="firstname"]').fill('Neo')
+        await page.locator('input[name="lastname"]').fill('Anderson')
+        await page.locator('input[name="email"]').fill('neo@zion.io')
+        await page
+            .locator('textarea[name="message"]')
+            .fill('This should fail and show an error.')
+
+        await page.waitForTimeout(2100)
+        await page.getByRole('button', { name: 'Send Message' }).click()
+
+        await expect(
+            page.getByText('* Server unavailable', { exact: true })
+        ).toBeVisible()
+        await expect(page.locator('input[name="firstname"]')).toHaveValue('Neo')
+        await expect(page.locator('textarea[name="message"]')).toHaveValue(
+            'This should fail and show an error.'
+        )
+    })
 })
