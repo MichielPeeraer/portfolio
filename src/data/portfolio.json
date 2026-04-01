@@ -2,7 +2,7 @@
     "personal": {
         "name": "Michiel Peeraer",
         "title": "Full-Stack TypeScript Developer",
-        "about": "Full-stack TypeScript developer with expertise in MERN / PERN stacks and Python, skilled in creating scalable, production-ready web applications. Proficient in frontend architecture, REST API integration, and backend services. Committed to performance optimization and clean software architecture, delivering tangible business value through software solutions. Seeking opportunities across the EU.",
+        "about": "Full-stack TypeScript developer with expertise in MERN / PERN stacks and Python, skilled in creating scalable, production-ready web applications. Proficient in frontend architecture, REST API integration, and backend services. Committed to performance optimization and clean software architecture, delivering tangible business value through software solutions. Seeking opportunities in Belgium and across the EU (remote).",
         "contact": {
             "phone": "+32 484 77 37 52",
             "email": "peeraer.michiel@gmail.com",
@@ -183,7 +183,7 @@
     "learning": {
         "heading": "Continuous Learning",
         "description": "Currently grinding through Boot.dev - back-end development, algorithms, and computer science fundamentals. Also building my language streak on Duolingo.",
-        "languages": ["French", "German", "Spanish"],
+        "languages": ["Spanish", "French", "German"],
         "bootDevEmbed": {
             "src": "https://api.boot.dev/v1/users/public/196f7e84-b6b7-4b3a-b28c-a0d5f98f60d2/thumbnail",
             "alt": "Boot.dev progress"
