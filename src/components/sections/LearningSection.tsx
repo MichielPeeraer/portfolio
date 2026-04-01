@@ -51,7 +51,7 @@ export default function LearningSection({ data }: LearningSectionProps) {
                                     height={150}
                                     unoptimized={data.duolingoEmbed.unoptimized}
                                     sizes="(max-width: 767px) 100vw, 50vw"
-                                    className="rounded-lg block"
+                                    className="rounded-lg grayscale block"
                                     style={{ width: '100%', height: 'auto' }}
                                 />
                             </div>
