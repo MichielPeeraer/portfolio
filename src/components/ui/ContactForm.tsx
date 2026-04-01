@@ -12,6 +12,8 @@ import { Loader2, ShieldCheck } from 'lucide-react'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
+z.config({ jitless: true })
+
 const PhoneInput = dynamic(() => import('react-phone-number-input'), {
     ssr: false,
 })
@@ -22,7 +24,7 @@ const SUBMIT_TIMEOUT_MS = 12000
 const contactSchema = z.object({
     firstname: z.string().min(1, '* Required'),
     lastname: z.string().min(1, '* Required'),
-    email: z.string().email('* Not a valid email address'),
+    email: z.email('* Not a valid email address'),
     phone: z
         .string()
         .optional()
