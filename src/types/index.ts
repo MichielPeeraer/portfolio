@@ -106,3 +106,13 @@ export interface SkillCategory {
     label: string
     skills: SkillItem[]
 }
+
+export type ContactEmailData = {
+    firstName: string
+    lastName: string
+    email: string
+    phone?: string
+    company?: string
+    linkedIn?: string
+    message: string
+}

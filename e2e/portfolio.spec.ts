@@ -72,7 +72,7 @@ test.describe('Portfolio smoke tests', () => {
             .fill('There is no spoon, only shipping.')
 
         await page.waitForTimeout(2100)
-        await page.getByRole('button', { name: 'Send Message' }).click()
+        await page.getByRole('button', { name: 'Send Secure Message' }).click()
 
         await expect
             .poll(() => submittedPayload)
@@ -109,7 +109,7 @@ test.describe('Portfolio smoke tests', () => {
             .fill('This should fail and show an error.')
 
         await page.waitForTimeout(2100)
-        await page.getByRole('button', { name: 'Send Message' }).click()
+        await page.getByRole('button', { name: 'Send Secure Message' }).click()
 
         await expect(
             page.getByText('* Server unavailable', { exact: true })

@@ -1,6 +1,14 @@
 import { checkBotId } from 'botid/server'
+import nodemailer from 'nodemailer'
 import { z } from 'zod'
 import { NextResponse } from 'next/server'
+import {
+    buildAutoReplyHtml,
+    buildAutoReplyText,
+    buildOwnerMessageHtml,
+    buildOwnerMessageText,
+} from '@/lib/contact-email'
+import type { ContactEmailData } from '@/types'
 
 const contactPayloadSchema = z.object({
     FirstName: z.string().min(1),
@@ -13,15 +21,44 @@ const contactPayloadSchema = z.object({
     Website: z.string().optional(),
 })
 
-const FORMSPARK_FORM_ID = process.env.FORMSPARK_FORM_ID
+const SMTP_HOST = process.env.SMTP_HOST
+const SMTP_PORT = process.env.SMTP_PORT
+const SMTP_USER = process.env.SMTP_USER
+const SMTP_PASS = process.env.SMTP_PASS
+const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL
 
-if (!FORMSPARK_FORM_ID && process.env.NODE_ENV !== 'production') {
+if (
+    (!SMTP_HOST ||
+        !SMTP_PORT ||
+        !SMTP_USER ||
+        !SMTP_PASS ||
+        !CONTACT_TO_EMAIL) &&
+    process.env.NODE_ENV !== 'production'
+) {
     console.warn(
-        '[contact-api] Missing FORMSPARK_FORM_ID. Contact submissions will fail until it is configured.'
+        '[contact-api] Missing one or more required env vars: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_TO_EMAIL.'
     )
 }
 
 const SUBMIT_TIMEOUT_MS = 12000
+
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number) => {
+    return new Promise<T>((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            reject(new Error('Email request timed out.'))
+        }, timeoutMs)
+
+        promise
+            .then((result) => {
+                clearTimeout(timeoutId)
+                resolve(result)
+            })
+            .catch((error) => {
+                clearTimeout(timeoutId)
+                reject(error)
+            })
+    })
+}
 
 export async function POST(request: Request) {
     const verification = await checkBotId()
@@ -30,9 +67,26 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    if (!FORMSPARK_FORM_ID) {
+    if (
+        !SMTP_HOST ||
+        !SMTP_PORT ||
+        !SMTP_USER ||
+        !SMTP_PASS ||
+        !CONTACT_TO_EMAIL
+    ) {
         return NextResponse.json(
             { error: 'Form server is not configured.' },
+            { status: 500 }
+        )
+    }
+
+    const toEmail = CONTACT_TO_EMAIL
+    const fromEmail = toEmail
+    const smtpPort = Number(SMTP_PORT)
+
+    if (!Number.isFinite(smtpPort)) {
+        return NextResponse.json(
+            { error: 'Form server is misconfigured.' },
             { status: 500 }
         )
     }
@@ -62,55 +116,56 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true })
     }
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => {
-        controller.abort()
-    }, SUBMIT_TIMEOUT_MS)
+    const transporter = nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: {
+            user: SMTP_USER,
+            pass: SMTP_PASS,
+        },
+    })
 
     try {
-        const formsparkPayload = {
-            FirstName: payload.FirstName,
-            LastName: payload.LastName,
-            Email: payload.Email,
-            Phone: payload.Phone,
-            Company: payload.Company,
-            LinkedIn: payload.LinkedIn,
-            Message: payload.Message,
+        const emailData: ContactEmailData = {
+            firstName: payload.FirstName,
+            lastName: payload.LastName,
+            email: payload.Email,
+            phone: payload.Phone,
+            company: payload.Company,
+            linkedIn: payload.LinkedIn,
+            message: payload.Message,
         }
 
-        const response = await fetch(
-            `https://submit-form.com/${FORMSPARK_FORM_ID}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify(formsparkPayload),
-                signal: controller.signal,
-            }
+        await withTimeout(
+            transporter.sendMail({
+                from: fromEmail,
+                to: toEmail,
+                replyTo: payload.Email,
+                subject: `New contact message from ${payload.FirstName} ${payload.LastName}`,
+                text: buildOwnerMessageText(emailData),
+                html: buildOwnerMessageHtml(emailData),
+            }),
+            SUBMIT_TIMEOUT_MS
         )
 
-        if (!response.ok) {
-            const body = (await response.json().catch(() => ({}))) as {
-                error?: string
-                message?: string
-            }
-
-            return NextResponse.json(
-                {
-                    error:
-                        body.error ??
-                        body.message ??
-                        `Submission failed (${response.status})`,
-                },
-                { status: 502 }
-            )
-        }
+        await withTimeout(
+            transporter.sendMail({
+                from: fromEmail,
+                to: payload.Email,
+                subject: 'Thanks for reaching out',
+                html: buildAutoReplyHtml(emailData),
+                text: buildAutoReplyText(emailData),
+            }),
+            SUBMIT_TIMEOUT_MS
+        )
 
         return NextResponse.json({ success: true })
     } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
+        if (
+            error instanceof Error &&
+            error.message === 'Email request timed out.'
+        ) {
             return NextResponse.json(
                 { error: 'Request timed out. Please try again.' },
                 { status: 504 }
@@ -118,10 +173,8 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(
-            { error: 'Failed to submit form. Please try again.' },
-            { status: 500 }
+            { error: 'Failed to send emails. Please try again.' },
+            { status: 502 }
         )
-    } finally {
-        clearTimeout(timeoutId)
     }
 }
