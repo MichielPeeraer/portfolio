@@ -137,6 +137,7 @@ export async function POST(request: Request) {
             message: payload.Message,
         }
 
+        // Primary delivery: owner notification must succeed.
         await withTimeout(
             transporter.sendMail({
                 from: fromEmail,
@@ -149,18 +150,23 @@ export async function POST(request: Request) {
             SUBMIT_TIMEOUT_MS
         )
 
-        await withTimeout(
-            transporter.sendMail({
-                from: fromEmail,
-                to: payload.Email,
-                subject: 'Thanks for reaching out',
-                html: buildAutoReplyHtml(emailData),
-                text: buildAutoReplyText(emailData),
-            }),
-            SUBMIT_TIMEOUT_MS
-        )
+        // Auto-reply is best-effort and should not fail the overall submission.
+        try {
+            await withTimeout(
+                transporter.sendMail({
+                    from: fromEmail,
+                    to: payload.Email,
+                    subject: 'Thanks for reaching out',
+                    html: buildAutoReplyHtml(emailData),
+                    text: buildAutoReplyText(emailData),
+                }),
+                SUBMIT_TIMEOUT_MS
+            )
 
-        return NextResponse.json({ success: true })
+            return NextResponse.json({ success: true, autoReplySent: true })
+        } catch {
+            return NextResponse.json({ success: true, autoReplySent: false })
+        }
     } catch (error) {
         if (
             error instanceof Error &&
