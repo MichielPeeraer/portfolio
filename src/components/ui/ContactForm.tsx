@@ -372,9 +372,14 @@ export default function ContactForm() {
                         render={({ field }) => (
                             <PhoneInput
                                 id="phone"
+                                name={field.name}
                                 international
                                 defaultCountry="BE"
                                 countryCallingCodeEditable={false}
+                                countrySelectProps={{
+                                    id: 'phone-country',
+                                    name: 'phoneCountry',
+                                }}
                                 value={field.value}
                                 onChange={field.onChange}
                                 onBlur={field.onBlur}
