@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-import { ShieldCheck } from 'lucide-react'
+import { Loader2, ShieldCheck } from 'lucide-react'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 
@@ -489,13 +489,21 @@ export default function ContactForm() {
                 <button
                     type="submit"
                     disabled={isSubmitting || !isValid}
-                    className="min-w-[15.5rem] bg-green-400 text-black px-8 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                    className="min-w-62 bg-green-400 text-black px-8 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                 >
-                    {isSubmitting
-                        ? 'Sending Secure Message...'
-                        : isValid
-                          ? 'Send Secure Message'
-                          : 'Complete Required Fields'}
+                    {isSubmitting ? (
+                        <span className="inline-flex items-center justify-center gap-2">
+                            <Loader2
+                                className="h-4 w-4 animate-spin"
+                                aria-hidden="true"
+                            />
+                            <span>Sending Secure Message...</span>
+                        </span>
+                    ) : isValid ? (
+                        'Send Secure Message'
+                    ) : (
+                        'Complete Required Fields'
+                    )}
                 </button>
                 <div className="inline-flex items-center gap-2 rounded-full border border-green-300/35 bg-[linear-gradient(135deg,rgba(74,222,128,0.16),rgba(74,222,128,0.06))] px-3.5 py-1.5 text-[10px] font-medium tracking-[0.08em] text-green-100/90 shadow-[0_0_0_1px_rgba(74,222,128,0.12),0_0_10px_rgba(74,222,128,0.12)]">
                     <ShieldCheck
