@@ -99,9 +99,9 @@ export type SkillIconKey =
 export type SkillItem =
     | string
     | {
-        label: string
-        icon?: SkillIconKey
-    }
+          label: string
+          icon?: SkillIconKey
+      }
 
 export interface SkillCategory {
     label: string

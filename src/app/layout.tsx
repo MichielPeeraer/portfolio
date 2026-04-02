@@ -31,11 +31,6 @@ export const metadata: Metadata = {
         locale: 'en_US',
         type: 'website',
     },
-    twitter: {
-        card: 'summary',
-        title: siteConfig.title,
-        description: siteConfig.description,
-    },
     keywords: [
         'Full-Stack Developer',
         'TypeScript',
