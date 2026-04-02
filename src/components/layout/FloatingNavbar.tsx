@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import { getSocialIcon } from '@/lib/social-icons'
+import type { SocialLink } from '@/types'
 
 const sections = [
     { id: 'hero', label: 'Home' },
@@ -15,20 +16,11 @@ const sections = [
     { id: 'contact', label: 'Contact' },
 ]
 
-const socialLinks = [
-    {
-        name: 'GitHub',
-        icon: FaGithub,
-        url: 'https://github.com/MichielPeeraer',
-    },
-    {
-        name: 'LinkedIn',
-        icon: FaLinkedin,
-        url: 'https://linkedin.com/in/michiel-herman-peeraer',
-    },
-]
+interface FloatingNavbarProps {
+    socialLinks: SocialLink[]
+}
 
-export default function FloatingNavbar() {
+export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
     const [activeSection, setActiveSection] = useState('hero')
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -110,18 +102,26 @@ export default function FloatingNavbar() {
 
                 {/* Social Links - Tablet/Desktop */}
                 <div className="hidden md:flex items-center gap-3 lg:gap-4 pl-3 lg:pl-4 border-l border-green-400/30">
-                    {socialLinks.map((link) => (
-                        <a
-                            key={link.name}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-green-400 hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded"
-                            aria-label={link.name}
-                        >
-                            <link.icon size={18} />
-                        </a>
-                    ))}
+                    {socialLinks
+                        .filter((link) => link.name !== 'Website')
+                        .map((link) => {
+                            const Icon = link.icon
+                                ? getSocialIcon(link.icon)
+                                : null
+                            if (!Icon) return null
+                            return (
+                                <a
+                                    key={link.name}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-green-400 hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded"
+                                    aria-label={link.name}
+                                >
+                                    <Icon size={18} />
+                                </a>
+                            )
+                        })}
                 </div>
             </div>
 
@@ -147,18 +147,26 @@ export default function FloatingNavbar() {
                         </button>
                     ))}
                     <div className="border-t border-green-400/30 pt-3 flex gap-4 justify-center">
-                        {socialLinks.map((link) => (
-                            <a
-                                key={link.name}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-green-400 hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded"
-                                aria-label={link.name}
-                            >
-                                <link.icon size={20} />
-                            </a>
-                        ))}
+                        {socialLinks
+                            .filter((link) => link.name !== 'Website')
+                            .map((link) => {
+                                const Icon = link.icon
+                                    ? getSocialIcon(link.icon)
+                                    : null
+                                if (!Icon) return null
+                                return (
+                                    <a
+                                        key={link.name}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-green-400 hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded"
+                                        aria-label={link.name}
+                                    >
+                                        <Icon size={20} />
+                                    </a>
+                                )
+                            })}
                     </div>
                 </motion.div>
             )}

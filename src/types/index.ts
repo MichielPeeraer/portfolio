@@ -36,6 +36,9 @@ export interface PersonalInfo {
     title: string
     about: string
     openToWork?: boolean
+    openToWorkLabel?: string
+    cvPath?: string
+    ogTechPills?: string[]
     heroTypedLines?: string[]
     contact: ContactInfo
 }
@@ -58,6 +61,7 @@ export interface PortfolioData {
     personal: PersonalInfo
     experience: Experience[]
     skillCategories: SkillCategory[]
+    devPracticesLabel?: string
     devPractices: string[]
     education: Education[]
     learning: LearningInfo
@@ -106,6 +110,7 @@ export type SkillItem =
 
 export interface SkillCategory {
     label: string
+    wide?: boolean
     skills: SkillItem[]
 }
 

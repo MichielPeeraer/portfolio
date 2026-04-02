@@ -1,4 +1,4 @@
-import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import { getSocialIcon } from '@/lib/social-icons'
 import { DeferredContactForm } from '@/components/ui'
 import type { ContactInfo } from '@/types'
 
@@ -34,10 +34,10 @@ export default function ContactSection({ contact }: ContactSectionProps) {
                         {contact.socialLinks
                             .filter((link) => link.name !== 'Website')
                             .map((link) => {
-                                const Icon =
-                                    link.name === 'GitHub'
-                                        ? FaGithub
-                                        : FaLinkedin
+                                const Icon = link.icon
+                                    ? getSocialIcon(link.icon)
+                                    : null
+                                if (!Icon) return null
                                 return (
                                     <a
                                         key={link.name}

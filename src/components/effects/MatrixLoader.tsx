@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
-const LINES = [
+interface MatrixLoaderProps {
+    name: string
+}
+
+const STATIC_LINES = [
     'Hey, glad you stopped by.',
-    'My name is Michiel.',
     'I turn ideas into software.',
     'Welcome to my portfolio.',
 ]
@@ -16,7 +19,12 @@ const END_PAUSE = 1200
 
 const delay = (ms: number) => new Promise<void>((res) => setTimeout(res, ms))
 
-export default function MatrixLoader() {
+export default function MatrixLoader({ name }: MatrixLoaderProps) {
+    const LINES = [
+        STATIC_LINES[0],
+        `My name is ${name}.`,
+        ...STATIC_LINES.slice(1),
+    ]
     const [show, setShow] = useState(true)
     const [completedLines, setCompletedLines] = useState<string[]>([])
     const [typingLine, setTypingLine] = useState('')

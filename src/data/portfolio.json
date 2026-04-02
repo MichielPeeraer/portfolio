@@ -3,10 +3,15 @@
         "name": "Michiel Peeraer",
         "title": "Full-Stack TypeScript Developer",
         "openToWork": true,
+        "openToWorkLabel": "Open to opportunities",
+        "cvPath": "/CV_Michiel_Peeraer.pdf",
+        "ogTechPills": ["React", "TypeScript", "Next.js", "Node.js", "Python"],
         "heroTypedLines": [
-            "Building scalable full-stack web applications",
-            "React | TypeScript | Node.js | Python",
-            "Belgium-based, open to opportunities across the EU"
+            "Building scalable web apps",
+            "Turning ideas into products",
+            "AI-assisted, human-led build",
+            "Clean architecture, fast delivery",
+            "Belgium-based, EU remote"
         ],
         "about": "Full-stack TypeScript developer with expertise in MERN / PERN stacks and Python, skilled in creating scalable, production-ready web applications. Proficient in frontend architecture, REST API integration, and backend services. Committed to performance optimization and clean software architecture, delivering tangible business value through software solutions. Seeking opportunities in Belgium and across the EU (remote).",
         "contact": {
@@ -15,14 +20,17 @@
             "socialLinks": [
                 {
                     "name": "GitHub",
+                    "icon": "github",
                     "url": "https://github.com/MichielPeeraer"
                 },
                 {
                     "name": "LinkedIn",
+                    "icon": "linkedin",
                     "url": "https://linkedin.com/in/michiel-herman-peeraer"
                 },
                 {
                     "name": "Website",
+                    "icon": "website",
                     "url": "https://michiel-peeraer.vercel.app"
                 }
             ]
@@ -133,6 +141,7 @@
         },
         {
             "label": "Tooling & DevOps",
+            "wide": true,
             "skills": [
                 { "label": "Git / GitHub", "icon": "github" },
                 { "label": "Docker", "icon": "docker" },
@@ -147,6 +156,7 @@
             ]
         }
     ],
+    "devPracticesLabel": "Dev Practices",
     "devPractices": [
         "Agile methodologies",
         "Component-Based Architecture",

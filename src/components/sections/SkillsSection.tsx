@@ -8,6 +8,7 @@ import type { SkillCategory } from '@/types'
 
 interface SkillsSectionProps {
     skillCategories: SkillCategory[]
+    devPracticesLabel?: string
     devPractices: string[]
 }
 
@@ -36,6 +37,7 @@ const cardVariants = {
 
 export default function SkillsSection({
     skillCategories,
+    devPracticesLabel = 'Dev Practices',
     devPractices,
 }: SkillsSectionProps) {
     return (
@@ -56,15 +58,12 @@ export default function SkillsSection({
                     viewport={{ once: true, amount: 0.1 }}
                 >
                     {skillCategories.map((category) => {
-                        const isToolingCategory =
-                            category.label === 'Tooling & DevOps'
-
                         return (
                             <motion.div
                                 key={category.label}
                                 variants={cardVariants}
                                 className={`border border-green-400/30 rounded-lg p-4 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-green-300/60 hover:shadow-[0_0_28px_rgba(74,222,128,0.14)] ${
-                                    isToolingCategory ? 'sm:col-span-2' : ''
+                                    category.wide ? 'sm:col-span-2' : ''
                                 }`}
                             >
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-green-500 mb-3">
@@ -92,7 +91,7 @@ export default function SkillsSection({
                     className="border border-green-400/30 rounded-lg p-4 transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-green-300/60 hover:shadow-[0_0_28px_rgba(74,222,128,0.14)]"
                 >
                     <h3 className="text-sm font-bold uppercase tracking-widest text-green-500 mb-3">
-                        Dev Practices
+                        {devPracticesLabel}
                     </h3>
                     <div className="flex flex-wrap gap-2">
                         {devPractices.map((practice) => (

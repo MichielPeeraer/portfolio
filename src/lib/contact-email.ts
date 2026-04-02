@@ -1,4 +1,7 @@
 import type { ContactEmailData } from '@/types'
+import portfolioData from '@/data/portfolio.json'
+
+const ownerFirstName = portfolioData.personal.name.split(' ')[0]
 
 const escapeHtml = (value: string) =>
     value
@@ -81,7 +84,7 @@ export const buildAutoReplyText = (data: ContactEmailData) => {
         'Your message:',
         data.message,
         '',
-        '- Michiel',
+        '- ' + ownerFirstName,
     ].join('\n')
 }
 
@@ -97,6 +100,6 @@ export const buildAutoReplyHtml = (data: ContactEmailData) => {
     <p style="margin:0 0 8px; color:#86efac; font-size:12px; letter-spacing:0.04em; text-transform:uppercase;">Your Message</p>
     <p style="margin:0; line-height:1.6;">${safeMessageHtml}</p>
   </div>
-  <p style="margin:16px 0 0; line-height:1.6;">- Michiel</p>
+  <p style="margin:16px 0 0; line-height:1.6;">- ${ownerFirstName}</p>
 </div>`.trim()
 }

@@ -56,13 +56,14 @@ export default function Home() {
                 }}
             />
             <MatrixRain />
-            <FloatingNavbar />
+            <FloatingNavbar socialLinks={data.personal.contact.socialLinks} />
 
             <HeroSection data={data.personal} />
             <AboutSection about={data.personal.about} />
             <ExperienceSection experiences={data.experience} />
             <SkillsSection
                 skillCategories={data.skillCategories}
+                devPracticesLabel={data.devPracticesLabel}
                 devPractices={data.devPractices}
             />
             <EducationSection education={data.education} />

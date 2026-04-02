@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Download } from 'lucide-react'
-import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import { getSocialIcon } from '@/lib/social-icons'
 import type { PersonalInfo } from '@/types'
 
 interface HeroSectionProps {
@@ -181,7 +181,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     >
                         <span className="inline-flex items-center gap-2 border border-green-500/40 bg-green-950/40 text-green-400 text-sm px-4 py-1.5 rounded-full">
                             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                            Open to opportunities
+                            {data.openToWorkLabel ?? 'Open to opportunities'}
                         </span>
                     </motion.div>
                 )}
@@ -197,7 +197,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 justify-center items-center"
                 >
                     <a
-                        href="/CV_Michiel_Peeraer.pdf"
+                        href={data.cvPath ?? '/CV_Michiel_Peeraer.pdf'}
                         download
                         className="bg-green-400 text-black px-6 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                     >
@@ -208,10 +208,10 @@ export default function HeroSection({ data }: HeroSectionProps) {
                         {data.contact.socialLinks
                             .filter((link) => link.name !== 'Website')
                             .map((link) => {
-                                const Icon =
-                                    link.name === 'GitHub'
-                                        ? FaGithub
-                                        : FaLinkedin
+                                const Icon = link.icon
+                                    ? getSocialIcon(link.icon)
+                                    : null
+                                if (!Icon) return null
                                 return (
                                     <a
                                         key={link.name}

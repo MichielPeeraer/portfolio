@@ -4,6 +4,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { siteConfig } from '@/lib/site'
 import { MatrixLoader, MatrixToaster } from '@/components/effects'
+import portfolioData from '@/data/portfolio.json'
 import './globals.css'
 
 const geistSans = Geist({
@@ -47,7 +48,7 @@ export const metadata: Metadata = {
         'Node.js',
         'MERN',
         'PERN',
-        'Michiel Peeraer',
+        siteConfig.name,
         'Web Developer Belgium',
     ],
 }
@@ -63,7 +64,9 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
-                <MatrixLoader />
+                <MatrixLoader
+                    name={portfolioData.personal.name.split(' ')[0]}
+                />
                 {children}
                 <MatrixToaster />
                 <Analytics />

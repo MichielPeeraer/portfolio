@@ -10,10 +10,9 @@ export const alt = `${siteConfig.name} – Full-Stack TypeScript Developer`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-const TECH = ['React', 'TypeScript', 'Next.js', 'Node.js', 'Python']
-
 export default function Image() {
     const data = portfolioData as PortfolioData
+    const tech = data.personal.ogTechPills ?? []
     const profileImg = readFileSync(join(process.cwd(), 'public/profile.jpg'))
     const profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
     const linkedInUrl = data.personal.contact.socialLinks.find(
@@ -165,7 +164,8 @@ export default function Image() {
                                     display: 'flex',
                                 }}
                             >
-                                Open to opportunities
+                                {data.personal.openToWorkLabel ??
+                                    'Open to opportunities'}
                             </div>
                         </div>
                     )}
@@ -178,7 +178,7 @@ export default function Image() {
                             marginBottom: '44px',
                         }}
                     >
-                        {TECH.map((t) => (
+                        {tech.map((t) => (
                             <div
                                 key={t}
                                 style={{
