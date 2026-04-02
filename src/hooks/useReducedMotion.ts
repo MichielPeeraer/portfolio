@@ -13,9 +13,8 @@ const getInitialPreference = () => {
 }
 
 export const useReducedMotion = () => {
-    const [prefersReducedMotion, setPrefersReducedMotion] = useState(
-        getInitialPreference
-    )
+    const [prefersReducedMotion, setPrefersReducedMotion] =
+        useState(getInitialPreference)
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(

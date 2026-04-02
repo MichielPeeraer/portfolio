@@ -29,7 +29,9 @@ const normalizeLinkedIn = (value?: string) => {
     return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
 }
 
-export const useContactSubmission = ({ reset }: UseContactSubmissionOptions) => {
+export const useContactSubmission = ({
+    reset,
+}: UseContactSubmissionOptions) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [formError, setFormError] = useState<string | null>(null)
     const startedAtRef = useRef<number>(Date.now())
@@ -106,13 +108,13 @@ export const useContactSubmission = ({ reset }: UseContactSubmissionOptions) => 
                             const body = (await response
                                 .json()
                                 .catch(() => ({}))) as {
-                                    error?: string
-                                    message?: string
-                                }
+                                error?: string
+                                message?: string
+                            }
                             throw new Error(
                                 body.error ??
-                                body.message ??
-                                `Submission failed (${response.status})`
+                                    body.message ??
+                                    `Submission failed (${response.status})`
                             )
                         }
 

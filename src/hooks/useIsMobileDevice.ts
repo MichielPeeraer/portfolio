@@ -3,7 +3,7 @@ import { useSyncExternalStore } from 'react'
 import { detectIsMobileDevice } from '@/lib/device'
 
 const subscribe = () => {
-    return () => { }
+    return () => {}
 }
 
 const getServerSnapshot = () => false

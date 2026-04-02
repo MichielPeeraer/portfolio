@@ -53,7 +53,9 @@ export const useTypewriter = ({
             }
 
             setIsDeleting(false)
-            setTypedLineIndex((currentIndex) => (currentIndex + 1) % lines.length)
+            setTypedLineIndex(
+                (currentIndex) => (currentIndex + 1) % lines.length
+            )
         }, timeoutMs)
 
         return () => {
