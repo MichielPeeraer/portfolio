@@ -158,13 +158,13 @@
     ],
     "devPracticesLabel": "Dev Practices",
     "devPractices": [
-        "SEO",
         "Agile methodologies",
         "Component-Based Architecture",
         "Performance Optimization",
         "Secure API Design",
         "Clean Code & SOLID Principles",
-        "Database Design & Optimization"
+        "Database Design & Optimization",
+        "SEO"
     ],
     "education": [
         {
