@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 interface MatrixLoaderProps {
@@ -20,11 +20,14 @@ const END_PAUSE = 1200
 const delay = (ms: number) => new Promise<void>((res) => setTimeout(res, ms))
 
 export default function MatrixLoader({ name }: MatrixLoaderProps) {
-    const LINES = [
-        STATIC_LINES[0],
-        `My name is ${name}.`,
-        ...STATIC_LINES.slice(1),
-    ]
+    const lines = useMemo(
+        () => [
+            STATIC_LINES[0],
+            `My name is ${name}.`,
+            ...STATIC_LINES.slice(1),
+        ],
+        [name]
+    )
     const [show, setShow] = useState(true)
     const [completedLines, setCompletedLines] = useState<string[]>([])
     const [typingLine, setTypingLine] = useState('')
@@ -56,9 +59,9 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
         const run = async () => {
             await delay(400)
 
-            for (let i = 0; i < LINES.length; i++) {
+            for (let i = 0; i < lines.length; i++) {
                 if (cancelled) return
-                const line = LINES[i]
+                const line = lines[i]
 
                 for (let c = 1; c <= line.length; c++) {
                     if (cancelled) return
@@ -70,7 +73,7 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
                 setCompletedLines((prev) => [...prev, line])
                 setTypingLine('')
 
-                if (i < LINES.length - 1) await delay(LINE_PAUSE)
+                if (i < lines.length - 1) await delay(LINE_PAUSE)
             }
 
             await delay(END_PAUSE)
@@ -83,7 +86,7 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
             cancelled = true
             document.body.style.overflow = ''
         }
-    }, [dismiss])
+    }, [dismiss, lines])
 
     return (
         <AnimatePresence>

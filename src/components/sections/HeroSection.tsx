@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Download } from 'lucide-react'
@@ -21,7 +21,10 @@ export default function HeroSection({ data }: HeroSectionProps) {
     const [typedText, setTypedText] = useState('')
     const [isDeleting, setIsDeleting] = useState(false)
     const loaderCheckDoneRef = useRef(false)
-    const typedLines = data.heroTypedLines ?? []
+    const typedLines = useMemo(
+        () => data.heroTypedLines ?? [],
+        [data.heroTypedLines]
+    )
 
     useEffect(() => {
         // Check on mount if loader is already ready
