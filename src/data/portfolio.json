@@ -107,8 +107,8 @@
                 { "label": "TypeScript", "icon": "typescript" },
                 { "label": "Tailwind CSS", "icon": "tailwindcss" },
                 { "label": "SCSS / SASS", "icon": "sass" },
-                { "label": "Motion (Framer Motion)", "icon": "framer" },
-                { "label": "Mantine UI", "icon": "mantine" }
+                { "label": "Mantine UI", "icon": "mantine" },
+                { "label": "Motion (Framer Motion)", "icon": "framer" }
             ]
         },
         {
@@ -146,7 +146,6 @@
                 { "label": "Git / GitHub", "icon": "github" },
                 { "label": "Docker", "icon": "docker" },
                 { "label": "GitHub Actions", "icon": "githubactions" },
-                { "label": "Kubernetes", "icon": "kubernetes" },
                 { "label": "Jest", "icon": "jest" },
                 { "label": "Vitest", "icon": "vitest" },
                 { "label": "ESLint", "icon": "eslint" },
@@ -158,13 +157,13 @@
     ],
     "devPracticesLabel": "Dev Practices",
     "devPractices": [
+        "SEO",
         "Agile methodologies",
         "Component-Based Architecture",
         "Performance Optimization",
         "Secure API Design",
         "Clean Code & SOLID Principles",
-        "Database Design & Optimization",
-        "SEO"
+        "Database Design & Optimization"
     ],
     "education": [
         {
