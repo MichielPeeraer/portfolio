@@ -28,6 +28,14 @@ export const metadata: Metadata = {
         description: siteConfig.description,
         url: siteConfig.url,
         siteName: siteConfig.name,
+        images: [
+            {
+                url: '/opengraph-image',
+                width: 1200,
+                height: 630,
+                alt: `${siteConfig.name} | Full-Stack TypeScript Developer`,
+            },
+        ],
         locale: 'en_US',
         type: 'website',
     },
