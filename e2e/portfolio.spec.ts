@@ -1,8 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
+
+const fastForwardFormMinFillTimer = async (page: Page) => {
+    await page.evaluate(() => {
+        const originalNow = Date.now
+        const bumpedNow = originalNow() + 3000
+        Date.now = () => bumpedNow
+    })
+}
 
 test.describe('Portfolio smoke tests', () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto('/')
+        await page.goto('/', { waitUntil: 'domcontentloaded' })
     })
 
     test('page loads and shows hero name', async ({ page }) => {
@@ -71,7 +79,7 @@ test.describe('Portfolio smoke tests', () => {
             .locator('textarea[name="message"]')
             .fill('There is no spoon, only shipping.')
 
-        await page.waitForTimeout(2100)
+        await fastForwardFormMinFillTimer(page)
         await page.getByRole('button', { name: 'Send Secure Message' }).click()
 
         await expect
@@ -108,7 +116,7 @@ test.describe('Portfolio smoke tests', () => {
             .locator('textarea[name="message"]')
             .fill('This should fail and show an error.')
 
-        await page.waitForTimeout(2100)
+        await fastForwardFormMinFillTimer(page)
         await page.getByRole('button', { name: 'Send Secure Message' }).click()
 
         await expect(

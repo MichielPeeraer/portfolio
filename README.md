@@ -1,5 +1,7 @@
 # Michiel Peeraer Portfolio
 
+[![CI](https://github.com/MichielPeeraer/portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/MichielPeeraer/portfolio/actions/workflows/ci.yml)
+
 A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind CSS, and Framer Motion.
 
 ## Features
@@ -64,6 +66,26 @@ Notes:
 ```bash
 npm run build
 npm start
+```
+
+## Testing
+
+- Run all unit/component tests:
+
+```bash
+npm run test
+```
+
+- Run E2E tests (Playwright):
+
+```bash
+npm run test:e2e
+```
+
+- First-time Playwright setup (or after Playwright version updates):
+
+```bash
+npx playwright install
 ```
 
 ## Project Structure

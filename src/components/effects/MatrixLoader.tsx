@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useIsMobileDevice } from '@/hooks'
 
 interface MatrixLoaderProps {
     name: string
@@ -28,6 +29,7 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
         ],
         [name]
     )
+    const isMobileDevice = useIsMobileDevice()
     const [show, setShow] = useState(true)
     const [completedLines, setCompletedLines] = useState<string[]>([])
     const [typingLine, setTypingLine] = useState('')
@@ -115,7 +117,7 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
                         </p>
                     </div>
                     <p className="absolute bottom-6 right-6 text-green-400/30 text-xs font-mono select-none">
-                        click to skip
+                        {isMobileDevice ? 'press to skip' : 'click to skip'}
                     </p>
                 </motion.div>
             )}

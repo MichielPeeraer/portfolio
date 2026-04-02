@@ -1,13 +1,15 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { Loader2 } from 'lucide-react'
 import InViewMount from '@/components/ui/InViewMount'
 
 const ContactForm = dynamic(() => import('@/components/ui/ContactForm'), {
     ssr: false,
     loading: () => (
-        <div className="text-green-500 text-sm">
-            Loading secure contact form...
+        <div className="inline-flex items-center gap-2 text-green-500 text-sm">
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            <span>Loading secure contact form...</span>
         </div>
     ),
 })

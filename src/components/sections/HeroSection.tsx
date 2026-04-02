@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { Download } from 'lucide-react'
+import { useMatrixLoaderReady, useTypewriter } from '@/hooks'
 import { getSocialIcon } from '@/lib/social-icons'
 import type { PersonalInfo } from '@/types'
 
@@ -11,88 +12,16 @@ interface HeroSectionProps {
     data: PersonalInfo
 }
 
-type MatrixLoaderWindow = Window & {
-    __matrixLoaderReady?: boolean
-}
-
 export default function HeroSection({ data }: HeroSectionProps) {
-    const [canAnimate, setCanAnimate] = useState(false)
-    const [typedLineIndex, setTypedLineIndex] = useState(0)
-    const [typedText, setTypedText] = useState('')
-    const [isDeleting, setIsDeleting] = useState(false)
-    const loaderCheckDoneRef = useRef(false)
+    const canAnimate = useMatrixLoaderReady()
     const typedLines = useMemo(
         () => data.heroTypedLines ?? [],
         [data.heroTypedLines]
     )
-
-    useEffect(() => {
-        // Check on mount if loader is already ready
-        if (
-            !loaderCheckDoneRef.current &&
-            (window as MatrixLoaderWindow).__matrixLoaderReady
-        ) {
-            loaderCheckDoneRef.current = true
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setCanAnimate(true)
-            return
-        }
-
-        const handleLoaderDone = () => {
-            loaderCheckDoneRef.current = true
-            setCanAnimate(true)
-        }
-
-        window.addEventListener('matrix-loader:done', handleLoaderDone)
-
-        return () => {
-            window.removeEventListener('matrix-loader:done', handleLoaderDone)
-        }
-    }, [])
-
-    useEffect(() => {
-        if (!canAnimate || typedLines.length === 0) {
-            return
-        }
-
-        const currentLine = typedLines[typedLineIndex] ?? ''
-        const isLineComplete = typedText === currentLine
-        const isLineCleared = typedText === ''
-
-        let timeoutMs = isDeleting ? 42 : 72
-
-        if (!isDeleting && isLineComplete) {
-            timeoutMs = 1500
-        } else if (isDeleting && isLineCleared) {
-            timeoutMs = 280
-        }
-
-        const timeout = window.setTimeout(() => {
-            if (!isDeleting && !isLineComplete) {
-                setTypedText(currentLine.slice(0, typedText.length + 1))
-                return
-            }
-
-            if (!isDeleting && isLineComplete) {
-                setIsDeleting(true)
-                return
-            }
-
-            if (isDeleting && !isLineCleared) {
-                setTypedText(currentLine.slice(0, typedText.length - 1))
-                return
-            }
-
-            setIsDeleting(false)
-            setTypedLineIndex(
-                (currentIndex) => (currentIndex + 1) % typedLines.length
-            )
-        }, timeoutMs)
-
-        return () => {
-            window.clearTimeout(timeout)
-        }
-    }, [canAnimate, isDeleting, typedLineIndex, typedLines, typedText])
+    const typedText = useTypewriter({
+        lines: typedLines,
+        enabled: canAnimate,
+    })
 
     return (
         <section

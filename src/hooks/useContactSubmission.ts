@@ -1,0 +1,176 @@
+import { useCallback, useRef, useState } from 'react'
+import { track } from '@vercel/analytics'
+import { toast } from 'sonner'
+
+const MIN_FILL_DURATION_MS = 2000
+const SUBMIT_TIMEOUT_MS = 12000
+
+export interface ContactFormValues {
+    firstname: string
+    lastname: string
+    email: string
+    phone?: string
+    company?: string
+    linkedin?: string
+    message: string
+    website?: string
+}
+
+interface UseContactSubmissionOptions {
+    reset: () => void
+}
+
+const normalizeLinkedIn = (value?: string) => {
+    if (!value) return ''
+
+    const trimmed = value.trim()
+    if (!trimmed) return ''
+
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
+}
+
+export const useContactSubmission = ({ reset }: UseContactSubmissionOptions) => {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [formError, setFormError] = useState<string | null>(null)
+    const startedAtRef = useRef<number>(Date.now())
+    const trackedStartRef = useRef(false)
+
+    const markFormStarted = useCallback((isDirty: boolean) => {
+        if (isDirty && !trackedStartRef.current) {
+            track('contact_form_started')
+            trackedStartRef.current = true
+        }
+    }, [])
+
+    const submit = useCallback(
+        async (data: ContactFormValues) => {
+            setFormError(null)
+
+            if (data.website && data.website.trim().length > 0) {
+                track('contact_form_honeypot_triggered')
+                toast.success('Transmission complete', {
+                    description:
+                        'Message sent successfully. I will get back to you soon.',
+                })
+                reset()
+                startedAtRef.current = Date.now()
+                trackedStartRef.current = false
+                return
+            }
+
+            if (Date.now() - startedAtRef.current < MIN_FILL_DURATION_MS) {
+                const tooFastMessage =
+                    '* Please wait a moment before submitting the form.'
+                setFormError(tooFastMessage)
+                toast.error('Transmission failed', {
+                    description: tooFastMessage,
+                })
+                return
+            }
+
+            track('contact_form_submitted')
+            setIsSubmitting(true)
+
+            try {
+                const payload = {
+                    FirstName: data.firstname,
+                    LastName: data.lastname,
+                    Email: data.email,
+                    Phone: data.phone,
+                    Company: data.company,
+                    LinkedIn: normalizeLinkedIn(data.linkedin),
+                    Message: data.message,
+                    Website: data.website,
+                }
+
+                let attempt = 0
+
+                while (attempt < 2) {
+                    const controller = new AbortController()
+                    const timeoutId = setTimeout(() => {
+                        controller.abort()
+                    }, SUBMIT_TIMEOUT_MS)
+
+                    try {
+                        const response = await fetch('/api/contact', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Accept: 'application/json',
+                            },
+                            body: JSON.stringify(payload),
+                            signal: controller.signal,
+                        })
+
+                        if (!response.ok) {
+                            const body = (await response
+                                .json()
+                                .catch(() => ({}))) as {
+                                    error?: string
+                                    message?: string
+                                }
+                            throw new Error(
+                                body.error ??
+                                body.message ??
+                                `Submission failed (${response.status})`
+                            )
+                        }
+
+                        clearTimeout(timeoutId)
+                        toast.success('Transmission complete', {
+                            description:
+                                'Message sent successfully. I will get back to you soon.',
+                        })
+                        track('contact_form_success')
+                        reset()
+                        setFormError(null)
+                        startedAtRef.current = Date.now()
+                        trackedStartRef.current = false
+                        return
+                    } catch (error) {
+                        clearTimeout(timeoutId)
+
+                        const canRetry =
+                            attempt === 0 &&
+                            error instanceof Error &&
+                            (error.name === 'AbortError' ||
+                                error.name === 'TypeError')
+
+                        if (canRetry) {
+                            attempt += 1
+                            continue
+                        }
+
+                        throw error
+                    }
+                }
+            } catch (error) {
+                const errorMessage =
+                    error instanceof Error
+                        ? error.name === 'AbortError'
+                            ? 'Request timed out. Please check your connection and try again.'
+                            : error.message
+                        : 'Failed to send message. Please try again.'
+
+                setFormError(`* ${errorMessage}`)
+                track('contact_form_error', {
+                    message: error instanceof Error ? error.message : 'unknown',
+                })
+                toast.error('Transmission failed', {
+                    description: errorMessage,
+                })
+            } finally {
+                setIsSubmitting(false)
+            }
+        },
+        [reset]
+    )
+
+    return {
+        formError,
+        isSubmitting,
+        markFormStarted,
+        setFormError,
+        submit,
+    }
+}

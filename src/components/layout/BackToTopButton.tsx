@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
+import { useMotionAwareScroll } from '@/hooks'
 
 const SHOW_AFTER_SCROLL_PX = 480
 
 export default function BackToTopButton() {
     const [isVisible, setIsVisible] = useState(false)
+    const { scrollToTop } = useMotionAwareScroll()
 
     useEffect(() => {
         const onScroll = () => {
@@ -19,23 +21,13 @@ export default function BackToTopButton() {
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
-    const handleBackToTop = () => {
-        const prefersReducedMotion = window.matchMedia(
-            '(prefers-reduced-motion: reduce)'
-        ).matches
-        window.scrollTo({
-            top: 0,
-            behavior: prefersReducedMotion ? 'auto' : 'smooth',
-        })
-    }
-
     return (
         <AnimatePresence>
             {isVisible ? (
                 <motion.button
                     type="button"
                     aria-label="Back to top"
-                    onClick={handleBackToTop}
+                    onClick={scrollToTop}
                     initial={{ opacity: 0, y: 12, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 12, scale: 0.9 }}

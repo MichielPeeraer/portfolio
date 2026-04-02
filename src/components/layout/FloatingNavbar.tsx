@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { useActiveSection, useMotionAwareScroll } from '@/hooks'
 import { getSocialIcon } from '@/lib/social-icons'
 import type { SocialLink } from '@/types'
 
@@ -16,46 +17,24 @@ const sections = [
     { id: 'contact', label: 'Contact' },
 ]
 
+const sectionIds = sections.map((section) => section.id)
+
 interface FloatingNavbarProps {
     socialLinks: SocialLink[]
 }
 
 export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
-    const [activeSection, setActiveSection] = useState('hero')
+    const activeSection = useActiveSection({
+        sectionIds,
+        initialSectionId: 'hero',
+    })
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-    useEffect(() => {
-        const sectionElements = sections
-            .map((s) => ({ id: s.id, el: document.getElementById(s.id) }))
-            .filter((s): s is { id: string; el: HTMLElement } => Boolean(s.el))
-
-        if (sectionElements.length === 0) return
-
-        const handleScroll = () => {
-            const triggerY = window.scrollY + window.innerHeight * 0.35
-            let active = sectionElements[0].id
-            for (const { id, el } of sectionElements) {
-                if (el.offsetTop <= triggerY) {
-                    active = id
-                }
-            }
-            setActiveSection(active)
-        }
-
-        handleScroll()
-        window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [])
+    const { scrollElementIntoView } = useMotionAwareScroll()
 
     const scrollToSection = (sectionId: string) => {
         const element = document.getElementById(sectionId)
         if (element) {
-            const prefersReducedMotion = window.matchMedia(
-                '(prefers-reduced-motion: reduce)'
-            ).matches
-            element.scrollIntoView({
-                behavior: prefersReducedMotion ? 'auto' : 'smooth',
-            })
+            scrollElementIntoView(element)
             setMobileMenuOpen(false)
         }
     }
