@@ -82,9 +82,10 @@ public/
 
 ## Customization
 
-- Update personal information in `src/app/page.tsx`
-- Modify Matrix rain effect in `src/components/MatrixRain.tsx`
-- Adjust styling in `src/app/globals.css` and Tailwind classes
+- Update portfolio content in `src/data/portfolio.json`
+- Adjust global styles in `src/app/globals.css`
+- Tweak section components in `src/components/sections/`
+- Fine-tune visual effects in `src/components/effects/`
 
 ## License
 
