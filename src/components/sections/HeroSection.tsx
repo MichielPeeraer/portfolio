@@ -17,7 +17,11 @@ type MatrixLoaderWindow = Window & {
 
 export default function HeroSection({ data }: HeroSectionProps) {
     const [canAnimate, setCanAnimate] = useState(false)
+    const [typedLineIndex, setTypedLineIndex] = useState(0)
+    const [typedText, setTypedText] = useState('')
+    const [isDeleting, setIsDeleting] = useState(false)
     const loaderCheckDoneRef = useRef(false)
+    const typedLines = data.heroTypedLines ?? []
 
     useEffect(() => {
         // Check on mount if loader is already ready
@@ -42,6 +46,50 @@ export default function HeroSection({ data }: HeroSectionProps) {
             window.removeEventListener('matrix-loader:done', handleLoaderDone)
         }
     }, [])
+
+    useEffect(() => {
+        if (!canAnimate || typedLines.length === 0) {
+            return
+        }
+
+        const currentLine = typedLines[typedLineIndex] ?? ''
+        const isLineComplete = typedText === currentLine
+        const isLineCleared = typedText === ''
+
+        let timeoutMs = isDeleting ? 42 : 72
+
+        if (!isDeleting && isLineComplete) {
+            timeoutMs = 1500
+        } else if (isDeleting && isLineCleared) {
+            timeoutMs = 280
+        }
+
+        const timeout = window.setTimeout(() => {
+            if (!isDeleting && !isLineComplete) {
+                setTypedText(currentLine.slice(0, typedText.length + 1))
+                return
+            }
+
+            if (!isDeleting && isLineComplete) {
+                setIsDeleting(true)
+                return
+            }
+
+            if (isDeleting && !isLineCleared) {
+                setTypedText(currentLine.slice(0, typedText.length - 1))
+                return
+            }
+
+            setIsDeleting(false)
+            setTypedLineIndex(
+                (currentIndex) => (currentIndex + 1) % typedLines.length
+            )
+        }, timeoutMs)
+
+        return () => {
+            window.clearTimeout(timeout)
+        }
+    }, [canAnimate, isDeleting, typedLineIndex, typedLines, typedText])
 
     return (
         <section
@@ -97,6 +145,28 @@ export default function HeroSection({ data }: HeroSectionProps) {
                 >
                     {data.title}
                 </motion.p>
+
+                {typedLines.length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
+                        transition={{
+                            duration: 0.45,
+                            delay: 0.56,
+                            ease: [0.22, 1, 0.36, 1],
+                        }}
+                        className="mb-6 flex w-full justify-center"
+                        aria-live="polite"
+                    >
+                        <span className="inline-block max-w-[calc(100vw-2rem)] rounded border border-green-500/30 bg-black/50 px-3 py-2 text-center text-sm leading-relaxed text-green-300 shadow-[0_0_20px_rgba(74,222,128,0.08)] sm:max-w-2xl sm:px-4 sm:text-base">
+                            <span className="text-green-500/80">&gt; </span>
+                            <span className="whitespace-normal wrap-break-word">
+                                {typedText}
+                            </span>
+                            <span className="ml-1 inline-block h-[0.95em] w-2 align-[-0.12em] bg-green-400/90 animate-pulse" />
+                        </span>
+                    </motion.div>
+                )}
 
                 {data.openToWork && (
                     <motion.div
