@@ -2,6 +2,7 @@
     "personal": {
         "name": "Michiel Peeraer",
         "title": "Full-Stack TypeScript Developer",
+        "openToWork": true,
         "about": "Full-stack TypeScript developer with expertise in MERN / PERN stacks and Python, skilled in creating scalable, production-ready web applications. Proficient in frontend architecture, REST API integration, and backend services. Committed to performance optimization and clean software architecture, delivering tangible business value through software solutions. Seeking opportunities in Belgium and across the EU (remote).",
         "contact": {
             "phone": "+32 484 77 37 52",

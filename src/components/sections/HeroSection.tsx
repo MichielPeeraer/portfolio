@@ -93,10 +93,28 @@ export default function HeroSection({ data }: HeroSectionProps) {
                         delay: 0.5,
                         ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="text-base sm:text-lg md:text-xl mb-8"
+                    className="text-base sm:text-lg md:text-xl mb-6"
                 >
                     {data.title}
                 </motion.p>
+
+                {data.openToWork && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
+                        transition={{
+                            duration: 0.4,
+                            delay: 0.58,
+                            ease: [0.22, 1, 0.36, 1],
+                        }}
+                        className="flex justify-center mb-8"
+                    >
+                        <span className="inline-flex items-center gap-2 border border-green-500/40 bg-green-950/40 text-green-400 text-sm px-4 py-1.5 rounded-full">
+                            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                            Open to opportunities
+                        </span>
+                    </motion.div>
+                )}
 
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}

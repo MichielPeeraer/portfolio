@@ -35,6 +35,7 @@ export interface PersonalInfo {
     name: string
     title: string
     about: string
+    openToWork?: boolean
     contact: ContactInfo
 }
 
@@ -98,9 +99,9 @@ export type SkillIconKey =
 export type SkillItem =
     | string
     | {
-          label: string
-          icon?: SkillIconKey
-      }
+        label: string
+        icon?: SkillIconKey
+    }
 
 export interface SkillCategory {
     label: string
