@@ -74,7 +74,7 @@ export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
                         <button
                             key={section.id}
                             onClick={() => scrollToSection(section.id)}
-                            className={`px-2 lg:px-3 py-1 text-xs lg:text-sm font-medium transition-colors whitespace-nowrap hover:text-green-300 ${
+                            className={`px-2 lg:px-3 py-1 text-sm font-medium transition-colors whitespace-nowrap hover:text-green-300 ${
                                 activeSection === section.id
                                     ? 'text-green-300'
                                     : 'text-green-400'
