@@ -1,10 +1,8 @@
 import { act, renderHook } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
-import {
-    useContactSubmission,
-    type ContactFormValues,
-} from '@/hooks/useContactSubmission'
+import { useContactSubmission } from '@/hooks/useContactSubmission'
+import type { ContactFormValues } from '@/types'
 
 const trackMock = vi.hoisted(() => vi.fn())
 const toastSuccessMock = vi.hoisted(() => vi.fn())

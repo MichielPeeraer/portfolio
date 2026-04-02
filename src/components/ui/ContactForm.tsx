@@ -9,7 +9,7 @@ import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { Loader2, ShieldCheck } from 'lucide-react'
 import { useContactSubmission } from '@/hooks'
-import type { ContactFormValues } from '@/hooks/useContactSubmission'
+import type { ContactFormValues } from '@/types'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 

@@ -1,20 +1,10 @@
 import { useCallback, useRef, useState } from 'react'
 import { track } from '@vercel/analytics'
 import { toast } from 'sonner'
+import type { ContactFormValues } from '@/types'
 
 const MIN_FILL_DURATION_MS = 2000
 const SUBMIT_TIMEOUT_MS = 12000
-
-export interface ContactFormValues {
-    firstname: string
-    lastname: string
-    email: string
-    phone?: string
-    company?: string
-    linkedin?: string
-    message: string
-    website?: string
-}
 
 interface UseContactSubmissionOptions {
     reset: () => void
