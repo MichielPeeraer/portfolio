@@ -3,40 +3,7 @@ export interface Skill {
     level: number
 }
 
-export type SkillIconKey =
-    | 'react'
-    | 'nextdotjs'
-    | 'typescript'
-    | 'tailwindcss'
-    | 'sass'
-    | 'framer'
-    | 'nodedotjs'
-    | 'express'
-    | 'eslint'
-    | 'python'
-    | 'flask'
-    | 'fastapi'
-    | 'mantine'
-    | 'mongodb'
-    | 'postgresql'
-    | 'sqlalchemy'
-    | 'supabase'
-    | 'prisma'
-    | 'redux'
-    | 'formik'
-    | 'git'
-    | 'github'
-    | 'docker'
-    | 'githubactions'
-    | 'kubernetes'
-    | 'jest'
-    | 'vitest'
-    | 'jwt'
-    | 'postman'
-    | 'prettier'
-    | 'vercel'
-    | 'zod'
-    | 'dotnet'
+export type SkillIconKey = string
 
 export type SkillItem =
     | string

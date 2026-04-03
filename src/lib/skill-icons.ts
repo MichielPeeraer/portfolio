@@ -1,75 +1,49 @@
 import type { IconType } from 'react-icons'
-import {
-    SiDocker,
-    SiDotnet,
-    SiExpress,
-    SiEslint,
-    SiFastapi,
-    SiFlask,
-    SiFormik,
-    SiFramer,
-    SiGit,
-    SiGithub,
-    SiGithubactions,
-    SiJest,
-    SiJsonwebtokens,
-    SiKubernetes,
-    SiMantine,
-    SiMongodb,
-    SiNextdotjs,
-    SiNodedotjs,
-    SiPostgresql,
-    SiPostman,
-    SiPrettier,
-    SiPrisma,
-    SiPython,
-    SiReact,
-    SiRedux,
-    SiSass,
-    SiSqlalchemy,
-    SiSupabase,
-    SiTailwindcss,
-    SiTypescript,
-    SiVercel,
-    SiVitest,
-    SiZod,
-} from 'react-icons/si'
-import type { SkillIconKey, SkillItem } from '@/types'
+import * as SimpleIcons from 'react-icons/si'
+import type { SkillItem } from '@/types'
 
-const ICONS: Record<SkillIconKey, IconType> = {
-    react: SiReact,
-    nextdotjs: SiNextdotjs,
-    typescript: SiTypescript,
-    tailwindcss: SiTailwindcss,
-    sass: SiSass,
-    framer: SiFramer,
-    nodedotjs: SiNodedotjs,
-    express: SiExpress,
-    eslint: SiEslint,
-    python: SiPython,
-    flask: SiFlask,
-    fastapi: SiFastapi,
-    mantine: SiMantine,
-    mongodb: SiMongodb,
-    postgresql: SiPostgresql,
-    sqlalchemy: SiSqlalchemy,
-    supabase: SiSupabase,
-    prisma: SiPrisma,
-    redux: SiRedux,
-    formik: SiFormik,
-    git: SiGit,
-    github: SiGithub,
-    docker: SiDocker,
-    githubactions: SiGithubactions,
-    kubernetes: SiKubernetes,
-    jest: SiJest,
-    vitest: SiVitest,
-    jwt: SiJsonwebtokens,
-    postman: SiPostman,
-    prettier: SiPrettier,
-    vercel: SiVercel,
-    zod: SiZod,
-    dotnet: SiDotnet,
+const SIMPLE_ICON_INDEX: Record<string, IconType> = Object.entries(SimpleIcons)
+    .filter(
+        (entry): entry is [string, IconType] =>
+            entry[0].startsWith('Si') && typeof entry[1] === 'function'
+    )
+    .reduce<Record<string, IconType>>((acc, [exportName, icon]) => {
+        acc[exportName.slice(2).toLowerCase()] = icon
+        return acc
+    }, {})
+
+const ICON_ALIASES: Record<string, string> = {
+    nextjs: 'nextdotjs',
+    nodejs: 'nodedotjs',
+    javascript: 'js',
+    ts: 'typescript',
+    js: 'javascript',
+    jwt: 'jsonwebtokens',
+}
+
+function toIconSlug(value: string): string {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/\.js\b/g, 'dotjs')
+        .replace(/\.net\b/g, 'dotnet')
+        .replace(/\+\+/g, 'plusplus')
+        .replace(/\+/g, 'plus')
+        .replace(/#/g, 'sharp')
+        .replace(/[^a-z0-9]/g, '')
+}
+
+function resolveIcon(iconOrLabel?: string): IconType | null {
+    if (!iconOrLabel) return null
+    const slug = toIconSlug(iconOrLabel)
+    if (!slug) return null
+
+    const alias = ICON_ALIASES[slug]
+    if (alias && SIMPLE_ICON_INDEX[alias]) {
+        return SIMPLE_ICON_INDEX[alias]
+    }
+
+    return SIMPLE_ICON_INDEX[slug] ?? null
 }
 
 export function getSkillLabel(skill: SkillItem): string {
@@ -77,6 +51,9 @@ export function getSkillLabel(skill: SkillItem): string {
 }
 
 export function getSkillIcon(skill: SkillItem): IconType | null {
-    if (typeof skill === 'string' || !skill.icon) return null
-    return ICONS[skill.icon] ?? null
+    if (typeof skill === 'string') {
+        return resolveIcon(skill)
+    }
+
+    return resolveIcon(skill.icon) ?? resolveIcon(skill.label)
 }
