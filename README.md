@@ -24,7 +24,7 @@ A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind
 - **Animations**: Framer Motion
 - **Formatting**: Prettier
 - **Database**: PostgreSQL + Prisma
-- **Authentication**: NextAuth (credentials)
+- **Authentication**: NextAuth (GitHub OAuth)
 
 ## Getting Started
 
@@ -69,6 +69,31 @@ Notes:
 - By default, using only `ADMIN_EMAIL` is enough for both incoming notifications and auto-replies.
 - SMTP credentials should come from your email provider (for Gmail/Outlook use an app password).
 - For production, set the same variables in your hosting platform.
+
+## Security Runbook
+
+If any `.env` value is exposed, rotate secrets immediately and redeploy.
+
+### Rotation Priority
+
+1. Database credentials (`DATABASE_URL`, `DIRECT_URL`, `POSTGRES_PASSWORD`)
+2. Supabase privileged keys (`POSTGRES_SUPABASE_SERVICE_ROLE_KEY`, `POSTGRES_SUPABASE_SECRET_KEY`, `POSTGRES_SUPABASE_JWT_SECRET`)
+3. OAuth secret (`GITHUB_SECRET`)
+4. Email credentials (`SMTP_PASS`)
+5. Session secret (`NEXTAUTH_SECRET`)
+
+### Emergency Response Steps
+
+1. Rotate secrets in Supabase, GitHub OAuth app settings, and SMTP provider.
+2. Update Vercel project environment variables for all environments.
+3. Update local `.env.local` with fresh values.
+4. Redeploy and verify `/login`, `/admin`, and `/api/contact`.
+5. Invalidate old sessions by rotating `NEXTAUTH_SECRET`.
+
+### Runtime Guardrails
+
+- The app now fails fast on missing required auth/contact env vars in development and production.
+- Deprecated keys (`ADMIN_PASSWORD`, `CONTACT_TO_EMAIL`) now trigger startup errors to avoid insecure legacy config.
 
 ## Database and Admin Setup
 

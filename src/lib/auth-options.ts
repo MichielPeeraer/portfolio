@@ -1,10 +1,12 @@
 import type { NextAuthOptions } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import { getAuthEnv } from '@/lib/env'
 import { prisma } from '@/lib/prisma'
 
-const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
-const adminGithubLogin = process.env.ADMIN_GITHUB_LOGIN?.trim().toLowerCase()
+const authEnv = getAuthEnv()
+const adminEmail = authEnv.adminEmail
+const adminGithubLogin = authEnv.adminGithubLogin
 
 type TokenWithGithubLogin = { githubLogin?: unknown }
 type GithubProfile = { login?: unknown }
@@ -27,8 +29,8 @@ export const authOptions: NextAuthOptions = {
     },
     providers: [
         GithubProvider({
-            clientId: process.env.GITHUB_ID ?? '',
-            clientSecret: process.env.GITHUB_SECRET ?? '',
+            clientId: authEnv.githubId,
+            clientSecret: authEnv.githubSecret,
             allowDangerousEmailAccountLinking: true,
             authorization: {
                 params: {

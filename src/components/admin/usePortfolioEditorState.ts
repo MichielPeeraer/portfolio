@@ -73,6 +73,32 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
     const onSubmitForm = async (formValues: AdminFormValues) => {
         setFormStatus('')
 
+        const existingSocialLinks = portfolioData.personal.contact.socialLinks
+        const nonEditableSocials = existingSocialLinks.filter(
+            (link) => link.name !== 'GitHub' && link.name !== 'LinkedIn'
+        )
+
+        const githubIcon =
+            existingSocialLinks.find((link) => link.name === 'GitHub')?.icon ??
+            'github'
+        const linkedinIcon =
+            existingSocialLinks.find((link) => link.name === 'LinkedIn')
+                ?.icon ?? 'linkedin'
+
+        const socialLinks = [
+            {
+                name: 'GitHub',
+                icon: githubIcon,
+                url: formValues.githubUrl.trim(),
+            },
+            {
+                name: 'LinkedIn',
+                icon: linkedinIcon,
+                url: formValues.linkedinUrl.trim(),
+            },
+            ...nonEditableSocials,
+        ]
+
         const nextData: PortfolioData = {
             ...portfolioData,
             personal: {
@@ -89,6 +115,7 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
                     ...portfolioData.personal.contact,
                     email: formValues.contactEmail.trim(),
                     phone: formValues.contactPhone.trim(),
+                    socialLinks,
                 },
             },
             devPractices: fromMultiline(formValues.devPracticesText),

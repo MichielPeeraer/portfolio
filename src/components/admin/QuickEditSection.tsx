@@ -207,6 +207,55 @@ export function QuickEditSection({
                             ) : null}
                         </div>
 
+                        <div className="pt-2">
+                            <h4 className="text-xs uppercase tracking-[0.16em] text-green-500">
+                                Social Links
+                            </h4>
+                            <p className="mt-1 text-xs text-green-700">
+                                Edit only GitHub and LinkedIn URLs.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="githubUrl"
+                                className="mb-1 block text-sm"
+                            >
+                                GitHub URL
+                            </label>
+                            <input
+                                id="githubUrl"
+                                {...register('githubUrl')}
+                                autoComplete="url"
+                                className={inputClass}
+                            />
+                            {errors.githubUrl ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.githubUrl.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="linkedinUrl"
+                                className="mb-1 block text-sm"
+                            >
+                                LinkedIn URL
+                            </label>
+                            <input
+                                id="linkedinUrl"
+                                {...register('linkedinUrl')}
+                                autoComplete="url"
+                                className={inputClass}
+                            />
+                            {errors.linkedinUrl ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.linkedinUrl.message}
+                                </p>
+                            ) : null}
+                        </div>
+
                         <div>
                             <label
                                 htmlFor="openToWorkLabel"

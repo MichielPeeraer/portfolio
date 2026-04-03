@@ -8,6 +8,7 @@ import {
     buildOwnerMessageHtml,
     buildOwnerMessageText,
 } from '@/lib/contact-email'
+import { getContactEnv } from '@/lib/env'
 import type { ContactEmailData } from '@/types'
 
 const MAX_MESSAGE_LENGTH = 5000
@@ -23,11 +24,12 @@ const contactPayloadSchema = z.object({
     Website: z.string().optional(),
 })
 
-const SMTP_HOST = process.env.SMTP_HOST
-const SMTP_PORT = process.env.SMTP_PORT
-const SMTP_USER = process.env.SMTP_USER
-const SMTP_PASS = process.env.SMTP_PASS
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+const contactEnv = getContactEnv()
+const SMTP_HOST = contactEnv.smtpHost
+const SMTP_PORT = contactEnv.smtpPort
+const SMTP_USER = contactEnv.smtpUser
+const SMTP_PASS = contactEnv.smtpPass
+const ADMIN_EMAIL = contactEnv.adminEmail
 
 if (
     (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !ADMIN_EMAIL) &&

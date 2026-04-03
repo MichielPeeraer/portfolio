@@ -10,6 +10,8 @@ export const adminFormSchema = z.object({
     cvPath: z.string().trim().min(1, 'CV path is required'),
     contactEmail: z.email('Valid contact email is required'),
     contactPhone: z.string().trim().min(1, 'Contact phone is required'),
+    githubUrl: z.url('GitHub URL must be valid'),
+    linkedinUrl: z.url('LinkedIn URL must be valid'),
     heroTypedLinesText: z
         .string()
         .trim()
@@ -98,6 +100,13 @@ export const buildAdminFormDefaults = (
     cvPath: data.personal.cvPath ?? '/CV_Michiel_Peeraer.pdf',
     contactEmail: data.personal.contact.email,
     contactPhone: data.personal.contact.phone,
+    githubUrl:
+        data.personal.contact.socialLinks.find((link) => link.name === 'GitHub')
+            ?.url ?? '',
+    linkedinUrl:
+        data.personal.contact.socialLinks.find(
+            (link) => link.name === 'LinkedIn'
+        )?.url ?? '',
     heroTypedLinesText: toMultiline(data.personal.heroTypedLines),
     ogTechPillsText: toMultiline(data.personal.ogTechPills),
     devPracticesText: toMultiline(data.devPractices),
