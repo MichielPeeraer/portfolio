@@ -78,6 +78,15 @@ const buildRequest = (body: unknown, headers?: Record<string, string>) =>
         body: JSON.stringify(body),
     })
 
+const buildMalformedJsonRequest = () =>
+    new Request('http://localhost/api/contact', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: '{"FirstName":',
+    })
+
 describe('contact API route', () => {
     beforeEach(() => {
         vi.clearAllMocks()
@@ -111,6 +120,13 @@ describe('contact API route', () => {
             })
         )
 
+        expect(response.status).toBe(400)
+    })
+
+    it('returns 400 for malformed JSON body', async () => {
+        const POST = await loadPost()
+
+        const response = await POST(buildMalformedJsonRequest())
         expect(response.status).toBe(400)
     })
 
@@ -151,6 +167,24 @@ describe('contact API route', () => {
 
         const response = await POST(buildRequest(basePayload))
         expect(response.status).toBe(502)
+    })
+
+    it('returns 504 when owner delivery times out', async () => {
+        vi.useFakeTimers()
+        try {
+            sendMailMock.mockImplementationOnce(() => new Promise(() => {}))
+            const POST = await loadPost()
+
+            const requestPromise = POST(buildRequest(basePayload))
+            await vi.advanceTimersByTimeAsync(12_100)
+            const response = await requestPromise
+            const body = (await response.json()) as { error?: string }
+
+            expect(response.status).toBe(504)
+            expect(body.error).toBe('Request timed out. Please try again.')
+        } finally {
+            vi.useRealTimers()
+        }
     })
 
     it('returns 429 after rate limit threshold for same client IP', async () => {
