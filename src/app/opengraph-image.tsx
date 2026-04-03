@@ -19,9 +19,14 @@ export default function Image() {
         const profilePath = resolve(process.cwd(), 'public/profile.jpg')
         const profileImg = readFileSync(profilePath)
         profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
+        console.log('✓ Profile image loaded successfully')
     } catch (error) {
-        console.error('Failed to read profile image:', error)
-        profileSrc = ''
+        console.error('✗ Failed to read profile image:', error)
+        console.log('Current CWD:', process.cwd())
+        console.log(
+            'Looking for:',
+            resolve(process.cwd(), 'public/profile.jpg')
+        )
     }
     const linkedInUrl = data.personal.contact.socialLinks.find(
         (link) => link.name === 'LinkedIn'
@@ -268,30 +273,35 @@ export default function Image() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 overflow: 'hidden',
+                                background: '#052e16',
                             }}
                         >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={profileSrc}
-                                width={244}
-                                height={244}
-                                alt=""
-                                style={{
-                                    borderRadius: '50%',
-                                    objectFit: 'cover',
-                                }}
-                            />
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    inset: 0,
-                                    borderRadius: '50%',
-                                    backgroundImage:
-                                        'repeating-linear-gradient(180deg, rgba(74, 222, 128, 0.02) 0px, rgba(74, 222, 128, 0.02) 2px, transparent 2px, transparent 6px, rgba(74, 222, 128, 0.1) 6px, rgba(74, 222, 128, 0.1) 7px, transparent 7px, transparent 9px)',
-                                    opacity: 0.78,
-                                    display: 'flex',
-                                }}
-                            />
+                            {profileSrc && (
+                                <>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                        src={profileSrc}
+                                        width={244}
+                                        height={244}
+                                        alt=""
+                                        style={{
+                                            borderRadius: '50%',
+                                            objectFit: 'cover',
+                                        }}
+                                    />
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            inset: 0,
+                                            borderRadius: '50%',
+                                            backgroundImage:
+                                                'repeating-linear-gradient(180deg, rgba(74, 222, 128, 0.02) 0px, rgba(74, 222, 128, 0.02) 2px, transparent 2px, transparent 6px, rgba(74, 222, 128, 0.1) 6px, rgba(74, 222, 128, 0.1) 7px, transparent 7px, transparent 9px)',
+                                            opacity: 0.78,
+                                            display: 'flex',
+                                        }}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

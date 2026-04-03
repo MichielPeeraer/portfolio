@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         siteName: siteConfig.name,
         images: [
             {
-                url: '/opengraph-image',
+                url: `${siteConfig.url}/opengraph-image`,
                 width: 1200,
                 height: 630,
                 alt: `${siteConfig.name} | Full-Stack TypeScript Developer`,
@@ -48,6 +48,7 @@ export const metadata: Metadata = {
         'Node.js',
         'MERN',
         'PERN',
+        'Python',
         siteConfig.name,
         'Web Developer Belgium',
     ],
