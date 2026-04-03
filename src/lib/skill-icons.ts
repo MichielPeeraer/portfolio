@@ -12,14 +12,14 @@ const SIMPLE_ICON_INDEX: Record<string, IconType> = Object.entries(SimpleIcons)
         return acc
     }, {})
 
-const ICON_ALIASES: Record<string, string> = {
+/*const ICON_ALIASES: Record<string, string> = {
     nextjs: 'nextdotjs',
     nodejs: 'nodedotjs',
     javascript: 'js',
     ts: 'typescript',
     js: 'javascript',
     jwt: 'jsonwebtokens',
-}
+}*/
 
 function toIconSlug(value: string): string {
     return value
@@ -38,10 +38,10 @@ function resolveIcon(iconOrLabel?: string): IconType | null {
     const slug = toIconSlug(iconOrLabel)
     if (!slug) return null
 
-    const alias = ICON_ALIASES[slug]
+    /*const alias = ICON_ALIASES[slug]
     if (alias && SIMPLE_ICON_INDEX[alias]) {
         return SIMPLE_ICON_INDEX[alias]
-    }
+    }*/
 
     return SIMPLE_ICON_INDEX[slug] ?? null
 }
