@@ -1,3 +1,46 @@
+function LoadingSpinner() {
+    return (
+        <svg
+            className="inline-block h-4 w-4 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+        >
+            <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+            />
+            <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+        </svg>
+    )
+}
+
+function CheckIcon() {
+    return (
+        <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+            />
+        </svg>
+    )
+}
+
 interface AdvancedJsonSectionProps {
     value: string
     setValue: (next: string) => void
@@ -29,15 +72,24 @@ export function AdvancedJsonSection({
                 </p>
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
-                <textarea
-                    value={value}
-                    onChange={(event) => setValue(event.target.value)}
-                    className="h-[55vh] w-full rounded-2xl border border-green-900 bg-black/80 p-4 text-sm outline-none transition focus:border-green-500"
-                    spellCheck={false}
-                />
+            <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+                <div className="flex flex-col gap-2">
+                    <label
+                        htmlFor="portfolio-json"
+                        className="text-sm font-medium text-green-300"
+                    >
+                        Portfolio JSON
+                    </label>
+                    <textarea
+                        id="portfolio-json"
+                        value={value}
+                        onChange={(event) => setValue(event.target.value)}
+                        className="h-[50vh] min-h-75 w-full rounded-2xl border border-green-900 bg-black/80 p-4 text-sm outline-none transition focus:border-green-500 sm:h-[55vh]"
+                        spellCheck={false}
+                    />
+                </div>
 
-                <aside className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
+                <aside className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4 lg:max-h-[calc(50vh+44px)] lg:overflow-y-auto lg:sm:h-[55vh]">
                     <div>
                         <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
                             Safe Use
@@ -61,8 +113,9 @@ export function AdvancedJsonSection({
                         type="button"
                         onClick={save}
                         disabled={isSaving}
-                        className="w-full rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
+                        className="flex items-center justify-center gap-2 w-full rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
                     >
+                        {isSaving ? <LoadingSpinner /> : <CheckIcon />}
                         {isSaving ? 'Saving...' : 'Save JSON'}
                     </button>
                 </aside>
