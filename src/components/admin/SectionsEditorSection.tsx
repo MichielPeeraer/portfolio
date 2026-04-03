@@ -94,6 +94,25 @@ function CheckIcon() {
     )
 }
 
+function ToggleArrowIcon({ open }: { open: boolean }) {
+    return (
+        <svg
+            className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+            />
+        </svg>
+    )
+}
+
 interface SectionsEditorSectionProps {
     sectionsDraft: SectionsFormValues
     setSectionsDraft: Dispatch<SetStateAction<SectionsFormValues>>
@@ -192,9 +211,14 @@ export function SectionsEditorSection({
                                     setExperienceOpen((open) => !open)
                                 }
                                 aria-expanded={experienceOpen}
-                                className="rounded-xl border border-green-800 px-3 py-2 text-xs uppercase tracking-[0.12em] text-green-300 transition hover:bg-green-900/30"
+                                aria-label={
+                                    experienceOpen
+                                        ? 'Collapse experience section'
+                                        : 'Expand experience section'
+                                }
+                                className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
                             >
-                                {experienceOpen ? 'Collapse' : 'Expand'}
+                                <ToggleArrowIcon open={experienceOpen} />
                             </button>
                             <button
                                 type="button"
@@ -436,9 +460,14 @@ export function SectionsEditorSection({
                                     setEducationOpen((open) => !open)
                                 }
                                 aria-expanded={educationOpen}
-                                className="rounded-xl border border-green-800 px-3 py-2 text-xs uppercase tracking-[0.12em] text-green-300 transition hover:bg-green-900/30"
+                                aria-label={
+                                    educationOpen
+                                        ? 'Collapse education section'
+                                        : 'Expand education section'
+                                }
+                                className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
                             >
-                                {educationOpen ? 'Collapse' : 'Expand'}
+                                <ToggleArrowIcon open={educationOpen} />
                             </button>
                             <button
                                 type="button"
@@ -679,9 +708,14 @@ export function SectionsEditorSection({
                                 type="button"
                                 onClick={() => setSkillsOpen((open) => !open)}
                                 aria-expanded={skillsOpen}
-                                className="rounded-xl border border-green-800 px-3 py-2 text-xs uppercase tracking-[0.12em] text-green-300 transition hover:bg-green-900/30"
+                                aria-label={
+                                    skillsOpen
+                                        ? 'Collapse skills section'
+                                        : 'Expand skills section'
+                                }
+                                className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
                             >
-                                {skillsOpen ? 'Collapse' : 'Expand'}
+                                <ToggleArrowIcon open={skillsOpen} />
                             </button>
                             <button
                                 type="button"
@@ -873,9 +907,14 @@ export function SectionsEditorSection({
                             type="button"
                             onClick={() => setLearningOpen((open) => !open)}
                             aria-expanded={learningOpen}
-                            className="rounded-xl border border-green-800 px-3 py-2 text-xs uppercase tracking-[0.12em] text-green-300 transition hover:bg-green-900/30"
+                            aria-label={
+                                learningOpen
+                                    ? 'Collapse learning section'
+                                    : 'Expand learning section'
+                            }
+                            className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
                         >
-                            {learningOpen ? 'Collapse' : 'Expand'}
+                            <ToggleArrowIcon open={learningOpen} />
                         </button>
                     </div>
 

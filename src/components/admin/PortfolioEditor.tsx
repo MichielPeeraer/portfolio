@@ -11,6 +11,25 @@ interface PortfolioEditorProps {
     initialData: PortfolioData
 }
 
+function ToggleArrowIcon({ open }: { open: boolean }) {
+    return (
+        <svg
+            className={`h-4 w-4 text-green-500 transition-transform ${open ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+            />
+        </svg>
+    )
+}
+
 export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
     const [quickEditOpen, setQuickEditOpen] = useState(true)
     const [sectionsOpen, setSectionsOpen] = useState(true)
@@ -47,14 +66,17 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     type="button"
                     onClick={() => setQuickEditOpen((open) => !open)}
                     aria-expanded={quickEditOpen}
+                    aria-label={
+                        quickEditOpen
+                            ? 'Collapse quick edit'
+                            : 'Expand quick edit'
+                    }
                     className="flex w-full items-center justify-between rounded-xl border border-green-900/60 bg-black/30 px-4 py-3 text-left text-sm text-green-200 transition hover:bg-green-900/20"
                 >
                     <span className="uppercase tracking-[0.18em]">
                         Quick Edit
                     </span>
-                    <span className="text-green-500">
-                        {quickEditOpen ? 'Collapse' : 'Expand'}
-                    </span>
+                    <ToggleArrowIcon open={quickEditOpen} />
                 </button>
                 {quickEditOpen ? (
                     <div className="mt-3">
@@ -75,14 +97,17 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     type="button"
                     onClick={() => setSectionsOpen((open) => !open)}
                     aria-expanded={sectionsOpen}
+                    aria-label={
+                        sectionsOpen
+                            ? 'Collapse sections editor'
+                            : 'Expand sections editor'
+                    }
                     className="flex w-full items-center justify-between rounded-xl border border-green-900/60 bg-black/30 px-4 py-3 text-left text-sm text-green-200 transition hover:bg-green-900/20"
                 >
                     <span className="uppercase tracking-[0.18em]">
                         Sections Editor
                     </span>
-                    <span className="text-green-500">
-                        {sectionsOpen ? 'Collapse' : 'Expand'}
-                    </span>
+                    <ToggleArrowIcon open={sectionsOpen} />
                 </button>
                 {sectionsOpen ? (
                     <div className="mt-3">
@@ -106,14 +131,17 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     type="button"
                     onClick={() => setJsonOpen((open) => !open)}
                     aria-expanded={jsonOpen}
+                    aria-label={
+                        jsonOpen
+                            ? 'Collapse advanced JSON'
+                            : 'Expand advanced JSON'
+                    }
                     className="flex w-full items-center justify-between rounded-xl border border-green-900/60 bg-black/30 px-4 py-3 text-left text-sm text-green-200 transition hover:bg-green-900/20"
                 >
                     <span className="uppercase tracking-[0.18em]">
                         Advanced JSON
                     </span>
-                    <span className="text-green-500">
-                        {jsonOpen ? 'Collapse' : 'Expand'}
-                    </span>
+                    <ToggleArrowIcon open={jsonOpen} />
                 </button>
                 {jsonOpen ? (
                     <div className="mt-3">
