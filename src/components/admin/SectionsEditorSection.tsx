@@ -196,8 +196,9 @@ export function SectionsEditorSection({
                                     ],
                                 }))
                             }
-                            className={addButtonClass}
+                            className={`${addButtonClass} flex items-center justify-center gap-2`}
                         >
+                            <PlusIcon />
                             Add Experience
                         </button>
                     </div>
@@ -220,9 +221,9 @@ export function SectionsEditorSection({
                                                 ),
                                             }))
                                         }
-                                        className={actionButtonClass}
+                                        className={`${actionButtonClass} flex items-center justify-center`}
                                     >
-                                        Up
+                                        <ArrowUpIcon />
                                     </button>
                                     <button
                                         type="button"
@@ -242,7 +243,7 @@ export function SectionsEditorSection({
                                         }
                                         className={actionButtonClass}
                                     >
-                                        Down
+                                        <ArrowDownIcon />
                                     </button>
                                     <button
                                         type="button"
@@ -258,7 +259,7 @@ export function SectionsEditorSection({
                                         }
                                         className={destructiveButtonClass}
                                     >
-                                        Delete
+                                        <TrashIcon />
                                     </button>
                                 </div>
                             </div>
@@ -355,8 +356,9 @@ export function SectionsEditorSection({
                                     ],
                                 }))
                             }
-                            className={addButtonClass}
+                            className={`${addButtonClass} flex items-center justify-center gap-2`}
                         >
+                            <PlusIcon />
                             Add Education
                         </button>
                     </div>
@@ -381,7 +383,7 @@ export function SectionsEditorSection({
                                         }
                                         className={actionButtonClass}
                                     >
-                                        Up
+                                        <ArrowUpIcon />
                                     </button>
                                     <button
                                         type="button"
@@ -401,7 +403,7 @@ export function SectionsEditorSection({
                                         }
                                         className={actionButtonClass}
                                     >
-                                        Down
+                                        <ArrowDownIcon />
                                     </button>
                                     <button
                                         type="button"
@@ -417,7 +419,7 @@ export function SectionsEditorSection({
                                         }
                                         className={destructiveButtonClass}
                                     >
-                                        Delete
+                                        <TrashIcon />
                                     </button>
                                 </div>
                             </div>
@@ -513,8 +515,9 @@ export function SectionsEditorSection({
                                     ],
                                 }))
                             }
-                            className={addButtonClass}
+                            className={`${addButtonClass} flex items-center justify-center gap-2`}
                         >
+                            <PlusIcon />
                             Add Category
                         </button>
                     </div>
@@ -539,7 +542,7 @@ export function SectionsEditorSection({
                                         }
                                         className={actionButtonClass}
                                     >
-                                        Up
+                                        <ArrowUpIcon />
                                     </button>
                                     <button
                                         type="button"
@@ -561,7 +564,7 @@ export function SectionsEditorSection({
                                         }
                                         className={actionButtonClass}
                                     >
-                                        Down
+                                        <ArrowDownIcon />
                                     </button>
                                     <button
                                         type="button"
@@ -577,7 +580,7 @@ export function SectionsEditorSection({
                                         }
                                         className={destructiveButtonClass}
                                     >
-                                        Delete
+                                        <TrashIcon />
                                     </button>
                                 </div>
                             </div>
