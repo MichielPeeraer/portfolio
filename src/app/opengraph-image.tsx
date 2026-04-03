@@ -10,23 +10,34 @@ export const alt = `${siteConfig.name} – Full-Stack TypeScript Developer`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default function Image() {
+export default async function Image() {
     const data = portfolioData as PortfolioData
     const tech = data.personal.ogTechPills ?? []
 
     let profileSrc = ''
     try {
-        const profilePath = resolve(process.cwd(), 'public/profile.jpg')
-        const profileImg = readFileSync(profilePath)
-        profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
-        console.log('✓ Profile image loaded successfully')
+        // On Vercel, load from public URL instead of filesystem
+        const profileUrl = new URL('/profile.jpg', siteConfig.url).href
+        const response = await fetch(profileUrl, {
+            headers: {
+                'User-Agent': 'facebookexternalhit/1.1',
+            },
+        })
+        if (!response.ok) throw new Error(`Fetch failed: ${response.status}`)
+        const buffer = await response.arrayBuffer()
+        profileSrc = `data:image/jpeg;base64,${Buffer.from(buffer).toString('base64')}`
+        console.log('✓ Profile image loaded from URL:', profileUrl)
     } catch (error) {
-        console.error('✗ Failed to read profile image:', error)
-        console.log('Current CWD:', process.cwd())
-        console.log(
-            'Looking for:',
-            resolve(process.cwd(), 'public/profile.jpg')
-        )
+        console.error('✗ Failed to load profile image:', error)
+        // Fallback: try filesystem
+        try {
+            const profilePath = resolve(process.cwd(), 'public/profile.jpg')
+            const profileImg = readFileSync(profilePath)
+            profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
+            console.log('✓ Profile image loaded from filesystem')
+        } catch (fsError) {
+            console.error('✗ Filesystem fallback also failed:', fsError)
+        }
     }
     const linkedInUrl = data.personal.contact.socialLinks.find(
         (link) => link.name === 'LinkedIn'
