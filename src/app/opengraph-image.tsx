@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { readFileSync } from 'fs'
-import { resolve } from 'path'
+import { join } from 'path'
 import portfolioData from '@/data/portfolio.json'
 import { siteConfig } from '@/lib/site'
 import type { PortfolioData } from '@/types'
@@ -10,35 +10,11 @@ export const alt = `${siteConfig.name} – Full-Stack TypeScript Developer`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default async function Image() {
+export default function Image() {
     const data = portfolioData as PortfolioData
     const tech = data.personal.ogTechPills ?? []
-
-    let profileSrc = ''
-    try {
-        // On Vercel, load from public URL instead of filesystem
-        const profileUrl = new URL('/profile.jpg', siteConfig.url).href
-        const response = await fetch(profileUrl, {
-            headers: {
-                'User-Agent': 'facebookexternalhit/1.1',
-            },
-        })
-        if (!response.ok) throw new Error(`Fetch failed: ${response.status}`)
-        const buffer = await response.arrayBuffer()
-        profileSrc = `data:image/jpeg;base64,${Buffer.from(buffer).toString('base64')}`
-        console.log('✓ Profile image loaded from URL:', profileUrl)
-    } catch (error) {
-        console.error('✗ Failed to load profile image:', error)
-        // Fallback: try filesystem
-        try {
-            const profilePath = resolve(process.cwd(), 'public/profile.jpg')
-            const profileImg = readFileSync(profilePath)
-            profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
-            console.log('✓ Profile image loaded from filesystem')
-        } catch (fsError) {
-            console.error('✗ Filesystem fallback also failed:', fsError)
-        }
-    }
+    const profileImg = readFileSync(join(process.cwd(), 'public/profile.jpg'))
+    const profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
     const linkedInUrl = data.personal.contact.socialLinks.find(
         (link) => link.name === 'LinkedIn'
     )?.url
@@ -284,35 +260,30 @@ export default async function Image() {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 overflow: 'hidden',
-                                background: '#052e16',
                             }}
                         >
-                            {profileSrc && (
-                                <>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                        src={profileSrc}
-                                        width={244}
-                                        height={244}
-                                        alt=""
-                                        style={{
-                                            borderRadius: '50%',
-                                            objectFit: 'cover',
-                                        }}
-                                    />
-                                    <div
-                                        style={{
-                                            position: 'absolute',
-                                            inset: 0,
-                                            borderRadius: '50%',
-                                            backgroundImage:
-                                                'repeating-linear-gradient(180deg, rgba(74, 222, 128, 0.02) 0px, rgba(74, 222, 128, 0.02) 2px, transparent 2px, transparent 6px, rgba(74, 222, 128, 0.1) 6px, rgba(74, 222, 128, 0.1) 7px, transparent 7px, transparent 9px)',
-                                            opacity: 0.78,
-                                            display: 'flex',
-                                        }}
-                                    />
-                                </>
-                            )}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={profileSrc}
+                                width={244}
+                                height={244}
+                                alt=""
+                                style={{
+                                    borderRadius: '50%',
+                                    objectFit: 'cover',
+                                }}
+                            />
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    inset: 0,
+                                    borderRadius: '50%',
+                                    backgroundImage:
+                                        'repeating-linear-gradient(180deg, rgba(74, 222, 128, 0.02) 0px, rgba(74, 222, 128, 0.02) 2px, transparent 2px, transparent 6px, rgba(74, 222, 128, 0.1) 6px, rgba(74, 222, 128, 0.1) 7px, transparent 7px, transparent 9px)',
+                                    opacity: 0.78,
+                                    display: 'flex',
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
