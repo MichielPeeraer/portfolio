@@ -1,13 +1,13 @@
 import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
-import { authOptions } from '@/lib/auth-options'
+import { createAuthOptions } from '@/lib/auth-options'
 import { getPortfolioData } from '@/lib/portfolio-data'
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import { prisma } from '@/lib/prisma'
 
 const isAdmin = async () => {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(createAuthOptions())
     return session?.user?.role === 'admin'
 }
 

@@ -24,22 +24,6 @@ const contactPayloadSchema = z.object({
     Website: z.string().optional(),
 })
 
-const contactEnv = getContactEnv()
-const SMTP_HOST = contactEnv.smtpHost
-const SMTP_PORT = contactEnv.smtpPort
-const SMTP_USER = contactEnv.smtpUser
-const SMTP_PASS = contactEnv.smtpPass
-const ADMIN_EMAIL = contactEnv.adminEmail
-
-if (
-    (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !ADMIN_EMAIL) &&
-    process.env.NODE_ENV !== 'production'
-) {
-    console.warn(
-        '[contact-api] Missing one or more required env vars: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and ADMIN_EMAIL.'
-    )
-}
-
 const SUBMIT_TIMEOUT_MS = 12000
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX_REQUESTS = 5
@@ -113,6 +97,26 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number) => {
 }
 
 export async function POST(request: Request) {
+    let SMTP_HOST = ''
+    let SMTP_PORT = ''
+    let SMTP_USER = ''
+    let SMTP_PASS = ''
+    let ADMIN_EMAIL = ''
+
+    try {
+        const contactEnv = getContactEnv()
+        SMTP_HOST = contactEnv.smtpHost
+        SMTP_PORT = contactEnv.smtpPort
+        SMTP_USER = contactEnv.smtpUser
+        SMTP_PASS = contactEnv.smtpPass
+        ADMIN_EMAIL = contactEnv.adminEmail
+    } catch {
+        return NextResponse.json(
+            { error: 'Form server is not configured.' },
+            { status: 500 }
+        )
+    }
+
     const verification = await checkBotId()
 
     if (verification.isBot) {

@@ -1,12 +1,12 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { getPortfolioData } from '@/lib/portfolio-data'
-import { authOptions } from '@/lib/auth-options'
+import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
 
 export default async function AdminPage() {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(createAuthOptions())
 
     if (!session?.user || session.user.role !== 'admin') {
         redirect('/login')
