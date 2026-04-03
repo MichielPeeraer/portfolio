@@ -10,6 +10,13 @@ const scriptSrc = [
     'https://va.vercel-scripts.com',
 ]
 
+const scriptSrcAdmin = [
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'",
+    'https://va.vercel-scripts.com',
+]
+
 const connectSrc = [
     "'self'",
     'https://vitals.vercel-insights.com',
@@ -17,48 +24,68 @@ const connectSrc = [
     ...(isDev ? ['ws:', 'wss:', 'http://localhost:*'] : []),
 ]
 
-const contentSecurityPolicy = [
-    "default-src 'self'",
-    "base-uri 'self'",
-    "object-src 'none'",
-    "frame-ancestors 'none'",
-    "form-action 'self'",
-    `script-src ${scriptSrc.join(' ')}`,
-    "script-src-attr 'none'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https:",
-    "font-src 'self' data:",
-    `connect-src ${connectSrc.join(' ')}`,
-    ...(isDev ? [] : ['upgrade-insecure-requests']),
-].join('; ')
+const buildCsp = (overrideScriptSrc: string[]) =>
+    [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "object-src 'none'",
+        "frame-ancestors 'none'",
+        "form-action 'self'",
+        `script-src ${overrideScriptSrc.join(' ')}`,
+        "script-src-attr 'none'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob: https:",
+        "font-src 'self' data:",
+        `connect-src ${connectSrc.join(' ')}`,
+        ...(isDev ? [] : ['upgrade-insecure-requests']),
+    ].join('; ')
+
+const contentSecurityPolicy = buildCsp(scriptSrc)
+const adminContentSecurityPolicy = buildCsp(scriptSrcAdmin)
 
 const nextConfig: NextConfig = {
     poweredByHeader: false,
     async headers() {
-        return [
+        const commonHeaders = [
             {
-                source: '/(.*)',
+                key: 'X-Frame-Options',
+                value: 'DENY',
+            },
+            {
+                key: 'X-Content-Type-Options',
+                value: 'nosniff',
+            },
+            {
+                key: 'Referrer-Policy',
+                value: 'strict-origin-when-cross-origin',
+            },
+            {
+                key: 'Permissions-Policy',
+                value: 'camera=(), microphone=(), geolocation=()',
+            },
+        ]
+        return [
+            // Admin routes: allow unsafe-eval (required by admin-only libraries
+            // such as the rich JSON editor and animation engine)
+            {
+                source: '/(admin|api/admin)(.*)',
+                headers: [
+                    {
+                        key: 'Content-Security-Policy',
+                        value: adminContentSecurityPolicy,
+                    },
+                    ...commonHeaders,
+                ],
+            },
+            // All other routes: strict CSP with no eval
+            {
+                source: '/((?!admin|api/admin).*)',
                 headers: [
                     {
                         key: 'Content-Security-Policy',
                         value: contentSecurityPolicy,
                     },
-                    {
-                        key: 'X-Frame-Options',
-                        value: 'DENY',
-                    },
-                    {
-                        key: 'X-Content-Type-Options',
-                        value: 'nosniff',
-                    },
-                    {
-                        key: 'Referrer-Policy',
-                        value: 'strict-origin-when-cross-origin',
-                    },
-                    {
-                        key: 'Permissions-Policy',
-                        value: 'camera=(), microphone=(), geolocation=()',
-                    },
+                    ...commonHeaders,
                 ],
             },
         ]
