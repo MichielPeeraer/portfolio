@@ -58,83 +58,83 @@ export function AdvancedJsonSection({
     rawStatus,
     rawIssues,
 }: AdvancedJsonSectionProps) {
-    const statusClass = rawStatus.startsWith('Saved')
-        ? 'border-green-800/70 bg-green-950/30 text-green-300'
-        : 'border-red-900/70 bg-red-950/20 text-red-300'
+    const statusIsSuccess = rawStatus.startsWith('Saved')
+    const statusClass = statusIsSuccess
+        ? 'border-green-800/60 bg-green-950/30 text-green-300'
+        : 'border-red-900/60 bg-red-950/20 text-red-300'
 
     return (
-        <section className="rounded-2xl border border-green-900/70 bg-green-950/20 p-5 md:p-6">
-            <div className="flex flex-col gap-3 border-b border-green-900/70 pb-4">
-                <h2 className="text-xl text-green-200">Advanced JSON Editor</h2>
-                <p className="text-sm leading-6 text-green-500">
-                    Full-record editing for bulk changes. Save only after the
-                    structured editors are too limiting.
-                </p>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_260px]">
+            {/* Editor column */}
+            <div className="flex flex-col gap-2">
+                <label
+                    htmlFor="portfolio-json"
+                    className="text-[11px] font-medium uppercase tracking-[0.15em] text-green-600"
+                >
+                    Portfolio JSON
+                </label>
+                <textarea
+                    id="portfolio-json"
+                    name="portfolioJson"
+                    autoComplete="off"
+                    value={value}
+                    onChange={(event) => setValue(event.target.value)}
+                    className="h-[50vh] min-h-75 w-full rounded-xl border border-green-900/70 bg-black/70 p-4 font-mono text-sm text-green-100 outline-none transition focus:border-green-500 focus:bg-black sm:h-[55vh]"
+                    spellCheck={false}
+                />
             </div>
 
-            <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-                <div className="flex flex-col gap-2">
-                    <label
-                        htmlFor="portfolio-json"
-                        className="text-sm font-medium text-green-300"
-                    >
-                        Portfolio JSON
-                    </label>
-                    <textarea
-                        id="portfolio-json"
-                        name="portfolioJson"
-                        autoComplete="off"
-                        value={value}
-                        onChange={(event) => setValue(event.target.value)}
-                        className="h-[50vh] min-h-75 w-full rounded-2xl border border-green-900 bg-black/80 p-4 text-sm outline-none transition focus:border-green-500 sm:h-[55vh]"
-                        spellCheck={false}
-                    />
+            {/* Sidebar column */}
+            <aside className="flex flex-col gap-4 rounded-xl border border-amber-900/40 bg-black/30 p-4 lg:max-h-[calc(55vh+32px)] lg:self-start lg:overflow-y-auto">
+                <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-600">
+                        Safe use
+                    </p>
+                    <ul className="mt-3 space-y-2 text-[11px] leading-5 text-green-600">
+                        <li>Keep the JSON structure intact.</li>
+                        <li>Use arrays for repeated text values.</li>
+                        <li>Skill icons stay in label|icon format.</li>
+                    </ul>
                 </div>
 
-                <aside className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4 lg:max-h-[calc(50vh+44px)] lg:overflow-y-auto lg:sm:h-[55vh]">
-                    <div>
-                        <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
-                            Safe Use
-                        </h3>
-                        <ul className="mt-3 space-y-2 text-xs leading-5 text-green-600">
-                            <li>Keep the JSON structure intact.</li>
-                            <li>Use arrays for repeated text values.</li>
-                            <li>Skill icons stay in label|icon format.</li>
-                        </ul>
-                    </div>
+                <div className="border-t border-amber-900/30 pt-4">
+                    <p className="text-[11px] text-amber-700/80">
+                        Only use this editor when the structured forms above are
+                        too limiting.
+                    </p>
+                </div>
 
-                    {rawStatus ? (
-                        <p
-                            className={`rounded-lg border px-3 py-2 text-sm ${statusClass}`}
-                        >
-                            {rawStatus}
-                        </p>
-                    ) : null}
-
-                    <button
-                        type="button"
-                        onClick={save}
-                        disabled={isSaving}
-                        className="flex items-center justify-center gap-2 w-full rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
+                {rawStatus ? (
+                    <p
+                        className={`rounded-lg border px-3 py-2 text-sm ${statusClass}`}
                     >
-                        {isSaving ? <LoadingSpinner /> : <CheckIcon />}
-                        {isSaving ? 'Saving...' : 'Save JSON'}
-                    </button>
-                </aside>
-            </div>
+                        {rawStatus}
+                    </p>
+                ) : null}
+
+                <button
+                    type="button"
+                    onClick={save}
+                    disabled={isSaving}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-700 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-600 disabled:opacity-60"
+                >
+                    {isSaving ? <LoadingSpinner /> : <CheckIcon />}
+                    {isSaving ? 'Saving…' : 'Save JSON'}
+                </button>
+            </aside>
 
             {rawIssues.length > 0 ? (
-                <div className="mt-4 rounded-2xl border border-red-900/70 bg-red-950/20 p-4">
-                    <p className="text-sm text-red-300 mb-2">
+                <div className="rounded-xl border border-red-900/60 bg-red-950/20 p-4 lg:col-span-2">
+                    <p className="mb-2 text-sm text-red-300">
                         Validation issues:
                     </p>
-                    <ul className="text-xs text-red-300 space-y-1 max-h-48 overflow-auto">
+                    <ul className="max-h-48 space-y-1 overflow-auto text-xs text-red-300">
                         {rawIssues.map((issue) => (
                             <li key={issue}>{issue}</li>
                         ))}
                     </ul>
                 </div>
             ) : null}
-        </section>
+        </div>
     )
 }

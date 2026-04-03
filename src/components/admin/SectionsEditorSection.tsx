@@ -136,22 +136,23 @@ export function SectionsEditorSection({
     const [learningOpen, setLearningOpen] = useState(true)
 
     const panelClass =
-        'space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4'
+        'rounded-xl border border-green-900/50 bg-black/25 overflow-hidden'
     const itemCardClass =
-        'space-y-3 rounded-2xl border border-green-900/60 bg-black/45 p-4'
+        'space-y-3 rounded-xl border border-green-900/40 bg-black/40 p-4'
     const inputClass =
-        'w-full rounded-xl border border-green-900 bg-black/70 px-3 py-2 text-sm outline-none transition focus:border-green-500'
-    const textareaClass = `${inputClass} min-h-[112px]`
-    const fieldLabelClass = 'mb-1 block text-xs text-green-300'
-    const actionButtonClass =
-        'rounded-lg border border-green-800 px-2.5 py-1.5 text-xs transition hover:bg-green-900/30 disabled:opacity-40'
-    const destructiveButtonClass =
-        'rounded-lg border border-red-900 px-2.5 py-1.5 text-xs text-red-300 transition hover:bg-red-950/30'
+        'w-full rounded-lg border border-green-900/70 bg-black/60 px-3 py-2 text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
+    const textareaClass = `${inputClass} min-h-[100px] resize-y`
+    const fieldLabelClass =
+        'mb-1 block text-[11px] font-medium uppercase tracking-[0.15em] text-green-600'
+    const iconButtonClass =
+        'flex h-7 w-7 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30 disabled:opacity-30'
+    const destructiveIconButtonClass =
+        'flex h-7 w-7 items-center justify-center rounded-lg border border-red-900/60 text-red-400 transition hover:bg-red-950/30'
     const addButtonClass =
-        'rounded-xl border border-green-700 px-3 py-2 text-xs uppercase tracking-[0.2em] text-green-300 transition hover:bg-green-900/30'
+        'flex items-center gap-1.5 rounded-lg border border-green-700/70 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-green-400 transition hover:bg-green-900/30'
     const statusClass = sectionsStatus.startsWith('Section changes saved')
-        ? 'border-green-800/70 bg-green-950/30 text-green-300'
-        : 'border-red-900/70 bg-red-950/20 text-red-300'
+        ? 'border-green-800/60 bg-green-950/30 text-green-300'
+        : 'border-red-900/60 bg-red-950/20 text-red-300'
 
     const updateLearningField = (
         field: keyof SectionsFormValues['learning'],
@@ -167,23 +168,17 @@ export function SectionsEditorSection({
     }
 
     return (
-        <section className="rounded-2xl border border-green-900/70 bg-green-950/20 p-5 md:p-6">
-            <div className="flex flex-col gap-3 border-b border-green-900/70 pb-4">
-                <h2 className="text-xl text-green-200">Sections Editor</h2>
-                <p className="text-sm leading-6 text-green-500">
-                    Reorder structured sections, add new items, and validate the
-                    content model before publishing.
-                </p>
-            </div>
-
-            <div className="mt-6 space-y-5">
+        <div className="space-y-4">
+            <div className="space-y-4">
                 <div className={panelClass}>
-                    <div className="flex items-center justify-between">
+                    {/* Experience header */}
+                    <div className="flex items-center justify-between border-b border-green-900/40 px-4 py-3">
                         <div>
-                            <h3 className="text-green-300">Experience</h3>
-                            <p className="text-xs text-green-700">
-                                One card per role. Bullet points stay one per
-                                line.
+                            <p className="text-sm font-medium text-green-300">
+                                Experience
+                            </p>
+                            <p className="text-[11px] text-green-700">
+                                One card per role · bullet points one per line
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -198,7 +193,7 @@ export function SectionsEditorSection({
                                         ? 'Collapse experience section'
                                         : 'Expand experience section'
                                 }
-                                className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30"
                             >
                                 <ToggleArrowIcon open={experienceOpen} />
                             </button>
@@ -219,10 +214,10 @@ export function SectionsEditorSection({
                                         ],
                                     }))
                                 }
-                                className={`${addButtonClass} flex items-center justify-center gap-2`}
+                                className={addButtonClass}
                             >
                                 <PlusIcon />
-                                Add Experience
+                                Add
                             </button>
                         </div>
                     </div>
@@ -231,11 +226,13 @@ export function SectionsEditorSection({
                         ? sectionsDraft.experience.map((item, index) => (
                               <div
                                   key={`exp-${index}`}
-                                  className={itemCardClass}
+                                  className={`${itemCardClass} mx-4 mb-3`}
                               >
-                                  <div className="flex items-center justify-between text-xs text-green-500">
-                                      <span>Item {index + 1}</span>
-                                      <div className="flex gap-2">
+                                  <div className="flex items-center justify-between">
+                                      <span className="rounded-full border border-green-900/60 bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-wider text-green-600">
+                                          #{index + 1}
+                                      </span>
+                                      <div className="flex gap-1.5">
                                           <button
                                               type="button"
                                               disabled={index === 0}
@@ -251,7 +248,7 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={`${actionButtonClass} flex items-center justify-center`}
+                                              className={iconButtonClass}
                                           >
                                               <ArrowUpIcon />
                                           </button>
@@ -275,7 +272,7 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={actionButtonClass}
+                                              className={iconButtonClass}
                                           >
                                               <ArrowDownIcon />
                                           </button>
@@ -297,7 +294,9 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={destructiveButtonClass}
+                                              className={
+                                                  destructiveIconButtonClass
+                                              }
                                           >
                                               <TrashIcon />
                                           </button>
@@ -428,11 +427,14 @@ export function SectionsEditorSection({
                 </div>
 
                 <div className={panelClass}>
-                    <div className="flex items-center justify-between">
+                    {/* Education header */}
+                    <div className="flex items-center justify-between border-b border-green-900/40 px-4 py-3">
                         <div>
-                            <h3 className="text-green-300">Education</h3>
-                            <p className="text-xs text-green-700">
-                                Degrees, schools, and supporting context.
+                            <p className="text-sm font-medium text-green-300">
+                                Education
+                            </p>
+                            <p className="text-[11px] text-green-700">
+                                Degrees, schools, and supporting context
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -447,7 +449,7 @@ export function SectionsEditorSection({
                                         ? 'Collapse education section'
                                         : 'Expand education section'
                                 }
-                                className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30"
                             >
                                 <ToggleArrowIcon open={educationOpen} />
                             </button>
@@ -468,10 +470,10 @@ export function SectionsEditorSection({
                                         ],
                                     }))
                                 }
-                                className={`${addButtonClass} flex items-center justify-center gap-2`}
+                                className={addButtonClass}
                             >
                                 <PlusIcon />
-                                Add Education
+                                Add
                             </button>
                         </div>
                     </div>
@@ -480,11 +482,13 @@ export function SectionsEditorSection({
                         ? sectionsDraft.education.map((item, index) => (
                               <div
                                   key={`edu-${index}`}
-                                  className={itemCardClass}
+                                  className={`${itemCardClass} mx-4 mb-3`}
                               >
-                                  <div className="flex items-center justify-between text-xs text-green-500">
-                                      <span>Item {index + 1}</span>
-                                      <div className="flex gap-2">
+                                  <div className="flex items-center justify-between">
+                                      <span className="rounded-full border border-green-900/60 bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-wider text-green-600">
+                                          #{index + 1}
+                                      </span>
+                                      <div className="flex gap-1.5">
                                           <button
                                               type="button"
                                               disabled={index === 0}
@@ -500,7 +504,7 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={actionButtonClass}
+                                              className={iconButtonClass}
                                           >
                                               <ArrowUpIcon />
                                           </button>
@@ -524,7 +528,7 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={actionButtonClass}
+                                              className={iconButtonClass}
                                           >
                                               <ArrowDownIcon />
                                           </button>
@@ -546,7 +550,9 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={destructiveButtonClass}
+                                              className={
+                                                  destructiveIconButtonClass
+                                              }
                                           >
                                               <TrashIcon />
                                           </button>
@@ -677,12 +683,14 @@ export function SectionsEditorSection({
                 </div>
 
                 <div className={panelClass}>
-                    <div className="flex items-center justify-between">
+                    {/* Skills header */}
+                    <div className="flex items-center justify-between border-b border-green-900/40 px-4 py-3">
                         <div>
-                            <h3 className="text-green-300">Skill Categories</h3>
-                            <p className="text-xs text-green-700">
-                                Use one skill per line, optionally with
-                                label|icon.
+                            <p className="text-sm font-medium text-green-300">
+                                Skill Categories
+                            </p>
+                            <p className="text-[11px] text-green-700">
+                                One skill per line · optionally label|icon
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -695,7 +703,7 @@ export function SectionsEditorSection({
                                         ? 'Collapse skills section'
                                         : 'Expand skills section'
                                 }
-                                className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30"
                             >
                                 <ToggleArrowIcon open={skillsOpen} />
                             </button>
@@ -714,10 +722,10 @@ export function SectionsEditorSection({
                                         ],
                                     }))
                                 }
-                                className={`${addButtonClass} flex items-center justify-center gap-2`}
+                                className={addButtonClass}
                             >
                                 <PlusIcon />
-                                Add Category
+                                Add
                             </button>
                         </div>
                     </div>
@@ -726,11 +734,13 @@ export function SectionsEditorSection({
                         ? sectionsDraft.skillCategories.map((item, index) => (
                               <div
                                   key={`skills-${index}`}
-                                  className={itemCardClass}
+                                  className={`${itemCardClass} mx-4 mb-3`}
                               >
-                                  <div className="flex items-center justify-between text-xs text-green-500">
-                                      <span>Category {index + 1}</span>
-                                      <div className="flex gap-2">
+                                  <div className="flex items-center justify-between">
+                                      <span className="rounded-full border border-green-900/60 bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-wider text-green-600">
+                                          #{index + 1}
+                                      </span>
+                                      <div className="flex gap-1.5">
                                           <button
                                               type="button"
                                               disabled={index === 0}
@@ -747,7 +757,7 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={actionButtonClass}
+                                              className={iconButtonClass}
                                           >
                                               <ArrowUpIcon />
                                           </button>
@@ -772,7 +782,7 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={actionButtonClass}
+                                              className={iconButtonClass}
                                           >
                                               <ArrowDownIcon />
                                           </button>
@@ -794,7 +804,9 @@ export function SectionsEditorSection({
                                                       })
                                                   )
                                               }
-                                              className={destructiveButtonClass}
+                                              className={
+                                                  destructiveIconButtonClass
+                                              }
                                           >
                                               <TrashIcon />
                                           </button>
@@ -877,12 +889,15 @@ export function SectionsEditorSection({
                 </div>
 
                 <div className={panelClass}>
-                    <div className="flex items-center justify-between">
+                    {/* Learning header */}
+                    <div className="flex items-center justify-between border-b border-green-900/40 px-4 py-3">
                         <div>
-                            <h3 className="text-green-300">Learning</h3>
-                            <p className="text-xs text-green-700">
+                            <p className="text-sm font-medium text-green-300">
+                                Learning
+                            </p>
+                            <p className="text-[11px] text-green-700">
                                 Copy and media fields for the learning section
-                                embeds.
+                                embeds
                             </p>
                         </div>
                         <button
@@ -894,14 +909,14 @@ export function SectionsEditorSection({
                                     ? 'Collapse learning section'
                                     : 'Expand learning section'
                             }
-                            className="rounded-xl border border-green-800 p-2 text-green-300 transition hover:bg-green-900/30"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30"
                         >
                             <ToggleArrowIcon open={learningOpen} />
                         </button>
                     </div>
 
                     {learningOpen ? (
-                        <>
+                        <div className="space-y-4 p-4">
                             <div>
                                 <label
                                     htmlFor="learning-heading"
@@ -1093,47 +1108,48 @@ export function SectionsEditorSection({
                                 />
                                 Duolingo image unoptimized
                             </label>
-                        </>
+                        </div>
                     ) : null}
                 </div>
-
-                <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-green-900/60 bg-black/25 p-4 md:flex-row md:items-center md:justify-between">
-                    <div className="space-y-1">
-                        <p className="text-sm text-green-300">
-                            Section changes keep list order and overwrite the
-                            live portfolio record.
-                        </p>
-                        {sectionsStatus ? (
-                            <p
-                                className={`rounded-lg border px-3 py-2 text-sm ${statusClass}`}
-                            >
-                                {sectionsStatus}
-                            </p>
-                        ) : null}
-                    </div>
-                    <button
-                        type="button"
-                        onClick={saveSections}
-                        disabled={isSavingSections}
-                        className="rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
-                    >
-                        {isSavingSections ? 'Saving...' : 'Save Sections Form'}
-                    </button>
-                </div>
-
-                {sectionIssues.length > 0 ? (
-                    <div className="border border-red-900/70 bg-red-950/20 rounded p-3">
-                        <p className="text-sm text-red-300 mb-2">
-                            Section validation issues:
-                        </p>
-                        <ul className="text-xs text-red-300 space-y-1 max-h-48 overflow-auto">
-                            {sectionIssues.map((issue) => (
-                                <li key={issue}>{issue}</li>
-                            ))}
-                        </ul>
-                    </div>
-                ) : null}
             </div>
-        </section>
+
+            {/* Save bar */}
+            <div className="flex flex-col gap-3 rounded-xl border border-green-900/50 bg-black/30 p-4 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0 flex-1">
+                    <p className="text-xs text-green-600">
+                        Section changes keep list order and overwrite the live
+                        portfolio record.
+                    </p>
+                    {sectionsStatus ? (
+                        <p
+                            className={`mt-2 rounded-lg border px-3 py-2 text-sm ${statusClass}`}
+                        >
+                            {sectionsStatus}
+                        </p>
+                    ) : null}
+                </div>
+                <button
+                    type="button"
+                    onClick={saveSections}
+                    disabled={isSavingSections}
+                    className="shrink-0 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60 md:ml-4"
+                >
+                    {isSavingSections ? 'Saving…' : 'Save Sections'}
+                </button>
+            </div>
+
+            {sectionIssues.length > 0 ? (
+                <div className="rounded-xl border border-red-900/60 bg-red-950/20 p-4">
+                    <p className="mb-2 text-sm text-red-300">
+                        Validation issues:
+                    </p>
+                    <ul className="max-h-48 space-y-1 overflow-auto text-xs text-red-300">
+                        {sectionIssues.map((issue) => (
+                            <li key={issue}>{issue}</li>
+                        ))}
+                    </ul>
+                </div>
+            ) : null}
+        </div>
     )
 }

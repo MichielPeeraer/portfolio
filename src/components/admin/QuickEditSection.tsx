@@ -57,6 +57,46 @@ function CheckIcon() {
     )
 }
 
+interface FieldProps {
+    label: string
+    error?: string
+    children: React.ReactNode
+}
+
+function Field({ label, error, children }: FieldProps) {
+    return (
+        <div className="flex flex-col gap-1">
+            <label className="text-xs font-medium uppercase tracking-[0.15em] text-green-600">
+                {label}
+            </label>
+            {children}
+            {error ? <p className="text-[11px] text-red-400">{error}</p> : null}
+        </div>
+    )
+}
+
+interface FieldGroupProps {
+    title: string
+    description: string
+    children: React.ReactNode
+}
+
+function FieldGroup({ title, description, children }: FieldGroupProps) {
+    return (
+        <div className="rounded-xl border border-green-900/50 bg-black/30">
+            <div className="border-b border-green-900/40 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-green-500">
+                    {title}
+                </p>
+                <p className="mt-0.5 text-[11px] text-green-700">
+                    {description}
+                </p>
+            </div>
+            <div className="space-y-4 p-4">{children}</div>
+        </div>
+    )
+}
+
 export function QuickEditSection({
     register,
     errors,
@@ -66,350 +106,215 @@ export function QuickEditSection({
     onSubmit,
 }: QuickEditSectionProps) {
     const inputClass =
-        'w-full rounded-xl border border-green-900 bg-black/70 px-3 py-2.5 text-sm outline-none transition focus:border-green-500'
-    const textareaClass = `${inputClass} min-h-[120px]`
-    const helperClass = 'text-xs leading-5 text-green-700'
-    const statusClass = formStatus.startsWith('Saved')
-        ? 'border-green-800/70 bg-green-950/30 text-green-300'
-        : 'border-red-900/70 bg-red-950/20 text-red-300'
+        'w-full rounded-lg border border-green-900/70 bg-black/60 px-3 py-2 text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
+    const textareaClass = `${inputClass} min-h-[100px] resize-y`
+    const statusIsSuccess = formStatus.startsWith('Saved')
+    const statusClass = statusIsSuccess
+        ? 'border-green-800/60 bg-green-950/30 text-green-300'
+        : 'border-red-900/60 bg-red-950/20 text-red-300'
 
     return (
-        <section className="rounded-2xl border border-green-900/70 bg-green-950/20 p-5 md:p-6">
-            <div className="flex flex-col gap-3 border-b border-green-900/70 pb-4">
-                <h2 className="text-xl text-green-200">Quick Edit</h2>
-                <p className="text-sm leading-6 text-green-500">
-                    Fast updates for identity, contact details, and homepage
-                    copy blocks.
-                </p>
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Two-column identity + contact row */}
+            <div className="grid gap-4 lg:grid-cols-2">
+                <FieldGroup
+                    title="Identity"
+                    description="Core hero text and personal summary"
+                >
+                    <Field label="Name" error={errors.name?.message}>
+                        <input
+                            id="name"
+                            {...register('name')}
+                            autoComplete="name"
+                            placeholder="Your full name"
+                            className={inputClass}
+                        />
+                    </Field>
+                    <Field label="Title" error={errors.title?.message}>
+                        <input
+                            id="title"
+                            {...register('title')}
+                            autoComplete="organization-title"
+                            placeholder="e.g. Full-Stack Developer"
+                            className={inputClass}
+                        />
+                    </Field>
+                    <Field label="About" error={errors.about?.message}>
+                        <textarea
+                            id="about"
+                            {...register('about')}
+                            autoComplete="off"
+                            rows={6}
+                            placeholder="Short bio shown in the about section"
+                            className={textareaClass}
+                        />
+                    </Field>
+                </FieldGroup>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <section className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
-                        <div>
-                            <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
-                                Identity
-                            </h3>
-                            <p className={helperClass}>
-                                Core hero text and personal summary.
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="name"
-                                className="mb-1 block text-sm"
+                <div className="space-y-4">
+                    <FieldGroup
+                        title="Contact & Availability"
+                        description="Public contact details and CV link"
+                    >
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                            <Field
+                                label="Email"
+                                error={errors.contactEmail?.message}
                             >
-                                Name
-                            </label>
-                            <input
-                                id="name"
-                                {...register('name')}
-                                autoComplete="name"
-                                className={inputClass}
-                            />
-                            {errors.name ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.name.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="title"
-                                className="mb-1 block text-sm"
+                                <input
+                                    id="contactEmail"
+                                    {...register('contactEmail')}
+                                    autoComplete="email"
+                                    placeholder="contact@example.com"
+                                    className={inputClass}
+                                />
+                            </Field>
+                            <Field
+                                label="Phone"
+                                error={errors.contactPhone?.message}
                             >
-                                Title
-                            </label>
-                            <input
-                                id="title"
-                                {...register('title')}
-                                autoComplete="organization-title"
-                                className={inputClass}
-                            />
-                            {errors.title ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.title.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="about"
-                                className="mb-1 block text-sm"
+                                <input
+                                    id="contactPhone"
+                                    {...register('contactPhone')}
+                                    autoComplete="tel"
+                                    placeholder="+32 ..."
+                                    className={inputClass}
+                                />
+                            </Field>
+                            <Field
+                                label="GitHub URL"
+                                error={errors.githubUrl?.message}
                             >
-                                About
-                            </label>
-                            <textarea
-                                id="about"
-                                {...register('about')}
-                                autoComplete="off"
-                                rows={6}
-                                className={textareaClass}
-                            />
-                            {errors.about ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.about.message}
-                                </p>
-                            ) : null}
-                        </div>
-                    </section>
-
-                    <section className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
-                        <div>
-                            <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
-                                Contact And Availability
-                            </h3>
-                            <p className={helperClass}>
-                                Public contact details and CV availability.
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="contactEmail"
-                                className="mb-1 block text-sm"
+                                <input
+                                    id="githubUrl"
+                                    {...register('githubUrl')}
+                                    autoComplete="url"
+                                    placeholder="https://github.com/..."
+                                    className={inputClass}
+                                />
+                            </Field>
+                            <Field
+                                label="LinkedIn URL"
+                                error={errors.linkedinUrl?.message}
                             >
-                                Contact Email
-                            </label>
-                            <input
-                                id="contactEmail"
-                                {...register('contactEmail')}
-                                autoComplete="email"
-                                className={inputClass}
-                            />
-                            {errors.contactEmail ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.contactEmail.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="contactPhone"
-                                className="mb-1 block text-sm"
+                                <input
+                                    id="linkedinUrl"
+                                    {...register('linkedinUrl')}
+                                    autoComplete="url"
+                                    placeholder="https://linkedin.com/in/..."
+                                    className={inputClass}
+                                />
+                            </Field>
+                            <Field
+                                label="CV Path"
+                                error={errors.cvPath?.message}
                             >
-                                Contact Phone
-                            </label>
-                            <input
-                                id="contactPhone"
-                                {...register('contactPhone')}
-                                autoComplete="tel"
-                                className={inputClass}
-                            />
-                            {errors.contactPhone ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.contactPhone.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div className="pt-2">
-                            <h4 className="text-xs uppercase tracking-[0.16em] text-green-500">
-                                Social Links
-                            </h4>
-                            <p className="mt-1 text-xs text-green-700">
-                                Edit only GitHub and LinkedIn URLs.
-                            </p>
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="githubUrl"
-                                className="mb-1 block text-sm"
+                                <input
+                                    id="cvPath"
+                                    {...register('cvPath')}
+                                    autoComplete="off"
+                                    placeholder="/CV_Name.pdf"
+                                    className={inputClass}
+                                />
+                            </Field>
+                            <Field
+                                label="Open-to-work label"
+                                error={errors.openToWorkLabel?.message}
                             >
-                                GitHub URL
-                            </label>
-                            <input
-                                id="githubUrl"
-                                {...register('githubUrl')}
-                                autoComplete="url"
-                                className={inputClass}
-                            />
-                            {errors.githubUrl ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.githubUrl.message}
-                                </p>
-                            ) : null}
+                                <input
+                                    id="openToWorkLabel"
+                                    {...register('openToWorkLabel')}
+                                    autoComplete="off"
+                                    placeholder="Open to opportunities"
+                                    className={inputClass}
+                                />
+                            </Field>
                         </div>
-
-                        <div>
-                            <label
-                                htmlFor="linkedinUrl"
-                                className="mb-1 block text-sm"
-                            >
-                                LinkedIn URL
-                            </label>
-                            <input
-                                id="linkedinUrl"
-                                {...register('linkedinUrl')}
-                                autoComplete="url"
-                                className={inputClass}
-                            />
-                            {errors.linkedinUrl ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.linkedinUrl.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="openToWorkLabel"
-                                className="mb-1 block text-sm"
-                            >
-                                Open To Work Label
-                            </label>
-                            <input
-                                id="openToWorkLabel"
-                                {...register('openToWorkLabel')}
-                                autoComplete="off"
-                                className={inputClass}
-                            />
-                            {errors.openToWorkLabel ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.openToWorkLabel.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="cvPath"
-                                className="mb-1 block text-sm"
-                            >
-                                CV Path
-                            </label>
-                            <input
-                                id="cvPath"
-                                {...register('cvPath')}
-                                autoComplete="off"
-                                className={inputClass}
-                            />
-                            {errors.cvPath ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.cvPath.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <label className="flex items-center gap-2 rounded-xl border border-green-900/60 bg-black/30 px-3 py-3 text-sm text-green-300">
+                        <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-green-900/50 bg-black/30 px-3 py-2.5 text-sm text-green-300 transition hover:bg-green-950/20">
                             <input
                                 id="openToWork"
                                 type="checkbox"
                                 {...register('openToWork')}
                                 autoComplete="off"
-                                className="accent-green-500"
+                                className="h-4 w-4 accent-green-500"
                             />
-                            Open to work badge visible
+                            <span>Show open-to-work badge on portfolio</span>
                         </label>
-                    </section>
+                    </FieldGroup>
                 </div>
+            </div>
 
-                <section className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
-                    <div>
-                        <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
-                            Repeating Content
-                        </h3>
-                        <p className={helperClass}>
-                            One item per line. These lists drive the hero and
-                            SEO text blocks.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        <div>
-                            <label
-                                htmlFor="heroTypedLinesText"
-                                className="mb-1 block text-sm"
-                            >
-                                Hero Typed Lines
-                            </label>
-                            <textarea
-                                id="heroTypedLinesText"
-                                {...register('heroTypedLinesText')}
-                                autoComplete="off"
-                                rows={8}
-                                className={textareaClass}
-                            />
-                            {errors.heroTypedLinesText ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.heroTypedLinesText.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="ogTechPillsText"
-                                className="mb-1 block text-sm"
-                            >
-                                OG Tech Pills
-                            </label>
-                            <textarea
-                                id="ogTechPillsText"
-                                {...register('ogTechPillsText')}
-                                autoComplete="off"
-                                rows={8}
-                                className={textareaClass}
-                            />
-                            {errors.ogTechPillsText ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.ogTechPillsText.message}
-                                </p>
-                            ) : null}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="devPracticesText"
-                                className="mb-1 block text-sm"
-                            >
-                                Dev Practices
-                            </label>
-                            <textarea
-                                id="devPracticesText"
-                                {...register('devPracticesText')}
-                                autoComplete="off"
-                                rows={8}
-                                className={textareaClass}
-                            />
-                            {errors.devPracticesText ? (
-                                <p className="mt-1 text-xs text-red-400">
-                                    {errors.devPracticesText.message}
-                                </p>
-                            ) : null}
-                        </div>
-                    </div>
-                </section>
-
-                <div className="flex flex-col gap-3 rounded-2xl border border-green-900/60 bg-black/25 p-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="min-w-0 flex-1 space-y-1">
-                        <p className="text-sm text-green-300">
-                            Quick changes save directly to the live portfolio.
-                        </p>
-                        {formStatus ? (
-                            <p
-                                className={`rounded-lg border px-3 py-2 text-sm ${statusClass}`}
-                            >
-                                {formStatus}
-                            </p>
-                        ) : null}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="flex items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60 sm:ml-3"
+            {/* Repeating content row */}
+            <FieldGroup
+                title="Repeating Content"
+                description="One value per line — drives typewriter, OG image, and about section"
+            >
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <Field
+                        label="Hero typed lines"
+                        error={errors.heroTypedLinesText?.message}
                     >
-                        {isSubmitting ? <LoadingSpinner /> : <CheckIcon />}
-                        {isSubmitting ? 'Saving...' : 'Save Quick Form'}
-                    </button>
+                        <textarea
+                            id="heroTypedLinesText"
+                            {...register('heroTypedLinesText')}
+                            autoComplete="off"
+                            rows={8}
+                            placeholder="One line per entry"
+                            className={textareaClass}
+                        />
+                    </Field>
+                    <Field
+                        label="OG tech pills"
+                        error={errors.ogTechPillsText?.message}
+                    >
+                        <textarea
+                            id="ogTechPillsText"
+                            {...register('ogTechPillsText')}
+                            autoComplete="off"
+                            rows={8}
+                            placeholder="One pill per line"
+                            className={textareaClass}
+                        />
+                    </Field>
+                    <Field
+                        label="Dev practices"
+                        error={errors.devPracticesText?.message}
+                    >
+                        <textarea
+                            id="devPracticesText"
+                            {...register('devPracticesText')}
+                            autoComplete="off"
+                            rows={8}
+                            placeholder="One practice per line"
+                            className={textareaClass}
+                        />
+                    </Field>
                 </div>
-            </form>
-        </section>
+            </FieldGroup>
+
+            {/* Save bar */}
+            <div className="flex flex-col gap-3 rounded-xl border border-green-900/50 bg-black/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0 flex-1">
+                    <p className="text-xs text-green-600">
+                        Changes publish directly to the live portfolio.
+                    </p>
+                    {formStatus ? (
+                        <p
+                            className={`mt-2 rounded-lg border px-3 py-2 text-sm ${statusClass}`}
+                        >
+                            {formStatus}
+                        </p>
+                    ) : null}
+                </div>
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60 sm:ml-4"
+                >
+                    {isSubmitting ? <LoadingSpinner /> : <CheckIcon />}
+                    {isSubmitting ? 'Saving…' : 'Save Quick Form'}
+                </button>
+            </div>
+        </form>
     )
 }
