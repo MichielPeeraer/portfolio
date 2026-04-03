@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -19,28 +18,21 @@ async function main() {
     })
 
     const adminEmail = process.env.ADMIN_EMAIL
-    const adminPassword = process.env.ADMIN_PASSWORD
 
-    if (adminEmail && adminPassword) {
-        const passwordHash = await bcrypt.hash(adminPassword, 12)
-
+    if (adminEmail) {
         await prisma.user.upsert({
             where: { email: adminEmail },
             update: {
-                passwordHash,
                 role: 'admin',
             },
             create: {
                 email: adminEmail,
-                passwordHash,
                 role: 'admin',
                 name: 'Portfolio Admin',
             },
         })
     } else {
-        console.warn(
-            '[seed] ADMIN_EMAIL and ADMIN_PASSWORD are not set. Skipping admin bootstrap.'
-        )
+        console.warn('[seed] ADMIN_EMAIL is not set. Skipping admin bootstrap.')
     }
 }
 

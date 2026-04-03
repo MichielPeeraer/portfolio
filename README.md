@@ -49,7 +49,8 @@ DATABASE_URL=
 NEXTAUTH_URL=
 NEXTAUTH_SECRET=
 ADMIN_EMAIL=
-ADMIN_PASSWORD=
+GITHUB_ID=
+GITHUB_SECRET=
 SMTP_HOST=
 SMTP_PORT=
 SMTP_USER=
@@ -89,7 +90,15 @@ npm run db:migrate -- --name init_auth_and_portfolio
 npm run db:seed
 ```
 
-4. Start app and sign in at `/login` with `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+4. Configure a GitHub OAuth App and set callback URLs:
+
+```text
+http://localhost:3000/api/auth/callback/github
+https://<your-domain>/api/auth/callback/github
+```
+
+5. Start app and sign in at `/login` with GitHub.
+   Access is restricted to `ADMIN_EMAIL`.
 
 The public site reads portfolio data from DB and falls back to JSON if DB is unavailable.
 

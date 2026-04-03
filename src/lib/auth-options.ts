@@ -1,8 +1,9 @@
-import bcrypt from 'bcryptjs'
 import type { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import GithubProvider from 'next-auth/providers/github'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
+
+const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -13,49 +14,43 @@ export const authOptions: NextAuthOptions = {
         signIn: '/login',
     },
     providers: [
-        CredentialsProvider({
-            name: 'Credentials',
-            credentials: {
-                email: { label: 'Email', type: 'email' },
-                password: { label: 'Password', type: 'password' },
-            },
-            async authorize(credentials) {
-                const email = credentials?.email?.trim().toLowerCase()
-                const password = credentials?.password
-
-                if (!email || !password) {
-                    return null
-                }
-
-                const user = await prisma.user.findUnique({
-                    where: { email },
-                })
-
-                if (!user) {
-                    return null
-                }
-
-                const isValid = await bcrypt.compare(
-                    password,
-                    user.passwordHash
-                )
-                if (!isValid) {
-                    return null
-                }
-
-                return {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
-                    role: user.role,
-                }
-            },
+        GithubProvider({
+            clientId: process.env.GITHUB_ID ?? '',
+            clientSecret: process.env.GITHUB_SECRET ?? '',
         }),
     ],
     callbacks: {
+        async signIn({ user, account }) {
+            if (account?.provider !== 'github') {
+                return false
+            }
+
+            if (!adminEmail) {
+                return false
+            }
+
+            const email = user.email?.trim().toLowerCase()
+            return email === adminEmail
+        },
         async jwt({ token, user }) {
-            if (user && 'role' in user) {
-                token.role = (user.role as string | undefined) ?? 'admin'
+            const email = (user?.email ?? token.email)?.trim().toLowerCase()
+
+            if (!email) {
+                token.role = 'guest'
+                return token
+            }
+
+            const dbUser = await prisma.user.findUnique({
+                where: { email },
+                select: { role: true },
+            })
+
+            if (dbUser?.role) {
+                token.role = dbUser.role
+            } else if (adminEmail && email === adminEmail) {
+                token.role = 'admin'
+            } else {
+                token.role = 'guest'
             }
 
             return token
