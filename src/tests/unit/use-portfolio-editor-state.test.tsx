@@ -103,4 +103,50 @@ describe('usePortfolioEditorState', () => {
             'Section changes saved successfully.'
         )
     })
+
+    it('resyncs derived section state after a successful JSON save', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockResolvedValue({
+                ok: true,
+                json: async () => ({ success: true }),
+            })
+        )
+
+        const { result } = renderHook(() =>
+            usePortfolioEditorState(initialData)
+        )
+
+        const nextData = {
+            ...initialData,
+            experience: [
+                {
+                    period: '2027',
+                    title: 'Lead Engineer',
+                    company: 'Contoso',
+                    location: 'Ghent',
+                    points: ['Built admin tooling'],
+                },
+            ],
+        }
+
+        act(() => {
+            result.current.setValue(JSON.stringify(nextData, null, 2))
+        })
+
+        await act(async () => {
+            await result.current.saveJson()
+        })
+
+        expect(result.current.sectionsDraft.experience).toEqual([
+            {
+                period: '2027',
+                title: 'Lead Engineer',
+                company: 'Contoso',
+                location: 'Ghent',
+                pointsText: 'Built admin tooling',
+            },
+        ])
+        expect(result.current.rawStatus).toBe('Saved successfully.')
+    })
 })

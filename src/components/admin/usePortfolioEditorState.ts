@@ -5,12 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import {
     adminFormSchema,
+    buildAdminFormDefaults,
+    buildSectionsDraft,
     fromMultiline,
     getRawIssues,
     parseSkillLine,
     sectionsFormSchema,
-    skillItemToLine,
-    toMultiline,
     type AdminFormValues,
     type SectionsFormValues,
 } from '@/components/admin/editorSchemas'
@@ -22,69 +22,33 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         useState<PortfolioData>(initialData)
     const [value, setValue] = useState(JSON.stringify(initialData, null, 2))
     const [isSaving, setIsSaving] = useState(false)
+    const [isSavingSections, setIsSavingSections] = useState(false)
     const [formStatus, setFormStatus] = useState('')
     const [rawStatus, setRawStatus] = useState('')
     const [rawIssues, setRawIssues] = useState<string[]>([])
     const [sectionsStatus, setSectionsStatus] = useState('')
     const [sectionIssues, setSectionIssues] = useState<string[]>([])
 
-    const [sectionsDraft, setSectionsDraft] = useState<SectionsFormValues>({
-        experience: initialData.experience.map((item) => ({
-            period: item.period,
-            title: item.title,
-            company: item.company,
-            location: item.location,
-            pointsText: item.points.join('\n'),
-        })),
-        education: initialData.education.map((item) => ({
-            degree: item.degree,
-            institution: item.institution,
-            location: item.location,
-            year: item.year,
-            details: item.details,
-        })),
-        skillCategories: initialData.skillCategories.map((category) => ({
-            label: category.label,
-            wide: Boolean(category.wide),
-            skillsText: category.skills.map(skillItemToLine).join('\n'),
-        })),
-        learning: {
-            heading: initialData.learning.heading,
-            description: initialData.learning.description,
-            languagesText: initialData.learning.languages.join('\n'),
-            bootDevSrc: initialData.learning.bootDevEmbed.src,
-            bootDevAlt: initialData.learning.bootDevEmbed.alt,
-            duolingoSrc: initialData.learning.duolingoEmbed.src,
-            duolingoAlt: initialData.learning.duolingoEmbed.alt,
-            duolingoUnoptimized: Boolean(
-                initialData.learning.duolingoEmbed.unoptimized
-            ),
-        },
-    })
+    const [sectionsDraft, setSectionsDraft] = useState<SectionsFormValues>(
+        buildSectionsDraft(initialData)
+    )
 
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors, isSubmitting },
     } = useForm<AdminFormValues>({
         resolver: zodResolver(adminFormSchema),
-        defaultValues: {
-            name: initialData.personal.name,
-            title: initialData.personal.title,
-            about: initialData.personal.about,
-            openToWork: Boolean(initialData.personal.openToWork),
-            openToWorkLabel:
-                initialData.personal.openToWorkLabel ?? 'Open to opportunities',
-            cvPath: initialData.personal.cvPath ?? '/CV_Michiel_Peeraer.pdf',
-            contactEmail: initialData.personal.contact.email,
-            contactPhone: initialData.personal.contact.phone,
-            heroTypedLinesText: toMultiline(
-                initialData.personal.heroTypedLines
-            ),
-            ogTechPillsText: toMultiline(initialData.personal.ogTechPills),
-            devPracticesText: toMultiline(initialData.devPractices),
-        },
+        defaultValues: buildAdminFormDefaults(initialData),
     })
+
+    const syncEditorState = (nextData: PortfolioData) => {
+        setPortfolioData(nextData)
+        setValue(JSON.stringify(nextData, null, 2))
+        setSectionsDraft(buildSectionsDraft(nextData))
+        reset(buildAdminFormDefaults(nextData))
+    }
 
     const persist = async (payload: PortfolioData) => {
         const response = await fetch('/api/admin/portfolio', {
@@ -138,14 +102,30 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        const { response, result } = await persist(parsed.data as PortfolioData)
+        let response: Response
+        let result: {
+            error?: string
+            issues?: Array<{
+                path?: Array<string | number>
+                message?: string
+            }>
+        } | null
+
+        try {
+            ;({ response, result } = await persist(
+                parsed.data as PortfolioData
+            ))
+        } catch {
+            setFormStatus('Failed to save changes.')
+            return
+        }
+
         if (!response.ok) {
             setFormStatus(result?.error ?? 'Failed to save changes.')
             return
         }
 
-        setPortfolioData(parsed.data as PortfolioData)
-        setValue(JSON.stringify(parsed.data, null, 2))
+        syncEditorState(parsed.data as PortfolioData)
         setFormStatus('Saved successfully.')
     }
 
@@ -174,9 +154,24 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        const { response, result } = await persist(
-            validated.data as PortfolioData
-        )
+        let response: Response
+        let result: {
+            error?: string
+            issues?: Array<{
+                path?: Array<string | number>
+                message?: string
+            }>
+        } | null
+
+        try {
+            ;({ response, result } = await persist(
+                validated.data as PortfolioData
+            ))
+        } catch {
+            setRawStatus('Failed to save changes.')
+            setIsSaving(false)
+            return
+        }
 
         if (!response.ok) {
             const serverIssues =
@@ -194,7 +189,8 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        setPortfolioData(validated.data as PortfolioData)
+        syncEditorState(validated.data as PortfolioData)
+        setRawIssues([])
         setRawStatus('Saved successfully.')
         setIsSaving(false)
     }
@@ -250,6 +246,8 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             )
             return
         }
+
+        setIsSavingSections(true)
 
         const experience = parsedSections.data.experience.map((item) => ({
             period: item.period.trim(),
@@ -308,9 +306,24 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        const { response, result } = await persist(
-            parsedPortfolio.data as PortfolioData
-        )
+        let response: Response
+        let result: {
+            error?: string
+            issues?: Array<{
+                path?: Array<string | number>
+                message?: string
+            }>
+        } | null
+
+        try {
+            ;({ response, result } = await persist(
+                parsedPortfolio.data as PortfolioData
+            ))
+        } catch {
+            setSectionsStatus('Failed to save section changes.')
+            setIsSavingSections(false)
+            return
+        }
 
         if (!response.ok) {
             const serverIssues =
@@ -326,12 +339,13 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             setSectionsStatus(
                 result?.error ?? 'Failed to save section changes.'
             )
+            setIsSavingSections(false)
             return
         }
 
-        setPortfolioData(parsedPortfolio.data as PortfolioData)
-        setValue(JSON.stringify(parsedPortfolio.data, null, 2))
+        syncEditorState(parsedPortfolio.data as PortfolioData)
         setSectionsStatus('Section changes saved successfully.')
+        setIsSavingSections(false)
     }
 
     return {
@@ -347,6 +361,7 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         updateEducationField,
         updateSkillCategoryField,
         saveSections,
+        isSavingSections,
         sectionsStatus,
         sectionIssues,
         value,

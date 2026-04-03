@@ -22,219 +22,287 @@ export function QuickEditSection({
     handleSubmit,
     onSubmit,
 }: QuickEditSectionProps) {
+    const inputClass =
+        'w-full rounded-xl border border-green-900 bg-black/70 px-3 py-2.5 text-sm outline-none transition focus:border-green-500'
+    const textareaClass = `${inputClass} min-h-[120px]`
+    const helperClass = 'text-xs leading-5 text-green-700'
+    const statusClass = formStatus.startsWith('Saved')
+        ? 'border-green-800/70 bg-green-950/30 text-green-300'
+        : 'border-red-900/70 bg-red-950/20 text-red-300'
+
     return (
-        <section className="border border-green-900/70 bg-green-950/20 rounded-lg p-4 space-y-4">
-            <h2 className="text-lg text-green-300">Quick Edit Form</h2>
-            <p className="text-sm text-green-600">
-                These fields validate before saving.
-            </p>
+        <section className="rounded-2xl border border-green-900/70 bg-green-950/20 p-5 md:p-6">
+            <div className="flex flex-col gap-3 border-b border-green-900/70 pb-4">
+                <h2 className="text-xl text-green-200">Quick Edit</h2>
+                <p className="text-sm leading-6 text-green-500">
+                    Fast updates for identity, contact details, and homepage
+                    copy blocks.
+                </p>
+            </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label htmlFor="name" className="block text-sm mb-1">
-                            Name
-                        </label>
-                        <input
-                            id="name"
-                            {...register('name')}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.name ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.name.message}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
+                <div className="grid gap-4 xl:grid-cols-2">
+                    <section className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
+                        <div>
+                            <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
+                                Identity
+                            </h3>
+                            <p className={helperClass}>
+                                Core hero text and personal summary.
                             </p>
-                        ) : null}
-                    </div>
-                    <div>
-                        <label htmlFor="title" className="block text-sm mb-1">
-                            Title
-                        </label>
-                        <input
-                            id="title"
-                            {...register('title')}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.title ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.title.message}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="name"
+                                className="mb-1 block text-sm"
+                            >
+                                Name
+                            </label>
+                            <input
+                                id="name"
+                                {...register('name')}
+                                className={inputClass}
+                            />
+                            {errors.name ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.name.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="title"
+                                className="mb-1 block text-sm"
+                            >
+                                Title
+                            </label>
+                            <input
+                                id="title"
+                                {...register('title')}
+                                className={inputClass}
+                            />
+                            {errors.title ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.title.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="about"
+                                className="mb-1 block text-sm"
+                            >
+                                About
+                            </label>
+                            <textarea
+                                id="about"
+                                {...register('about')}
+                                rows={6}
+                                className={textareaClass}
+                            />
+                            {errors.about ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.about.message}
+                                </p>
+                            ) : null}
+                        </div>
+                    </section>
+
+                    <section className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
+                        <div>
+                            <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
+                                Contact And Availability
+                            </h3>
+                            <p className={helperClass}>
+                                Public contact details and CV availability.
                             </p>
-                        ) : null}
-                    </div>
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="contactEmail"
+                                className="mb-1 block text-sm"
+                            >
+                                Contact Email
+                            </label>
+                            <input
+                                id="contactEmail"
+                                {...register('contactEmail')}
+                                className={inputClass}
+                            />
+                            {errors.contactEmail ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.contactEmail.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="contactPhone"
+                                className="mb-1 block text-sm"
+                            >
+                                Contact Phone
+                            </label>
+                            <input
+                                id="contactPhone"
+                                {...register('contactPhone')}
+                                className={inputClass}
+                            />
+                            {errors.contactPhone ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.contactPhone.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="openToWorkLabel"
+                                className="mb-1 block text-sm"
+                            >
+                                Open To Work Label
+                            </label>
+                            <input
+                                id="openToWorkLabel"
+                                {...register('openToWorkLabel')}
+                                className={inputClass}
+                            />
+                            {errors.openToWorkLabel ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.openToWorkLabel.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <div>
+                            <label
+                                htmlFor="cvPath"
+                                className="mb-1 block text-sm"
+                            >
+                                CV Path
+                            </label>
+                            <input
+                                id="cvPath"
+                                {...register('cvPath')}
+                                className={inputClass}
+                            />
+                            {errors.cvPath ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.cvPath.message}
+                                </p>
+                            ) : null}
+                        </div>
+
+                        <label className="flex items-center gap-2 rounded-xl border border-green-900/60 bg-black/30 px-3 py-3 text-sm text-green-300">
+                            <input
+                                type="checkbox"
+                                {...register('openToWork')}
+                                className="accent-green-500"
+                            />
+                            Open to work badge visible
+                        </label>
+                    </section>
                 </div>
 
-                <div>
-                    <label htmlFor="about" className="block text-sm mb-1">
-                        About
-                    </label>
-                    <textarea
-                        id="about"
-                        {...register('about')}
-                        rows={5}
-                        className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                    />
-                    {errors.about ? (
-                        <p className="text-xs text-red-400 mt-1">
-                            {errors.about.message}
+                <section className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
+                    <div>
+                        <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
+                            Repeating Content
+                        </h3>
+                        <p className={helperClass}>
+                            One item per line. These lists drive the hero and
+                            SEO text blocks.
                         </p>
-                    ) : null}
-                </div>
+                    </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label
-                            htmlFor="contactEmail"
-                            className="block text-sm mb-1"
-                        >
-                            Contact Email
-                        </label>
-                        <input
-                            id="contactEmail"
-                            {...register('contactEmail')}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.contactEmail ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.contactEmail.message}
-                            </p>
-                        ) : null}
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="contactPhone"
-                            className="block text-sm mb-1"
-                        >
-                            Contact Phone
-                        </label>
-                        <input
-                            id="contactPhone"
-                            {...register('contactPhone')}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.contactPhone ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.contactPhone.message}
-                            </p>
-                        ) : null}
-                    </div>
-                </div>
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <div>
+                            <label
+                                htmlFor="heroTypedLinesText"
+                                className="mb-1 block text-sm"
+                            >
+                                Hero Typed Lines
+                            </label>
+                            <textarea
+                                id="heroTypedLinesText"
+                                {...register('heroTypedLinesText')}
+                                rows={8}
+                                className={textareaClass}
+                            />
+                            {errors.heroTypedLinesText ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.heroTypedLinesText.message}
+                                </p>
+                            ) : null}
+                        </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label
-                            htmlFor="openToWorkLabel"
-                            className="block text-sm mb-1"
-                        >
-                            Open To Work Label
-                        </label>
-                        <input
-                            id="openToWorkLabel"
-                            {...register('openToWorkLabel')}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.openToWorkLabel ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.openToWorkLabel.message}
-                            </p>
-                        ) : null}
-                    </div>
-                    <div>
-                        <label htmlFor="cvPath" className="block text-sm mb-1">
-                            CV Path
-                        </label>
-                        <input
-                            id="cvPath"
-                            {...register('cvPath')}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.cvPath ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.cvPath.message}
-                            </p>
-                        ) : null}
-                    </div>
-                </div>
+                        <div>
+                            <label
+                                htmlFor="ogTechPillsText"
+                                className="mb-1 block text-sm"
+                            >
+                                OG Tech Pills
+                            </label>
+                            <textarea
+                                id="ogTechPillsText"
+                                {...register('ogTechPillsText')}
+                                rows={8}
+                                className={textareaClass}
+                            />
+                            {errors.ogTechPillsText ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.ogTechPillsText.message}
+                                </p>
+                            ) : null}
+                        </div>
 
-                <label className="flex items-center gap-2 text-sm">
-                    <input
-                        type="checkbox"
-                        {...register('openToWork')}
-                        className="accent-green-500"
-                    />
-                    Open to work
-                </label>
+                        <div>
+                            <label
+                                htmlFor="devPracticesText"
+                                className="mb-1 block text-sm"
+                            >
+                                Dev Practices
+                            </label>
+                            <textarea
+                                id="devPracticesText"
+                                {...register('devPracticesText')}
+                                rows={8}
+                                className={textareaClass}
+                            />
+                            {errors.devPracticesText ? (
+                                <p className="mt-1 text-xs text-red-400">
+                                    {errors.devPracticesText.message}
+                                </p>
+                            ) : null}
+                        </div>
+                    </div>
+                </section>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label
-                            htmlFor="heroTypedLinesText"
-                            className="block text-sm mb-1"
-                        >
-                            Hero Typed Lines (one per line)
-                        </label>
-                        <textarea
-                            id="heroTypedLinesText"
-                            {...register('heroTypedLinesText')}
-                            rows={6}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.heroTypedLinesText ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.heroTypedLinesText.message}
+                <div className="flex flex-col gap-3 rounded-2xl border border-green-900/60 bg-black/25 p-4 md:flex-row md:items-center md:justify-between">
+                    <div className="space-y-1">
+                        <p className="text-sm text-green-300">
+                            Quick changes save directly to the live portfolio.
+                        </p>
+                        {formStatus ? (
+                            <p
+                                className={`rounded-lg border px-3 py-2 text-sm ${statusClass}`}
+                            >
+                                {formStatus}
                             </p>
                         ) : null}
                     </div>
-                    <div>
-                        <label
-                            htmlFor="ogTechPillsText"
-                            className="block text-sm mb-1"
-                        >
-                            OG Tech Pills (one per line)
-                        </label>
-                        <textarea
-                            id="ogTechPillsText"
-                            {...register('ogTechPillsText')}
-                            rows={6}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.ogTechPillsText ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.ogTechPillsText.message}
-                            </p>
-                        ) : null}
-                    </div>
-                    <div>
-                        <label
-                            htmlFor="devPracticesText"
-                            className="block text-sm mb-1"
-                        >
-                            Dev Practices (one per line)
-                        </label>
-                        <textarea
-                            id="devPracticesText"
-                            {...register('devPracticesText')}
-                            rows={6}
-                            className="w-full bg-black border border-green-900 rounded px-3 py-2 outline-none focus:border-green-500"
-                        />
-                        {errors.devPracticesText ? (
-                            <p className="text-xs text-red-400 mt-1">
-                                {errors.devPracticesText.message}
-                            </p>
-                        ) : null}
-                    </div>
-                </div>
 
-                <div className="flex items-center gap-3">
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="rounded bg-green-700 text-black font-semibold px-4 py-2 hover:bg-green-500 disabled:opacity-60"
+                        className="rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
                     >
                         {isSubmitting ? 'Saving...' : 'Save Quick Form'}
                     </button>
-                    {formStatus ? (
-                        <p className="text-sm text-green-300">{formStatus}</p>
-                    ) : null}
                 </div>
             </form>
         </section>

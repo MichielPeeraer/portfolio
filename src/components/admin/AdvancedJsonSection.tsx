@@ -15,36 +15,61 @@ export function AdvancedJsonSection({
     rawStatus,
     rawIssues,
 }: AdvancedJsonSectionProps) {
+    const statusClass = rawStatus.startsWith('Saved')
+        ? 'border-green-800/70 bg-green-950/30 text-green-300'
+        : 'border-red-900/70 bg-red-950/20 text-red-300'
+
     return (
-        <section className="border border-green-900/70 bg-green-950/20 rounded-lg p-4 space-y-3">
-            <h2 className="text-lg text-green-300">Advanced JSON Editor</h2>
-            <p className="text-sm text-green-600">
-                Full-content editing with client-side schema validation.
-            </p>
+        <section className="rounded-2xl border border-green-900/70 bg-green-950/20 p-5 md:p-6">
+            <div className="flex flex-col gap-3 border-b border-green-900/70 pb-4">
+                <h2 className="text-xl text-green-200">Advanced JSON Editor</h2>
+                <p className="text-sm leading-6 text-green-500">
+                    Full-record editing for bulk changes. Save only after the
+                    structured editors are too limiting.
+                </p>
+            </div>
 
-            <textarea
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-                className="w-full h-[55vh] bg-black border border-green-900 rounded p-3 text-sm outline-none focus:border-green-500"
-                spellCheck={false}
-            />
+            <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
+                <textarea
+                    value={value}
+                    onChange={(event) => setValue(event.target.value)}
+                    className="h-[55vh] w-full rounded-2xl border border-green-900 bg-black/80 p-4 text-sm outline-none transition focus:border-green-500"
+                    spellCheck={false}
+                />
 
-            <div className="flex items-center gap-3">
-                <button
-                    type="button"
-                    onClick={save}
-                    disabled={isSaving}
-                    className="rounded bg-green-700 text-black font-semibold px-4 py-2 hover:bg-green-500 disabled:opacity-60"
-                >
-                    {isSaving ? 'Saving...' : 'Save JSON'}
-                </button>
-                {rawStatus ? (
-                    <p className="text-sm text-green-300">{rawStatus}</p>
-                ) : null}
+                <aside className="space-y-4 rounded-2xl border border-green-900/60 bg-black/25 p-4">
+                    <div>
+                        <h3 className="text-sm uppercase tracking-[0.24em] text-green-500">
+                            Safe Use
+                        </h3>
+                        <ul className="mt-3 space-y-2 text-xs leading-5 text-green-600">
+                            <li>Keep the JSON structure intact.</li>
+                            <li>Use arrays for repeated text values.</li>
+                            <li>Skill icons stay in label|icon format.</li>
+                        </ul>
+                    </div>
+
+                    {rawStatus ? (
+                        <p
+                            className={`rounded-lg border px-3 py-2 text-sm ${statusClass}`}
+                        >
+                            {rawStatus}
+                        </p>
+                    ) : null}
+
+                    <button
+                        type="button"
+                        onClick={save}
+                        disabled={isSaving}
+                        className="w-full rounded-xl bg-green-700 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
+                    >
+                        {isSaving ? 'Saving...' : 'Save JSON'}
+                    </button>
+                </aside>
             </div>
 
             {rawIssues.length > 0 ? (
-                <div className="border border-red-900/70 bg-red-950/20 rounded p-3">
+                <div className="mt-4 rounded-2xl border border-red-900/70 bg-red-950/20 p-4">
                     <p className="text-sm text-red-300 mb-2">
                         Validation issues:
                     </p>

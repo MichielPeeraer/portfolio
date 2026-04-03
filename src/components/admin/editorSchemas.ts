@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { PortfolioData } from '@/types'
 
 export const adminFormSchema = z.object({
     name: z.string().trim().min(1, 'Name is required'),
@@ -85,6 +86,56 @@ export const sectionsFormSchema = z.object({
 })
 
 export type SectionsFormValues = z.infer<typeof sectionsFormSchema>
+
+export const buildAdminFormDefaults = (
+    data: PortfolioData
+): AdminFormValues => ({
+    name: data.personal.name,
+    title: data.personal.title,
+    about: data.personal.about,
+    openToWork: Boolean(data.personal.openToWork),
+    openToWorkLabel: data.personal.openToWorkLabel ?? 'Open to opportunities',
+    cvPath: data.personal.cvPath ?? '/CV_Michiel_Peeraer.pdf',
+    contactEmail: data.personal.contact.email,
+    contactPhone: data.personal.contact.phone,
+    heroTypedLinesText: toMultiline(data.personal.heroTypedLines),
+    ogTechPillsText: toMultiline(data.personal.ogTechPills),
+    devPracticesText: toMultiline(data.devPractices),
+})
+
+export const buildSectionsDraft = (
+    data: PortfolioData
+): SectionsFormValues => ({
+    experience: data.experience.map((item) => ({
+        period: item.period,
+        title: item.title,
+        company: item.company,
+        location: item.location,
+        pointsText: item.points.join('\n'),
+    })),
+    education: data.education.map((item) => ({
+        degree: item.degree,
+        institution: item.institution,
+        location: item.location,
+        year: item.year,
+        details: item.details,
+    })),
+    skillCategories: data.skillCategories.map((category) => ({
+        label: category.label,
+        wide: Boolean(category.wide),
+        skillsText: category.skills.map(skillItemToLine).join('\n'),
+    })),
+    learning: {
+        heading: data.learning.heading,
+        description: data.learning.description,
+        languagesText: data.learning.languages.join('\n'),
+        bootDevSrc: data.learning.bootDevEmbed.src,
+        bootDevAlt: data.learning.bootDevEmbed.alt,
+        duolingoSrc: data.learning.duolingoEmbed.src,
+        duolingoAlt: data.learning.duolingoEmbed.alt,
+        duolingoUnoptimized: Boolean(data.learning.duolingoEmbed.unoptimized),
+    },
+})
 
 export const toMultiline = (values: string[] | undefined) =>
     (values ?? []).join('\n')

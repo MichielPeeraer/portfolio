@@ -24,6 +24,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
         updateEducationField,
         updateSkillCategoryField,
         saveSections,
+        isSavingSections,
         sectionsStatus,
         sectionIssues,
         value,
@@ -35,35 +36,40 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
     } = usePortfolioEditorState(initialData)
 
     return (
-        <div className="space-y-6">
-            <QuickEditSection
-                register={register}
-                errors={errors}
-                isSubmitting={isSubmitting}
-                formStatus={formStatus}
-                handleSubmit={handleSubmit}
-                onSubmit={onSubmitForm}
-            />
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.25fr)] items-start">
+            <div className="space-y-6 xl:sticky xl:top-6">
+                <QuickEditSection
+                    register={register}
+                    errors={errors}
+                    isSubmitting={isSubmitting}
+                    formStatus={formStatus}
+                    handleSubmit={handleSubmit}
+                    onSubmit={onSubmitForm}
+                />
+            </div>
 
-            <SectionsEditorSection
-                sectionsDraft={sectionsDraft}
-                setSectionsDraft={setSectionsDraft}
-                updateExperienceField={updateExperienceField}
-                updateEducationField={updateEducationField}
-                updateSkillCategoryField={updateSkillCategoryField}
-                saveSections={saveSections}
-                sectionsStatus={sectionsStatus}
-                sectionIssues={sectionIssues}
-            />
+            <div className="space-y-6">
+                <SectionsEditorSection
+                    sectionsDraft={sectionsDraft}
+                    setSectionsDraft={setSectionsDraft}
+                    updateExperienceField={updateExperienceField}
+                    updateEducationField={updateEducationField}
+                    updateSkillCategoryField={updateSkillCategoryField}
+                    saveSections={saveSections}
+                    isSavingSections={isSavingSections}
+                    sectionsStatus={sectionsStatus}
+                    sectionIssues={sectionIssues}
+                />
 
-            <AdvancedJsonSection
-                value={value}
-                setValue={setValue}
-                save={saveJson}
-                isSaving={isSaving}
-                rawStatus={rawStatus}
-                rawIssues={rawIssues}
-            />
+                <AdvancedJsonSection
+                    value={value}
+                    setValue={setValue}
+                    save={saveJson}
+                    isSaving={isSaving}
+                    rawStatus={rawStatus}
+                    rawIssues={rawIssues}
+                />
+            </div>
         </div>
     )
 }
