@@ -5,6 +5,8 @@ import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminPage() {
     const session = await getServerSession(createAuthOptions())
 
