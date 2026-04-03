@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { getPortfolioData } from '@/lib/portfolio-data'
 import { authOptions } from '@/lib/auth-options'
+import { MatrixRain } from '@/components/effects'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
 
 export default async function AdminPage() {
@@ -14,8 +15,10 @@ export default async function AdminPage() {
     const data = await getPortfolioData()
 
     return (
-        <main className="min-h-screen bg-black text-green-400 font-mono px-4 py-6 md:px-8 md:py-10">
-            <div className="mx-auto max-w-7xl space-y-6">
+        <main className="relative min-h-screen overflow-hidden bg-black px-4 py-6 font-mono text-green-400 md:px-8 md:py-10">
+            <MatrixRain />
+
+            <div className="relative z-10 mx-auto max-w-7xl space-y-6">
                 <header className="rounded-2xl border border-green-900/70 bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.18),transparent_35%),rgba(5,18,12,0.92)] p-5 md:p-7">
                     <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                         <div className="max-w-3xl space-y-3">

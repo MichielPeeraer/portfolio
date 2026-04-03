@@ -105,6 +105,7 @@ export function QuickEditSection({
                             <input
                                 id="name"
                                 {...register('name')}
+                                autoComplete="name"
                                 className={inputClass}
                             />
                             {errors.name ? (
@@ -124,6 +125,7 @@ export function QuickEditSection({
                             <input
                                 id="title"
                                 {...register('title')}
+                                autoComplete="organization-title"
                                 className={inputClass}
                             />
                             {errors.title ? (
@@ -143,6 +145,7 @@ export function QuickEditSection({
                             <textarea
                                 id="about"
                                 {...register('about')}
+                                autoComplete="off"
                                 rows={6}
                                 className={textareaClass}
                             />
@@ -174,6 +177,7 @@ export function QuickEditSection({
                             <input
                                 id="contactEmail"
                                 {...register('contactEmail')}
+                                autoComplete="email"
                                 className={inputClass}
                             />
                             {errors.contactEmail ? (
@@ -193,6 +197,7 @@ export function QuickEditSection({
                             <input
                                 id="contactPhone"
                                 {...register('contactPhone')}
+                                autoComplete="tel"
                                 className={inputClass}
                             />
                             {errors.contactPhone ? (
@@ -212,6 +217,7 @@ export function QuickEditSection({
                             <input
                                 id="openToWorkLabel"
                                 {...register('openToWorkLabel')}
+                                autoComplete="off"
                                 className={inputClass}
                             />
                             {errors.openToWorkLabel ? (
@@ -231,6 +237,7 @@ export function QuickEditSection({
                             <input
                                 id="cvPath"
                                 {...register('cvPath')}
+                                autoComplete="off"
                                 className={inputClass}
                             />
                             {errors.cvPath ? (
@@ -242,8 +249,10 @@ export function QuickEditSection({
 
                         <label className="flex items-center gap-2 rounded-xl border border-green-900/60 bg-black/30 px-3 py-3 text-sm text-green-300">
                             <input
+                                id="openToWork"
                                 type="checkbox"
                                 {...register('openToWork')}
+                                autoComplete="off"
                                 className="accent-green-500"
                             />
                             Open to work badge visible
@@ -273,6 +282,7 @@ export function QuickEditSection({
                             <textarea
                                 id="heroTypedLinesText"
                                 {...register('heroTypedLinesText')}
+                                autoComplete="off"
                                 rows={8}
                                 className={textareaClass}
                             />
@@ -293,6 +303,7 @@ export function QuickEditSection({
                             <textarea
                                 id="ogTechPillsText"
                                 {...register('ogTechPillsText')}
+                                autoComplete="off"
                                 rows={8}
                                 className={textareaClass}
                             />
@@ -313,6 +324,7 @@ export function QuickEditSection({
                             <textarea
                                 id="devPracticesText"
                                 {...register('devPracticesText')}
+                                autoComplete="off"
                                 rows={8}
                                 className={textareaClass}
                             />

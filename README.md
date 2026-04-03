@@ -62,7 +62,7 @@ Notes:
 
 - BotID requires JavaScript-based form submission, which is already handled by the client-side `fetch` flow in the contact form.
 - The contact form submits to `/api/contact`, where `checkBotId()` is run before sending:
-    - the main message to `ADMIN_EMAIL` (or `CONTACT_TO_EMAIL` if you explicitly set it)
+    - the main message to `ADMIN_EMAIL`
     - an auto-reply to the sender's email address
 - BotID classification headers are attached by `src/instrumentation-client.ts` for `POST /api/contact`.
 - In development, the server logs a warning if any required email env vars are missing.

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
+import { MatrixRain } from '@/components/effects'
 
 function GitHubIcon() {
     return (
@@ -35,45 +36,52 @@ export default function LoginPage() {
     }
 
     return (
-        <main className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center px-4">
-            <section className="w-full max-w-md border border-green-900/70 bg-green-950/20 rounded-lg p-6">
-                <h1 className="text-2xl text-green-300 mb-2">Admin Login</h1>
-                <p className="text-sm text-green-600 mb-6">
-                    Continue with your GitHub account to manage portfolio data.
-                </p>
+        <main className="relative min-h-screen overflow-hidden bg-black px-4 font-mono text-green-400">
+            <MatrixRain />
 
-                <div className="space-y-4">
-                    {error ? (
-                        <p className="text-sm text-red-400" role="alert">
-                            {error}
-                        </p>
-                    ) : null}
-
-                    <button
-                        type="button"
-                        onClick={onSignIn}
-                        disabled={isSubmitting}
-                        className="w-full rounded bg-green-700 text-black font-semibold py-2 hover:bg-green-500 disabled:opacity-60 inline-flex items-center justify-center gap-2"
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <Loader2
-                                    className="h-4 w-4 animate-spin"
-                                    aria-hidden="true"
-                                />
-                                Signing in...
-                            </>
-                        ) : (
-                            <>
-                                <GitHubIcon />
-                                Continue with GitHub
-                            </>
-                        )}
-                    </button>
-
-                    <p className="text-xs text-green-700">
-                        Access is limited to your configured admin email.
+            <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-md items-center">
+                <div className="w-full rounded-lg border border-green-900/70 bg-green-950/20 p-6">
+                    <h1 className="text-2xl text-green-300 mb-2">
+                        Admin Login
+                    </h1>
+                    <p className="text-sm text-green-600 mb-6">
+                        Continue with your GitHub account to manage portfolio
+                        data.
                     </p>
+
+                    <div className="space-y-4">
+                        {error ? (
+                            <p className="text-sm text-red-400" role="alert">
+                                {error}
+                            </p>
+                        ) : null}
+
+                        <button
+                            type="button"
+                            onClick={onSignIn}
+                            disabled={isSubmitting}
+                            className="w-full rounded bg-green-700 text-black font-semibold py-2 hover:bg-green-500 disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2
+                                        className="h-4 w-4 animate-spin"
+                                        aria-hidden="true"
+                                    />
+                                    Signing in...
+                                </>
+                            ) : (
+                                <>
+                                    <GitHubIcon />
+                                    Continue with GitHub
+                                </>
+                            )}
+                        </button>
+
+                        <p className="text-xs text-green-700">
+                            Access is limited to your configured admin email.
+                        </p>
+                    </div>
                 </div>
             </section>
         </main>

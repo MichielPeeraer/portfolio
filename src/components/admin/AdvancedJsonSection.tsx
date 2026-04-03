@@ -82,6 +82,8 @@ export function AdvancedJsonSection({
                     </label>
                     <textarea
                         id="portfolio-json"
+                        name="portfolioJson"
+                        autoComplete="off"
                         value={value}
                         onChange={(event) => setValue(event.target.value)}
                         className="h-[50vh] min-h-75 w-full rounded-2xl border border-green-900 bg-black/80 p-4 text-sm outline-none transition focus:border-green-500 sm:h-[55vh]"
