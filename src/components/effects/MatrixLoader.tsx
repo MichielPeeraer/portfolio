@@ -41,6 +41,7 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
     const [completedLines, setCompletedLines] = useState<string[]>([])
     const [typingLine, setTypingLine] = useState('')
     const hasEmittedReady = useRef(false)
+    const containerRef = useRef<HTMLDivElement | null>(null)
 
     const emitReady = () => {
         if (hasEmittedReady.current) return
@@ -62,7 +63,11 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
 
     const handleKeyDown = useCallback(
         (event: KeyboardEvent<HTMLDivElement>) => {
-            if (event.key !== 'Enter' && event.key !== ' ') {
+            if (
+                event.key !== 'Enter' &&
+                event.key !== ' ' &&
+                event.key !== 'Spacebar'
+            ) {
                 return
             }
 
@@ -71,6 +76,32 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
         },
         [dismiss]
     )
+
+    useEffect(() => {
+        if (!show) return
+
+        // Ensure keyboard events are captured immediately.
+        containerRef.current?.focus()
+
+        const onWindowKeyDown = (event: globalThis.KeyboardEvent) => {
+            if (
+                event.key !== 'Enter' &&
+                event.key !== ' ' &&
+                event.key !== 'Spacebar'
+            ) {
+                return
+            }
+
+            event.preventDefault()
+            dismiss()
+        }
+
+        window.addEventListener('keydown', onWindowKeyDown)
+
+        return () => {
+            window.removeEventListener('keydown', onWindowKeyDown)
+        }
+    }, [dismiss, show])
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -113,6 +144,7 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
         <AnimatePresence>
             {show && (
                 <motion.div
+                    ref={containerRef}
                     key="matrix-loader"
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
