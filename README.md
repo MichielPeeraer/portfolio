@@ -49,6 +49,7 @@ DATABASE_URL=
 NEXTAUTH_URL=
 NEXTAUTH_SECRET=
 ADMIN_EMAIL=
+ADMIN_GITHUB_LOGIN=
 GITHUB_ID=
 GITHUB_SECRET=
 SMTP_HOST=
@@ -98,7 +99,8 @@ https://<your-domain>/api/auth/callback/github
 ```
 
 5. Start app and sign in at `/login` with GitHub.
-   Access is restricted to `ADMIN_EMAIL`.
+   Access is restricted to `ADMIN_GITHUB_LOGIN` (recommended), with
+   `ADMIN_EMAIL` as fallback.
 
 The public site reads portfolio data from DB and falls back to JSON if DB is unavailable.
 

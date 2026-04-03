@@ -4,6 +4,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
 
 const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
+const adminGithubLogin = process.env.ADMIN_GITHUB_LOGIN?.trim().toLowerCase()
 
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
@@ -20,30 +21,41 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        async signIn({ user, account }) {
+        async signIn({ user, account, profile }) {
             if (account?.provider !== 'github') {
                 return false
             }
 
-            if (!adminEmail) {
-                return false
-            }
-
             const email = user.email?.trim().toLowerCase()
-            return email === adminEmail
+            const githubLogin =
+                profile &&
+                typeof (profile as { login?: unknown }).login === 'string'
+                    ? ((profile as { login: string }).login ?? '')
+                          .trim()
+                          .toLowerCase()
+                    : ''
+
+            const matchesEmail = Boolean(adminEmail && email === adminEmail)
+            const matchesGithubLogin = Boolean(
+                adminGithubLogin && githubLogin === adminGithubLogin
+            )
+
+            return matchesEmail || matchesGithubLogin
         },
         async jwt({ token, user }) {
             const email = (user?.email ?? token.email)?.trim().toLowerCase()
 
-            if (!email) {
-                token.role = 'guest'
-                return token
-            }
-
-            const dbUser = await prisma.user.findUnique({
-                where: { email },
-                select: { role: true },
-            })
+            const dbUser = token.sub
+                ? await prisma.user.findUnique({
+                      where: { id: token.sub },
+                      select: { role: true, email: true },
+                  })
+                : email
+                  ? await prisma.user.findUnique({
+                        where: { email },
+                        select: { role: true, email: true },
+                    })
+                  : null
 
             if (dbUser?.role) {
                 token.role = dbUser.role
