@@ -6,6 +6,17 @@ import { prisma } from '@/lib/prisma'
 const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase()
 const adminGithubLogin = process.env.ADMIN_GITHUB_LOGIN?.trim().toLowerCase()
 
+type TokenWithGithubLogin = { githubLogin?: unknown }
+type GithubProfile = { login?: unknown }
+
+const normalize = (value?: string | null) => value?.trim().toLowerCase() ?? ''
+
+const readGithubLoginFromProfile = (profile?: GithubProfile | null) =>
+    typeof profile?.login === 'string' ? normalize(profile.login) : ''
+
+const readGithubLoginFromToken = (token: TokenWithGithubLogin) =>
+    typeof token.githubLogin === 'string' ? normalize(token.githubLogin) : ''
+
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     session: {
@@ -32,14 +43,10 @@ export const authOptions: NextAuthOptions = {
                 return false
             }
 
-            const email = user.email?.trim().toLowerCase()
-            const githubLogin =
-                profile &&
-                    typeof (profile as { login?: unknown }).login === 'string'
-                    ? ((profile as { login: string }).login ?? '')
-                        .trim()
-                        .toLowerCase()
-                    : ''
+            const email = normalize(user.email)
+            const githubLogin = readGithubLoginFromProfile(
+                profile as GithubProfile | null | undefined
+            )
 
             const matchesEmail = Boolean(adminEmail && email === adminEmail)
             const matchesGithubLogin = Boolean(
@@ -49,21 +56,13 @@ export const authOptions: NextAuthOptions = {
             return matchesEmail || matchesGithubLogin
         },
         async jwt({ token, user, profile }) {
-            const email = (user?.email ?? token.email)?.trim().toLowerCase()
-            const githubLoginFromProfile =
-                profile &&
-                    typeof (profile as { login?: unknown }).login === 'string'
-                    ? ((profile as { login: string }).login ?? '')
-                        .trim()
-                        .toLowerCase()
-                    : ''
-            const githubLoginFromToken =
-                typeof (token as { githubLogin?: unknown }).githubLogin ===
-                    'string'
-                    ? ((token as { githubLogin: string }).githubLogin ?? '')
-                        .trim()
-                        .toLowerCase()
-                    : ''
+            const email = normalize(user?.email ?? token.email)
+            const githubLoginFromProfile = readGithubLoginFromProfile(
+                profile as GithubProfile | null | undefined
+            )
+            const githubLoginFromToken = readGithubLoginFromToken(
+                token as TokenWithGithubLogin
+            )
             const githubLogin = githubLoginFromProfile || githubLoginFromToken
 
                 ; (token as { githubLogin?: string }).githubLogin = githubLogin
