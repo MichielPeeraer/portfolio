@@ -1,4 +1,5 @@
 import { getServerSession } from 'next-auth'
+import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth-options'
 import { getPortfolioData } from '@/lib/portfolio-data'
@@ -48,6 +49,10 @@ export async function PUT(request: Request) {
         update: { data: parsed.data },
         create: { key: 'primary', data: parsed.data },
     })
+
+    revalidatePath('/', 'layout')
+    revalidatePath('/admin')
+    revalidatePath('/opengraph-image')
 
     return NextResponse.json({ success: true })
 }
