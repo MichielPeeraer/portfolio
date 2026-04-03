@@ -1,4 +1,6 @@
 import { ImageResponse } from 'next/og'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 import portfolioData from '@/data/portfolio.json'
 import { siteConfig } from '@/lib/site'
 import type { PortfolioData } from '@/types'
@@ -8,19 +10,18 @@ export const alt = `${siteConfig.name} – Full-Stack TypeScript Developer`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default async function Image() {
+export default function Image() {
     const data = portfolioData as PortfolioData
     const tech = data.personal.ogTechPills ?? []
 
     let profileSrc = ''
     try {
-        const profileUrl = `${siteConfig.url}/profile.jpg`
-        const response = await fetch(profileUrl)
-        const buffer = await response.arrayBuffer()
-        profileSrc = `data:image/jpeg;base64,${Buffer.from(buffer).toString('base64')}`
+        const profilePath = resolve(process.cwd(), 'public/profile.jpg')
+        const profileImg = readFileSync(profilePath)
+        profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
     } catch (error) {
-        console.error('Failed to fetch profile image:', error)
-        profileSrc = '' // Fallback to empty
+        console.error('Failed to read profile image:', error)
+        profileSrc = ''
     }
     const linkedInUrl = data.personal.contact.socialLinks.find(
         (link) => link.name === 'LinkedIn'
