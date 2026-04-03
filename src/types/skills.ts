@@ -20,6 +20,7 @@ export type SkillIconKey =
     | 'mongodb'
     | 'postgresql'
     | 'sqlalchemy'
+    | 'supabase'
     | 'prisma'
     | 'redux'
     | 'formik'
