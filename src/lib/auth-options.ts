@@ -65,19 +65,19 @@ export const authOptions: NextAuthOptions = {
             )
             const githubLogin = githubLoginFromProfile || githubLoginFromToken
 
-                ; (token as { githubLogin?: string }).githubLogin = githubLogin
+            ;(token as { githubLogin?: string }).githubLogin = githubLogin
 
             const dbUser = token.sub
                 ? await prisma.user.findUnique({
-                    where: { id: token.sub },
-                    select: { role: true, email: true },
-                })
+                      where: { id: token.sub },
+                      select: { role: true, email: true },
+                  })
                 : email
-                    ? await prisma.user.findUnique({
+                  ? await prisma.user.findUnique({
                         where: { email },
                         select: { role: true, email: true },
                     })
-                    : null
+                  : null
 
             if (dbUser?.role) {
                 token.role = dbUser.role
