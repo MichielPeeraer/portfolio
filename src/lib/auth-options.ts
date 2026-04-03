@@ -18,6 +18,11 @@ export const authOptions: NextAuthOptions = {
         GithubProvider({
             clientId: process.env.GITHUB_ID ?? '',
             clientSecret: process.env.GITHUB_SECRET ?? '',
+            authorization: {
+                params: {
+                    scope: 'read:user user:email',
+                },
+            },
         }),
     ],
     callbacks: {
@@ -42,8 +47,25 @@ export const authOptions: NextAuthOptions = {
 
             return matchesEmail || matchesGithubLogin
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, profile }) {
             const email = (user?.email ?? token.email)?.trim().toLowerCase()
+            const githubLoginFromProfile =
+                profile &&
+                typeof (profile as { login?: unknown }).login === 'string'
+                    ? ((profile as { login: string }).login ?? '')
+                          .trim()
+                          .toLowerCase()
+                    : ''
+            const githubLoginFromToken =
+                typeof (token as { githubLogin?: unknown }).githubLogin ===
+                'string'
+                    ? ((token as { githubLogin: string }).githubLogin ?? '')
+                          .trim()
+                          .toLowerCase()
+                    : ''
+            const githubLogin = githubLoginFromProfile || githubLoginFromToken
+
+            ;(token as { githubLogin?: string }).githubLogin = githubLogin
 
             const dbUser = token.sub
                 ? await prisma.user.findUnique({
@@ -60,6 +82,8 @@ export const authOptions: NextAuthOptions = {
             if (dbUser?.role) {
                 token.role = dbUser.role
             } else if (adminEmail && email === adminEmail) {
+                token.role = 'admin'
+            } else if (adminGithubLogin && githubLogin === adminGithubLogin) {
                 token.role = 'admin'
             } else {
                 token.role = 'guest'
