@@ -1,17 +1,16 @@
 import { ImageResponse } from 'next/og'
 import { readFileSync } from 'fs'
 import { join } from 'path'
-import portfolioData from '@/data/portfolio.json'
+import { getPortfolioData } from '@/lib/portfolio-data'
 import { siteConfig } from '@/lib/site'
-import type { PortfolioData } from '@/types'
 
 export const runtime = 'nodejs'
 export const alt = `${siteConfig.name} – Full-Stack TypeScript Developer`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default function Image() {
-    const data = portfolioData as PortfolioData
+export default async function Image() {
+    const data = await getPortfolioData()
     const tech = data.personal.ogTechPills ?? []
     const profileImg = readFileSync(join(process.cwd(), 'public/profile.jpg'))
     const profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`

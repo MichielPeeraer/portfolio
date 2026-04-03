@@ -14,6 +14,7 @@ A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind
 - **SEO Ready**: Metadata, sitemap, robots.txt, and JSON-LD structured data
 - **Production Instrumentation**: Vercel Analytics and Speed Insights support
 - **Sections**: Hero, About, Experience, Skills, Education, Contact
+- **Admin Dashboard**: Protected login at `/admin` to edit portfolio data
 
 ## Tech Stack
 
@@ -22,6 +23,8 @@ A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
 - **Formatting**: Prettier
+- **Database**: PostgreSQL + Prisma
+- **Authentication**: NextAuth (credentials)
 
 ## Getting Started
 
@@ -42,6 +45,11 @@ Copy `.env.example` to `.env.local` and set these values:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=
+DATABASE_URL=
+NEXTAUTH_URL=
+NEXTAUTH_SECRET=
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
 SMTP_HOST=
 SMTP_PORT=
 SMTP_USER=
@@ -60,6 +68,41 @@ Notes:
 - By default, using only `CONTACT_TO_EMAIL` is enough for both incoming notifications and auto-replies.
 - SMTP credentials should come from your email provider (for Gmail/Outlook use an app password).
 - For production, set the same variables in your hosting platform.
+
+## Database and Admin Setup
+
+1. Generate Prisma client:
+
+```bash
+npm run db:generate
+```
+
+2. Create and apply local migrations:
+
+```bash
+npm run db:migrate -- --name init_auth_and_portfolio
+```
+
+3. Seed database with current `src/data/portfolio.json` and bootstrap admin user:
+
+```bash
+npm run db:seed
+```
+
+4. Start app and sign in at `/login` with `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+
+The public site reads portfolio data from DB and falls back to JSON if DB is unavailable.
+
+### Prisma CLI note
+
+If you see this error:
+
+`The datasource property url is no longer supported in schema files...`
+
+you are likely running Prisma v7 globally. This project currently uses Prisma v6.
+
+- Use project scripts (`npm run db:generate`, `npm run db:migrate`) so the local Prisma version is used.
+- Avoid running a global `prisma` binary in this repo.
 
 ## Build for Production
 

@@ -9,44 +9,43 @@ import {
     LearningSection,
     SkillsSection,
 } from '@/components/sections'
-import portfolioData from '@/data/portfolio.json'
+import { getPortfolioData } from '@/lib/portfolio-data'
 import { getSkillLabel } from '@/lib/skill-icons'
 import { siteConfig } from '@/lib/site'
-import type { PortfolioData } from '@/types'
 
-const data: PortfolioData = portfolioData as PortfolioData
+export default async function Home() {
+    const data = await getPortfolioData()
 
-const structuredData = {
-    '@context': 'https://schema.org',
-    '@graph': [
-        {
-            '@type': 'WebSite',
-            name: siteConfig.name,
-            url: siteConfig.url,
-            description: siteConfig.description,
-        },
-        {
-            '@type': 'Person',
-            name: data.personal.name,
-            url: siteConfig.url,
-            jobTitle: data.personal.title,
-            description: data.personal.about,
-            email: data.personal.contact.email,
-            telephone: data.personal.contact.phone,
-            sameAs: data.personal.contact.socialLinks
-                .filter((link) => link.name !== 'Website')
-                .map((link) => link.url),
-            knowsAbout: [
-                ...data.skillCategories.flatMap((category) =>
-                    category.skills.map((skill) => getSkillLabel(skill))
-                ),
-                ...data.devPractices,
-            ],
-        },
-    ],
-}
+    const structuredData = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'WebSite',
+                name: siteConfig.name,
+                url: siteConfig.url,
+                description: siteConfig.description,
+            },
+            {
+                '@type': 'Person',
+                name: data.personal.name,
+                url: siteConfig.url,
+                jobTitle: data.personal.title,
+                description: data.personal.about,
+                email: data.personal.contact.email,
+                telephone: data.personal.contact.phone,
+                sameAs: data.personal.contact.socialLinks
+                    .filter((link) => link.name !== 'Website')
+                    .map((link) => link.url),
+                knowsAbout: [
+                    ...data.skillCategories.flatMap((category) =>
+                        category.skills.map((skill) => getSkillLabel(skill))
+                    ),
+                    ...data.devPractices,
+                ],
+            },
+        ],
+    }
 
-export default function Home() {
     return (
         <div className="min-h-screen bg-black text-green-400 font-mono relative overflow-hidden">
             <script

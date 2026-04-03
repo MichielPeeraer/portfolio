@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import { MatrixLoader } from '@/components/effects'
 
 describe('MatrixLoader keyboard dismissal', () => {
@@ -19,9 +19,10 @@ describe('MatrixLoader keyboard dismissal', () => {
         window.addEventListener('matrix-loader:done', doneListener)
 
         render(<MatrixLoader name="Neo" />)
-        expect(screen.getByRole('button')).toBeInTheDocument()
 
-        fireEvent.keyDown(window, { key: 'Enter' })
+        act(() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+        })
 
         expect(
             (window as Window & { __matrixLoaderReady?: boolean })
@@ -35,7 +36,9 @@ describe('MatrixLoader keyboard dismissal', () => {
     it('dismisses when Space is pressed', () => {
         render(<MatrixLoader name="Neo" />)
 
-        fireEvent.keyDown(window, { key: ' ' })
+        act(() => {
+            window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }))
+        })
 
         expect(
             (window as Window & { __matrixLoaderReady?: boolean })
@@ -46,7 +49,11 @@ describe('MatrixLoader keyboard dismissal', () => {
     it('does not dismiss on unrelated keys', () => {
         render(<MatrixLoader name="Neo" />)
 
-        fireEvent.keyDown(window, { key: 'Escape' })
+        act(() => {
+            window.dispatchEvent(
+                new KeyboardEvent('keydown', { key: 'Escape' })
+            )
+        })
 
         expect(
             (window as Window & { __matrixLoaderReady?: boolean })

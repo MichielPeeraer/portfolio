@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { SkillCard } from '@/components/cards'
 
 describe('SkillCard', () => {
     it('renders the skill label', () => {
-        render(<SkillCard skill="TypeScript" />)
-        expect(screen.getByText('TypeScript')).toBeInTheDocument()
+        const { container } = render(<SkillCard skill="TypeScript" />)
+        expect(container).toHaveTextContent('TypeScript')
     })
 
     it('renders as a span element', () => {

@@ -1,7 +1,7 @@
 import type { ContactEmailData } from '@/types'
-import portfolioData from '@/data/portfolio.json'
+import { siteConfig } from '@/lib/site'
 
-const ownerFirstName = portfolioData.personal.name.split(' ')[0]
+const ownerFirstName = siteConfig.name.split(' ')[0]
 
 const escapeHtml = (value: string) =>
     value
