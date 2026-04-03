@@ -10,14 +10,16 @@ import {
 } from '@/lib/contact-email'
 import type { ContactEmailData } from '@/types'
 
+const MAX_MESSAGE_LENGTH = 5000
+
 const contactPayloadSchema = z.object({
-    FirstName: z.string().min(1),
-    LastName: z.string().min(1),
+    FirstName: z.string().trim().min(1),
+    LastName: z.string().trim().min(1),
     Email: z.email(),
     Phone: z.string().optional(),
     Company: z.string().optional(),
     LinkedIn: z.string().optional(),
-    Message: z.string().min(1),
+    Message: z.string().trim().min(1).max(MAX_MESSAGE_LENGTH),
     Website: z.string().optional(),
 })
 
@@ -41,6 +43,58 @@ if (
 }
 
 const SUBMIT_TIMEOUT_MS = 12000
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX_REQUESTS = 5
+const rateLimitBuckets = new Map<
+    string,
+    { count: number; windowStart: number }
+>()
+
+const getClientAddress = (request: Request) => {
+    const forwarded = request.headers.get('x-forwarded-for')
+    if (forwarded) {
+        const firstIp = forwarded.split(',')[0]?.trim()
+        if (firstIp) return firstIp
+    }
+
+    const realIp = request.headers.get('x-real-ip')?.trim()
+    if (realIp) return realIp
+
+    const cfIp = request.headers.get('cf-connecting-ip')?.trim()
+    if (cfIp) return cfIp
+
+    return 'unknown'
+}
+
+const isRateLimited = (clientAddress: string) => {
+    const now = Date.now()
+
+    if (rateLimitBuckets.size > 1024) {
+        for (const [key, bucket] of rateLimitBuckets) {
+            if (now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
+                rateLimitBuckets.delete(key)
+            }
+        }
+    }
+
+    const bucket = rateLimitBuckets.get(clientAddress)
+    if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
+        rateLimitBuckets.set(clientAddress, {
+            count: 1,
+            windowStart: now,
+        })
+        return false
+    }
+
+    if (bucket.count >= RATE_LIMIT_MAX_REQUESTS) {
+        return true
+    }
+
+    bucket.count += 1
+    return false
+}
+
+const sanitizeHeaderValue = (value: string) => value.replace(/[\r\n]/g, '')
 
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number) => {
     return new Promise<T>((resolve, reject) => {
@@ -65,6 +119,14 @@ export async function POST(request: Request) {
 
     if (verification.isBot) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 })
+    }
+
+    const clientAddress = getClientAddress(request)
+    if (isRateLimited(clientAddress)) {
+        return NextResponse.json(
+            { error: 'Too many requests. Please try again later.' },
+            { status: 429 }
+        )
     }
 
     if (
@@ -142,7 +204,7 @@ export async function POST(request: Request) {
             transporter.sendMail({
                 from: fromEmail,
                 to: toEmail,
-                replyTo: payload.Email,
+                replyTo: sanitizeHeaderValue(payload.Email),
                 subject: `New contact message from ${payload.FirstName} ${payload.LastName}`,
                 text: buildOwnerMessageText(emailData),
                 html: buildOwnerMessageHtml(emailData),

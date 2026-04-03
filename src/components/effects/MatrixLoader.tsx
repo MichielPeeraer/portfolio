@@ -1,6 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+    type KeyboardEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useIsMobileDevice } from '@/hooks'
 
@@ -53,6 +60,18 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
         setShow(false)
     }, [])
 
+    const handleKeyDown = useCallback(
+        (event: KeyboardEvent<HTMLDivElement>) => {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+                return
+            }
+
+            event.preventDefault()
+            dismiss()
+        },
+        [dismiss]
+    )
+
     useEffect(() => {
         document.body.style.overflow = 'hidden'
 
@@ -100,10 +119,10 @@ export default function MatrixLoader({ name }: MatrixLoaderProps) {
                     transition={{ duration: 0.8 }}
                     role="button"
                     tabIndex={0}
-                    aria-label="Loading screen — click or press any key to skip"
+                    aria-label="Loading screen — click, or press Enter or Space to skip"
                     className="fixed inset-0 z-200 bg-black flex items-center justify-center cursor-pointer outline-none"
                     onClick={dismiss}
-                    onKeyDown={dismiss}
+                    onKeyDown={handleKeyDown}
                 >
                     <div className="font-mono text-base md:text-xl px-8 max-w-xl w-full space-y-2">
                         {completedLines.map((line, i) => (

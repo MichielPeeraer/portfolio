@@ -19,9 +19,11 @@ const PhoneInput = dynamic(() => import('react-phone-number-input'), {
     ssr: false,
 })
 
+const MAX_MESSAGE_LENGTH = 5000
+
 const contactSchema = z.object({
-    firstname: z.string().min(1, '* Required'),
-    lastname: z.string().min(1, '* Required'),
+    firstname: z.string().trim().min(1, '* Required'),
+    lastname: z.string().trim().min(1, '* Required'),
     email: z.email('* Not a valid email address'),
     phone: z
         .string()
@@ -42,7 +44,11 @@ const contactSchema = z.object({
                 ),
             '* Not a valid LinkedIn URL'
         ),
-    message: z.string().min(1, '* Required'),
+    message: z
+        .string()
+        .trim()
+        .min(1, '* Required')
+        .max(MAX_MESSAGE_LENGTH, `* Max ${MAX_MESSAGE_LENGTH} characters`),
     website: z.string().optional(),
 })
 
