@@ -37,7 +37,7 @@ const setRouteEnv = (
         SMTP_PORT: '587',
         SMTP_USER: 'user',
         SMTP_PASS: 'pass',
-        CONTACT_TO_EMAIL: 'owner@example.test',
+        ADMIN_EMAIL: 'owner@example.test',
         ...overrides,
     }
 
@@ -46,7 +46,7 @@ const setRouteEnv = (
         'SMTP_PORT',
         'SMTP_USER',
         'SMTP_PASS',
-        'CONTACT_TO_EMAIL',
+        'ADMIN_EMAIL',
     ] as const
 
     for (const key of keys) {

@@ -28,17 +28,15 @@ const SMTP_PORT = process.env.SMTP_PORT
 const SMTP_USER = process.env.SMTP_USER
 const SMTP_PASS = process.env.SMTP_PASS
 const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+const OWNER_EMAIL = CONTACT_TO_EMAIL ?? ADMIN_EMAIL
 
 if (
-    (!SMTP_HOST ||
-        !SMTP_PORT ||
-        !SMTP_USER ||
-        !SMTP_PASS ||
-        !CONTACT_TO_EMAIL) &&
+    (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !OWNER_EMAIL) &&
     process.env.NODE_ENV !== 'production'
 ) {
     console.warn(
-        '[contact-api] Missing one or more required env vars: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, CONTACT_TO_EMAIL.'
+        '[contact-api] Missing one or more required env vars: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, and OWNER_EMAIL (CONTACT_TO_EMAIL or ADMIN_EMAIL).'
     )
 }
 
@@ -129,20 +127,14 @@ export async function POST(request: Request) {
         )
     }
 
-    if (
-        !SMTP_HOST ||
-        !SMTP_PORT ||
-        !SMTP_USER ||
-        !SMTP_PASS ||
-        !CONTACT_TO_EMAIL
-    ) {
+    if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !OWNER_EMAIL) {
         return NextResponse.json(
             { error: 'Form server is not configured.' },
             { status: 500 }
         )
     }
 
-    const toEmail = CONTACT_TO_EMAIL
+    const toEmail = OWNER_EMAIL
     const fromEmail = toEmail
     const smtpPort = Number(SMTP_PORT)
 
