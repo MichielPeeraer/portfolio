@@ -1,4 +1,4 @@
-import { MatrixRain } from '@/components/effects'
+import { MatrixLoader, MatrixRain } from '@/components/effects'
 import { BackToTopButton, FloatingNavbar, Footer } from '@/components/layout'
 import {
     AboutSection,
@@ -54,6 +54,7 @@ export default async function Home() {
                     __html: JSON.stringify(structuredData),
                 }}
             />
+            <MatrixLoader name={data.personal.name.split(' ')[0]} />
             <MatrixRain />
             <FloatingNavbar socialLinks={data.personal.contact.socialLinks} />
 

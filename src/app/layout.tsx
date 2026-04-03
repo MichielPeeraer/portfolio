@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { siteConfig } from '@/lib/site'
-import { MatrixLoader, MatrixToaster } from '@/components/effects'
-import { getPortfolioData } from '@/lib/portfolio-data'
+import { MatrixToaster } from '@/components/effects'
 import './globals.css'
 
 const geistSans = Geist({
@@ -59,15 +58,12 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
-    const data = await getPortfolioData()
-
     return (
         <html
             lang="en"
             className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
         >
             <body className="min-h-full flex flex-col">
-                <MatrixLoader name={data.personal.name.split(' ')[0]} />
                 {children}
                 <MatrixToaster />
                 <Analytics />
