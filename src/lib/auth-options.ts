@@ -18,6 +18,7 @@ export const authOptions: NextAuthOptions = {
         GithubProvider({
             clientId: process.env.GITHUB_ID ?? '',
             clientSecret: process.env.GITHUB_SECRET ?? '',
+            allowDangerousEmailAccountLinking: true,
             authorization: {
                 params: {
                     scope: 'read:user user:email',
@@ -34,10 +35,10 @@ export const authOptions: NextAuthOptions = {
             const email = user.email?.trim().toLowerCase()
             const githubLogin =
                 profile &&
-                typeof (profile as { login?: unknown }).login === 'string'
+                    typeof (profile as { login?: unknown }).login === 'string'
                     ? ((profile as { login: string }).login ?? '')
-                          .trim()
-                          .toLowerCase()
+                        .trim()
+                        .toLowerCase()
                     : ''
 
             const matchesEmail = Boolean(adminEmail && email === adminEmail)
@@ -51,33 +52,33 @@ export const authOptions: NextAuthOptions = {
             const email = (user?.email ?? token.email)?.trim().toLowerCase()
             const githubLoginFromProfile =
                 profile &&
-                typeof (profile as { login?: unknown }).login === 'string'
+                    typeof (profile as { login?: unknown }).login === 'string'
                     ? ((profile as { login: string }).login ?? '')
-                          .trim()
-                          .toLowerCase()
+                        .trim()
+                        .toLowerCase()
                     : ''
             const githubLoginFromToken =
                 typeof (token as { githubLogin?: unknown }).githubLogin ===
-                'string'
+                    'string'
                     ? ((token as { githubLogin: string }).githubLogin ?? '')
-                          .trim()
-                          .toLowerCase()
+                        .trim()
+                        .toLowerCase()
                     : ''
             const githubLogin = githubLoginFromProfile || githubLoginFromToken
 
-            ;(token as { githubLogin?: string }).githubLogin = githubLogin
+                ; (token as { githubLogin?: string }).githubLogin = githubLogin
 
             const dbUser = token.sub
                 ? await prisma.user.findUnique({
-                      where: { id: token.sub },
-                      select: { role: true, email: true },
-                  })
+                    where: { id: token.sub },
+                    select: { role: true, email: true },
+                })
                 : email
-                  ? await prisma.user.findUnique({
+                    ? await prisma.user.findUnique({
                         where: { email },
                         select: { role: true, email: true },
                     })
-                  : null
+                    : null
 
             if (dbUser?.role) {
                 token.role = dbUser.role
