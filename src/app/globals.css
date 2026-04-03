@@ -241,6 +241,27 @@ body {
     border: 0;
     outline: none;
     cursor: pointer;
+    scrollbar-width: thin;
+    scrollbar-color: #4ade80 #000;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.matrix-phone-input .PhoneInputCountrySelect::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.matrix-phone-input .PhoneInputCountrySelect::-webkit-scrollbar-track {
+    background: #000;
+}
+
+.matrix-phone-input .PhoneInputCountrySelect::-webkit-scrollbar-thumb {
+    background: #4ade80;
+    border-radius: 4px;
+}
+
+.matrix-phone-input .PhoneInputCountrySelect::-webkit-scrollbar-thumb:hover {
+    background: #22c55e;
 }
 
 .matrix-phone-input .PhoneInputCountryIcon {
@@ -257,4 +278,85 @@ body {
 
 .matrix-phone-input .PhoneInputInput::placeholder {
     color: #16a34a;
+}
+
+/* Checkbox styling */
+input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid #4ade80;
+    border-radius: 0.25rem;
+    background: #000;
+    cursor: pointer;
+    transition: all 200ms ease;
+    position: relative;
+}
+
+input[type='checkbox']:hover {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+}
+
+input[type='checkbox']:checked {
+    background: #4ade80;
+    border-color: #4ade80;
+}
+
+input[type='checkbox']:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    font-size: 0.875rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+input[type='checkbox']:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+input[type='checkbox']:focus-visible {
+    outline: 2px solid #4ade80;
+    outline-offset: 2px;
+}
+
+/* Global scrollbar styling for inputs and textareas */
+input,
+textarea,
+select {
+    scrollbar-width: thin;
+    scrollbar-color: #4ade80 #000;
+}
+
+input::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+select::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+input::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track,
+select::-webkit-scrollbar-track {
+    background: #000;
+}
+
+input::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb,
+select::-webkit-scrollbar-thumb {
+    background: #4ade80;
+    border-radius: 4px;
+}
+
+input::-webkit-scrollbar-thumb:hover,
+textarea::-webkit-scrollbar-thumb:hover,
+select::-webkit-scrollbar-thumb:hover {
+    background: #22c55e;
 }
