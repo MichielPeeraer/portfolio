@@ -22,17 +22,18 @@ export const createAuthOptions = (): NextAuthOptions => {
 
     return {
         adapter: PrismaAdapter(prisma),
+        secret: authEnv.nextAuthSecret,
         session: {
             strategy: 'jwt',
         },
         pages: {
             signIn: '/login',
+            signOut: '/signout',
         },
         providers: [
             GithubProvider({
                 clientId: authEnv.githubId,
                 clientSecret: authEnv.githubSecret,
-                allowDangerousEmailAccountLinking: true,
                 authorization: {
                     params: {
                         scope: 'read:user user:email',
@@ -102,7 +103,7 @@ export const createAuthOptions = (): NextAuthOptions => {
                 if (session.user) {
                     session.user.id = token.sub ?? ''
                     session.user.role =
-                        typeof token.role === 'string' ? token.role : 'admin'
+                        typeof token.role === 'string' ? token.role : 'guest'
                 }
 
                 return session

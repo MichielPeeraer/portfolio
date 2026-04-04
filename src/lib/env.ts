@@ -28,6 +28,7 @@ export const getAuthEnv = () => {
         adminGithubLogin: readEnv('ADMIN_GITHUB_LOGIN').toLowerCase(),
         githubId: requireEnv('GITHUB_ID', 'authentication'),
         githubSecret: requireEnv('GITHUB_SECRET', 'authentication'),
+        nextAuthSecret: requireEnv('NEXTAUTH_SECRET', 'authentication'),
     }
 }
 

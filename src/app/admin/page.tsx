@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import Link from 'next/link'
 import { getPortfolioData } from '@/lib/portfolio-data'
 import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
@@ -63,19 +64,12 @@ export default async function AdminPage() {
                                 ))}
                             </div>
 
-                            <form action="/api/auth/signout" method="post">
-                                <input
-                                    type="hidden"
-                                    name="callbackUrl"
-                                    value="/login"
-                                />
-                                <button
-                                    type="submit"
-                                    className="w-full rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-sm text-green-300 transition hover:bg-green-900/30 hover:text-green-100 sm:w-auto"
-                                >
-                                    Sign out
-                                </button>
-                            </form>
+                            <Link
+                                href="/signout"
+                                className="w-full rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-center text-sm text-green-300 transition hover:bg-green-900/30 hover:text-green-100 sm:w-auto"
+                            >
+                                Sign out
+                            </Link>
                         </div>
                     </div>
                 </header>
