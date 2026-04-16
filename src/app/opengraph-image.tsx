@@ -12,20 +12,22 @@ export const contentType = 'image/png'
 export default async function Image() {
     const data = await getPortfolioData()
     const tech = data.personal.ogTechPills ?? []
+    const links = data.personal.contact.socialLinks ?? []
     const profileImg = readFileSync(join(process.cwd(), 'public/profile.jpg'))
     const profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
-    const linkedInUrl = data.personal.contact.socialLinks.find(
-        (link) => link.name === 'LinkedIn'
-    )?.url
-    const gitHubUrl = data.personal.contact.socialLinks.find(
-        (link) => link.name === 'GitHub'
-    )?.url
-    const linkedInLabel = linkedInUrl
-        ? `linkedin.com${new URL(linkedInUrl).pathname}`
-        : siteConfig.url.replace('https://', '')
-    const gitHubLabel = gitHubUrl
-        ? `github.com${new URL(gitHubUrl).pathname}`
-        : siteConfig.url.replace('https://', '')
+    const socialLinkLabels = ['LinkedIn', 'GitHub'].flatMap((name) => {
+        const url = links.find((link) => link.name === name)?.url
+        if (!url) {
+            return []
+        }
+
+        const label =
+            name === 'LinkedIn'
+                ? `linkedin.com${new URL(url).pathname}`
+                : `github.com${new URL(url).pathname}`
+
+        return [{ name, label }]
+    })
 
     return new ImageResponse(
         <div
@@ -201,36 +203,37 @@ export default async function Image() {
                         ))}
                     </div>
 
-                    {/* LinkedIn */}
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                        }}
-                    >
+                    {socialLinkLabels.map((socialLink) => (
                         <div
+                            key={socialLink.name}
                             style={{
-                                width: '8px',
-                                height: '8px',
-                                borderRadius: '50%',
-                                background: '#4ade80',
-                                flexShrink: 0,
                                 display: 'flex',
-                            }}
-                        />
-                        <div
-                            style={{
-                                color: '#166534',
-                                fontSize: '18px',
-                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                marginBottom: '10px',
                             }}
                         >
-                            {linkedInLabel}
-                            <br />
-                            {gitHubLabel}
+                            <div
+                                style={{
+                                    width: '8px',
+                                    height: '8px',
+                                    borderRadius: '50%',
+                                    background: '#4ade80',
+                                    flexShrink: 0,
+                                    display: 'flex',
+                                }}
+                            />
+                            <div
+                                style={{
+                                    color: '#166534',
+                                    fontSize: '18px',
+                                    display: 'flex',
+                                }}
+                            >
+                                {socialLink.label}
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
 
                 {/* Right: photo with rings */}
