@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { useActiveSection, useMotionAwareScroll } from '@/hooks'
@@ -29,7 +29,39 @@ export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
         initialSectionId: 'hero',
     })
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const navRef = useRef<HTMLElement | null>(null)
     const { scrollElementIntoView } = useMotionAwareScroll()
+
+    useEffect(() => {
+        if (!mobileMenuOpen) return
+
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node | null
+            if (navRef.current && target && !navRef.current.contains(target)) {
+                setMobileMenuOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [mobileMenuOpen])
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(min-width: 768px)')
+
+        const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => {
+            if (e.matches) {
+                setMobileMenuOpen(false)
+            }
+        }
+
+        mediaQuery.addEventListener('change', handleMediaChange)
+        return () => {
+            mediaQuery.removeEventListener('change', handleMediaChange)
+        }
+    }, [])
 
     const scrollToSection = (sectionId: string) => {
         const element = document.getElementById(sectionId)
@@ -41,6 +73,7 @@ export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
 
     return (
         <motion.nav
+            ref={navRef}
             initial={{ y: -100 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.5 }}
