@@ -17,8 +17,14 @@ export default async function Image() {
     const linkedInUrl = data.personal.contact.socialLinks.find(
         (link) => link.name === 'LinkedIn'
     )?.url
+    const gitHubUrl = data.personal.contact.socialLinks.find(
+        (link) => link.name === 'GitHub'
+    )?.url
     const linkedInLabel = linkedInUrl
         ? `linkedin.com${new URL(linkedInUrl).pathname}`
+        : siteConfig.url.replace('https://', '')
+    const gitHubLabel = gitHubUrl
+        ? `github.com${new URL(gitHubUrl).pathname}`
         : siteConfig.url.replace('https://', '')
 
     return new ImageResponse(
@@ -221,6 +227,7 @@ export default async function Image() {
                             }}
                         >
                             {linkedInLabel}
+                            {gitHubLabel}
                         </div>
                     </div>
                 </div>
