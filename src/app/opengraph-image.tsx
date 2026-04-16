@@ -15,16 +15,16 @@ export default async function Image() {
     const links = data.personal.contact.socialLinks ?? []
     const profileImg = readFileSync(join(process.cwd(), 'public/profile.jpg'))
     const profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
-    const socialLinkLabels = ['LinkedIn', 'GitHub'].flatMap((name) => {
+    const socialLinkLabels = ['GitHub', 'LinkedIn'].flatMap((name) => {
         const url = links.find((link) => link.name === name)?.url
         if (!url) {
             return []
         }
 
         const label =
-            name === 'LinkedIn'
-                ? `linkedin.com${new URL(url).pathname}`
-                : `github.com${new URL(url).pathname}`
+            name === 'Github'
+                ? `github.com${new URL(url).pathname}`
+                : `linkedin.com${new URL(url).pathname}`
 
         return [{ name, label }]
     })
