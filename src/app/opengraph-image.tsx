@@ -227,6 +227,7 @@ export default async function Image() {
                             }}
                         >
                             {linkedInLabel}
+                            <br />
                             {gitHubLabel}
                         </div>
                     </div>
