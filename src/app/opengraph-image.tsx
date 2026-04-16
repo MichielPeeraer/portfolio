@@ -22,7 +22,7 @@ export default async function Image() {
         }
 
         const label =
-            name === 'Github'
+            name === 'GitHub'
                 ? `github.com${new URL(url).pathname}`
                 : `linkedin.com${new URL(url).pathname}`
 
