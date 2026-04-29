@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Download } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { useMatrixLoaderReady, useTypewriter } from '@/hooks'
 import { getSocialIcon } from '@/lib/social-icons'
 import type { PersonalInfo } from '@/types'
@@ -130,11 +130,15 @@ export default function HeroSection({ data }: HeroSectionProps) {
                 >
                     <a
                         href={data.cvPath ?? '/CV_Michiel_Peeraer.pdf'}
-                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="bg-green-400 text-black px-6 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                     >
-                        <Download size={16} className="inline mr-2 -mt-0.5" />
-                        Download CV
+                        <ExternalLink
+                            size={16}
+                            className="inline mr-2 -mt-0.5"
+                        />
+                        View CV
                     </a>
                     <div className="flex space-x-6">
                         {data.contact.socialLinks

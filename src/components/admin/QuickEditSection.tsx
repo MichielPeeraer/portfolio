@@ -206,14 +206,14 @@ export function QuickEditSection({
                                 />
                             </Field>
                             <Field
-                                label="CV Path"
+                                label="CV URL / Path"
                                 error={errors.cvPath?.message}
                             >
                                 <input
                                     id="cvPath"
                                     {...register('cvPath')}
                                     autoComplete="off"
-                                    placeholder="/CV_Name.pdf"
+                                    placeholder="https://docs.google.com/... or /CV_Name.pdf"
                                     className={inputClass}
                                 />
                             </Field>
