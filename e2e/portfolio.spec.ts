@@ -37,8 +37,8 @@ test.describe('Portfolio smoke tests', () => {
         await expect(page.locator('#about')).toBeInViewport({ ratio: 0.2 })
     })
 
-    test('CV download link is present', async ({ page }) => {
-        const link = page.locator('a[download]')
+    test('CV link is present', async ({ page }) => {
+        const link = page.getByRole('link', { name: 'View CV' })
         await expect(link).toBeVisible()
         await expect(link).toHaveAttribute('href', /CV_Michiel_Peeraer/)
     })
