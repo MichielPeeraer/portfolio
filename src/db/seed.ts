@@ -2,7 +2,8 @@
  * Seed script — run with: npm run db:seed
  *
  * Reads src/data/portfolio.json and inserts all rows into the normalized
- * Drizzle schema, then ensures the admin user record exists.
+ * Drizzle schema. Admin access is controlled entirely via env vars
+ * (ADMIN_EMAIL / ADMIN_GITHUB_LOGIN) — no user pre-seeding needed.
  *
  * Uses the DIRECT_URL (non-pooled) connection so that the script works even
  * when DATABASE_URL points at a pgBouncer transaction-mode pooler.
@@ -24,7 +25,6 @@ import {
     devPractices,
     education,
     learningLanguages,
-    users,
 } from './schema'
 import type { PortfolioData } from '@/types'
 
@@ -88,59 +88,57 @@ async function main() {
         await Promise.all([
             d.personal.heroTypedLines?.length
                 ? tx.insert(heroTypedLines).values(
-                    d.personal.heroTypedLines.map((text, i) => ({
-                        text,
-                        sortOrder: i,
-                    }))
-                )
+                      d.personal.heroTypedLines.map((text, i) => ({
+                          text,
+                          sortOrder: i,
+                      }))
+                  )
                 : Promise.resolve(),
 
             d.personal.ogTechPills?.length
                 ? tx.insert(ogTechPills).values(
-                    d.personal.ogTechPills.map((label, i) => ({
-                        label,
-                        sortOrder: i,
-                    }))
-                )
+                      d.personal.ogTechPills.map((label, i) => ({
+                          label,
+                          sortOrder: i,
+                      }))
+                  )
                 : Promise.resolve(),
 
             d.personal.contact.socialLinks.length
                 ? tx.insert(socialLinks).values(
-                    d.personal.contact.socialLinks.map((l, i) => ({
-                        name: l.name,
-                        icon: l.icon ?? '',
-                        url: l.url,
-                        sortOrder: i,
-                    }))
-                )
+                      d.personal.contact.socialLinks.map((l, i) => ({
+                          name: l.name,
+                          icon: l.icon ?? '',
+                          url: l.url,
+                          sortOrder: i,
+                      }))
+                  )
                 : Promise.resolve(),
 
             d.devPractices.length
-                ? tx
-                    .insert(devPractices)
-                    .values(
-                        d.devPractices.map((text, i) => ({
-                            text,
-                            sortOrder: i,
-                        }))
-                    )
+                ? tx.insert(devPractices).values(
+                      d.devPractices.map((text, i) => ({
+                          text,
+                          sortOrder: i,
+                      }))
+                  )
                 : Promise.resolve(),
 
             d.education.length
                 ? tx
-                    .insert(education)
-                    .values(
-                        d.education.map((e, i) => ({ ...e, sortOrder: i }))
-                    )
+                      .insert(education)
+                      .values(
+                          d.education.map((e, i) => ({ ...e, sortOrder: i }))
+                      )
                 : Promise.resolve(),
 
             d.learning.languages.length
                 ? tx.insert(learningLanguages).values(
-                    d.learning.languages.map((label, i) => ({
-                        label,
-                        sortOrder: i,
-                    }))
-                )
+                      d.learning.languages.map((label, i) => ({
+                          label,
+                          sortOrder: i,
+                      }))
+                  )
                 : Promise.resolve(),
         ])
 
@@ -195,27 +193,6 @@ async function main() {
     })
 
     console.log('[seed] Portfolio data seeded.')
-
-    // Ensure admin user record exists
-    const adminEmail = process.env.ADMIN_EMAIL?.trim().replace(/^['"]|['"]$/g, '')
-
-    if (adminEmail) {
-        await db
-            .insert(users)
-            .values({
-                email: adminEmail,
-                role: 'admin',
-                name: 'Portfolio Admin',
-            })
-            .onConflictDoUpdate({
-                target: users.email,
-                set: { role: 'admin' },
-            })
-        console.log(`[seed] Admin user ensured: ${adminEmail}`)
-    } else {
-        console.warn('[seed] ADMIN_EMAIL is not set. Skipping admin bootstrap.')
-    }
-
     console.log('[seed] Done.')
 }
 
