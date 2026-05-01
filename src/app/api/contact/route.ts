@@ -1,4 +1,5 @@
 import { checkBotId } from 'botid/server'
+import { sql } from 'drizzle-orm'
 import nodemailer from 'nodemailer'
 import { z } from 'zod'
 import { NextResponse } from 'next/server'
@@ -9,6 +10,7 @@ import {
     buildOwnerMessageText,
 } from '@/lib/contact-email'
 import { getContactEnv } from '@/lib/env'
+import { db } from '@/db'
 import type { ContactEmailData } from '@/types'
 
 const MAX_MESSAGE_LENGTH = 5000
@@ -27,77 +29,66 @@ const contactPayloadSchema = z.object({
 const SUBMIT_TIMEOUT_MS = 12000
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX_REQUESTS = 5
-const RATE_LIMIT_CLEANUP_INTERVAL = 30_000 // Clean expired buckets every 30 seconds
-const rateLimitBuckets = new Map<
-    string,
-    { count: number; windowStart: number }
->()
-
-// Start cleanup interval once on module load
-let cleanupIntervalStarted = false
-const startRateLimitCleanup = () => {
-    if (cleanupIntervalStarted) return
-    cleanupIntervalStarted = true
-
-    setInterval(() => {
-        const now = Date.now()
-        let cleaned = 0
-        for (const [key, bucket] of rateLimitBuckets) {
-            if (now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
-                rateLimitBuckets.delete(key)
-                cleaned++
-            }
-        }
-        if (cleaned > 0) {
-            console.debug(
-                `[rate-limit] Cleaned ${cleaned} expired buckets, ${rateLimitBuckets.size} remaining`
-            )
-        }
-    }, RATE_LIMIT_CLEANUP_INTERVAL)
-}
 
 const getClientAddress = (request: Request) => {
+    // x-vercel-forwarded-for is injected by Vercel's edge network and cannot
+    // be overridden by the client, making it the most trustworthy source.
+    const vercelForwarded = request.headers
+        .get('x-vercel-forwarded-for')
+        ?.trim()
+    if (vercelForwarded) return vercelForwarded
+
+    // x-forwarded-for may be client-controlled when there is no trusted proxy
+    // in front; take only the last (rightmost) entry appended by the proxy we
+    // do trust rather than the first entry which a client could forge.
     const forwarded = request.headers.get('x-forwarded-for')
     if (forwarded) {
-        const firstIp = forwarded.split(',')[0]?.trim()
-        if (firstIp) return firstIp
+        const ips = forwarded
+            .split(',')
+            .map((ip) => ip.trim())
+            .filter(Boolean)
+        const last = ips[ips.length - 1]
+        if (last) return last
     }
-
-    const realIp = request.headers.get('x-real-ip')?.trim()
-    if (realIp) return realIp
-
-    const cfIp = request.headers.get('cf-connecting-ip')?.trim()
-    if (cfIp) return cfIp
 
     return 'unknown'
 }
 
-const isRateLimited = (clientAddress: string): boolean => {
-    startRateLimitCleanup() // Ensure cleanup is running
-
-    const now = Date.now()
-    const bucket = rateLimitBuckets.get(clientAddress)
-
-    // Bucket expired or doesn't exist
-    if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
-        rateLimitBuckets.set(clientAddress, {
-            count: 1,
-            windowStart: now,
-        })
+const isRateLimited = async (key: string): Promise<boolean> => {
+    try {
+        // Atomic upsert: insert a fresh bucket or increment the existing one.
+        // If the window has expired, the row is treated as if it doesn't exist
+        // and the counter resets to 1.
+        const result = await db.execute(sql`
+            INSERT INTO rate_limits (key, count, window_start)
+            VALUES (${key}, 1, NOW())
+            ON CONFLICT (key) DO UPDATE SET
+                count = CASE
+                    WHEN rate_limits.window_start < NOW() - (INTERVAL '1 millisecond' * ${RATE_LIMIT_WINDOW_MS})
+                    THEN 1
+                    ELSE rate_limits.count + 1
+                END,
+                window_start = CASE
+                    WHEN rate_limits.window_start < NOW() - (INTERVAL '1 millisecond' * ${RATE_LIMIT_WINDOW_MS})
+                    THEN NOW()
+                    ELSE rate_limits.window_start
+                END
+            RETURNING count
+        `)
+        const count =
+            (result as unknown as Array<{ count: number }>)[0]?.count ?? 1
+        if (count > RATE_LIMIT_MAX_REQUESTS) {
+            console.warn(
+                `[rate-limit] Client exceeded rate limit (${count} requests in window)`
+            )
+            return true
+        }
+        return false
+    } catch (error) {
+        // Fail open: if the DB is unavailable don't block legitimate requests.
+        console.error('[rate-limit] DB check failed, allowing request:', error)
         return false
     }
-
-    // Check if already at limit
-    if (bucket.count >= RATE_LIMIT_MAX_REQUESTS) {
-        console.warn(
-            `[rate-limit] Client ${clientAddress} exceeded limit (${bucket.count} requests)`
-        )
-        return true
-    }
-
-    // Increment counter
-    bucket.count += 1
-    return false
 }
 
 const sanitizeHeaderValue = (value: string) => value.replace(/[\r\n]/g, '')
@@ -148,7 +139,7 @@ export async function POST(request: Request) {
     }
 
     const clientAddress = getClientAddress(request)
-    if (isRateLimited(clientAddress)) {
+    if (await isRateLimited(clientAddress)) {
         return NextResponse.json(
             { error: 'Too many requests. Please try again later.' },
             { status: 429 }

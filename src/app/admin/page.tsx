@@ -5,6 +5,8 @@ import { getPortfolioDataFromDb } from '@/lib/portfolio-data'
 import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
+import { db } from '@/db'
+import { personalInfo } from '@/db/schema'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,9 +18,18 @@ export default async function AdminPage() {
     }
 
     let data: Awaited<ReturnType<typeof getPortfolioDataFromDb>> | null = null
+    let dbVersion = 0
 
     try {
-        data = await getPortfolioDataFromDb()
+        const [fetchedData, versionRows] = await Promise.all([
+            getPortfolioDataFromDb(),
+            db
+                .select({ version: personalInfo.version })
+                .from(personalInfo)
+                .limit(1),
+        ])
+        data = fetchedData
+        dbVersion = versionRows[0]?.version ?? 0
     } catch (error) {
         console.error(
             '[admin-page] Failed to load portfolio data from DB:',
@@ -84,7 +95,10 @@ export default async function AdminPage() {
                 </header>
 
                 {data ? (
-                    <PortfolioEditor initialData={data} />
+                    <PortfolioEditor
+                        initialData={data}
+                        initialVersion={dbVersion}
+                    />
                 ) : (
                     <section className="rounded-2xl border border-red-900/70 bg-red-950/30 p-5 md:p-6">
                         <h2 className="text-lg font-medium text-red-300">

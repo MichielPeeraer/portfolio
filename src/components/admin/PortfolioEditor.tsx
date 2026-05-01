@@ -9,6 +9,7 @@ import type { PortfolioData } from '@/types'
 
 interface PortfolioEditorProps {
     initialData: PortfolioData
+    initialVersion?: number
 }
 
 interface PanelProps {
@@ -99,7 +100,10 @@ function Panel({
     )
 }
 
-export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
+export function PortfolioEditor({
+    initialData,
+    initialVersion = 0,
+}: PortfolioEditorProps) {
     const [quickEditOpen, setQuickEditOpen] = useState(true)
     const [sectionsOpen, setSectionsOpen] = useState(true)
     const [jsonOpen, setJsonOpen] = useState(false)
@@ -134,7 +138,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
         isQuickFormDirty,
         isSectionsDirty,
         isRawJsonDirty,
-    } = usePortfolioEditorState(initialData)
+    } = usePortfolioEditorState(initialData, initialVersion)
 
     return (
         <div className="space-y-4">

@@ -7,6 +7,8 @@ const createTransportMock = vi.hoisted(() =>
         sendMail: sendMailMock,
     }))
 )
+// Mock the DB so the Postgres-backed rate limiter doesn't need a real connection.
+const mockDbExecute = vi.hoisted(() => vi.fn())
 
 vi.mock('botid/server', () => ({
     checkBotId: checkBotIdMock,
@@ -16,6 +18,10 @@ vi.mock('nodemailer', () => ({
     default: {
         createTransport: createTransportMock,
     },
+}))
+
+vi.mock('@/db', () => ({
+    db: { execute: mockDbExecute },
 }))
 
 const basePayload = {
@@ -92,6 +98,8 @@ describe('contact API route', () => {
         vi.clearAllMocks()
         checkBotIdMock.mockResolvedValue({ isBot: false })
         sendMailMock.mockResolvedValue({})
+        // Default: rate limiter returns count=1 (well under threshold)
+        mockDbExecute.mockResolvedValue([{ count: 1 }])
     })
 
     it('returns 403 when BotID marks request as bot', async () => {
@@ -191,6 +199,13 @@ describe('contact API route', () => {
         const POST = await loadPost()
         const headers = { 'x-forwarded-for': '203.0.113.10' }
         const honeypotPayload = { ...basePayload, Website: 'bot' }
+
+        // Simulate the DB returning an incrementing count across requests
+        let callCount = 0
+        mockDbExecute.mockImplementation(async () => {
+            callCount++
+            return [{ count: callCount }]
+        })
 
         for (let i = 0; i < 5; i += 1) {
             const response = await POST(buildRequest(honeypotPayload, headers))

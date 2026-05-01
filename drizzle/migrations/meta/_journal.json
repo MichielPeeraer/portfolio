@@ -8,6 +8,13 @@
             "when": 1777652030145,
             "tag": "0000_aspiring_polaris",
             "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "7",
+            "when": 1777674957061,
+            "tag": "0001_marvelous_loki",
+            "breakpoints": true
         }
     ]
 }

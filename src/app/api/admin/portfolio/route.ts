@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createAuthOptions } from '@/lib/auth-options'
 import {
     PORTFOLIO_DATA_TAG,
@@ -44,8 +45,15 @@ export async function GET() {
     }
 
     try {
-        const data = await getPortfolioDataFromDb()
-        return NextResponse.json({ data })
+        const [data, versionRows] = await Promise.all([
+            getPortfolioDataFromDb(),
+            db
+                .select({ version: personalInfo.version })
+                .from(personalInfo)
+                .limit(1),
+        ])
+        const version = versionRows[0]?.version ?? 0
+        return NextResponse.json({ data, version })
     } catch (error) {
         console.error('[admin-portfolio] Failed to load DB data:', error)
         return NextResponse.json(
@@ -71,7 +79,19 @@ export async function PUT(request: Request) {
         )
     }
 
-    const parsed = portfolioSchema.safeParse(body)
+    // Extract the optimistic-concurrency token before schema validation.
+    // Zod strips unknown keys by default, so _version would be silently lost.
+    const { _version, ...portfolioPayload } = body as Record<string, unknown>
+    const versionParsed = z.number().int().min(0).safeParse(_version)
+    if (!versionParsed.success) {
+        return NextResponse.json(
+            { error: 'Missing or invalid version token.' },
+            { status: 400 }
+        )
+    }
+    const clientVersion = versionParsed.data
+
+    const parsed = portfolioSchema.safeParse(portfolioPayload)
     if (!parsed.success) {
         return NextResponse.json(
             { error: 'Validation failed', issues: parsed.error.issues },
@@ -80,6 +100,24 @@ export async function PUT(request: Request) {
     }
 
     const d = parsed.data
+
+    // Optimistic concurrency check: compare client's version against the DB.
+    const currentVersionRows = await db
+        .select({ version: personalInfo.version })
+        .from(personalInfo)
+        .limit(1)
+    const currentVersion = currentVersionRows[0]?.version ?? 0
+
+    if (currentVersion !== clientVersion) {
+        return NextResponse.json(
+            {
+                error: 'The data has been modified by another session. Please reload and try again.',
+            },
+            { status: 409 }
+        )
+    }
+
+    const nextVersion = clientVersion + 1
 
     await db.transaction(async (tx) => {
         // Clear all portfolio tables.
@@ -116,6 +154,7 @@ export async function PUT(request: Request) {
             duolingoEmbedAlt: d.learning.duolingoEmbed.alt,
             duolingoEmbedUnoptimized:
                 d.learning.duolingoEmbed.unoptimized ?? false,
+            version: nextVersion,
         })
 
         // All flat array tables in parallel
@@ -232,6 +271,6 @@ export async function PUT(request: Request) {
     revalidatePath('/admin')
     revalidatePath('/opengraph-image')
 
-    // Return fresh data so client can immediately update forms and UI
-    return NextResponse.json({ success: true, data: d })
+    // Return fresh data and new version so client stays in sync
+    return NextResponse.json({ success: true, data: d, version: nextVersion })
 }

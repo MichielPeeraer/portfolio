@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, type SetStateAction } from 'react'
 import { useRouter } from 'next/navigation'
@@ -18,7 +18,10 @@ import {
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import type { PortfolioData } from '@/types'
 
-export const usePortfolioEditorState = (initialData: PortfolioData) => {
+export const usePortfolioEditorState = (
+    initialData: PortfolioData,
+    initialVersion = 0
+) => {
     const router = useRouter()
     const [portfolioData, setPortfolioData] =
         useState<PortfolioData>(initialData)
@@ -34,6 +37,9 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
     const [sectionsDraft, setSectionsDraftState] = useState<SectionsFormValues>(
         buildSectionsDraft(initialData)
     )
+
+    // Track when we are programmatically resetting form defaults after save.
+    const [version, setVersion] = useState(initialVersion)
 
     // Track when we are programmatically resetting form defaults after save.
     const [isResettingForm, setIsResettingForm] = useState(false)
@@ -75,12 +81,16 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         result: {
             success?: boolean
             data?: PortfolioData
+            version?: number
             error?: string
         } | null
     ) => {
         // If API returned fresh data, sync immediately so forms show saved state
         if (result?.success && result.data) {
             syncEditorState(result.data)
+            if (typeof result.version === 'number') {
+                setVersion(result.version)
+            }
             return true
         }
         return false
@@ -121,12 +131,13 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ _version: version, ...payload }),
         })
 
         const result = (await response.json().catch(() => null)) as {
             success?: boolean
             data?: PortfolioData
+            version?: number
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -200,6 +211,7 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         let result: {
             success?: boolean
             data?: PortfolioData
+            version?: number
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -258,6 +270,7 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         let result: {
             success?: boolean
             data?: PortfolioData
+            version?: number
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -422,6 +435,7 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         let result: {
             success?: boolean
             data?: PortfolioData
+            version?: number
             error?: string
             issues?: Array<{
                 path?: Array<string | number>

@@ -99,6 +99,7 @@ export const personalInfo = pgTable('personal_info', {
     duolingoEmbedUnoptimized: boolean('duolingo_embed_unoptimized')
         .notNull()
         .default(false),
+    version: integer('version').notNull().default(0),
 })
 
 export const heroTypedLines = pgTable('hero_typed_lines', {
@@ -176,6 +177,19 @@ export const learningLanguages = pgTable('learning_languages', {
     id: serial('id').primaryKey(),
     label: text('label').notNull(),
     sortOrder: integer('sort_order').notNull(),
+})
+
+/**
+ * Distributed rate-limit buckets — one row per client key (IP).
+ * The in-memory fallback is useless in serverless (fresh process per request);
+ * this table provides shared state across all instances/regions.
+ */
+export const rateLimits = pgTable('rate_limits', {
+    key: text('key').primaryKey(),
+    count: integer('count').notNull().default(1),
+    windowStart: timestamp('window_start', { withTimezone: true })
+        .notNull()
+        .defaultNow(),
 })
 
 // ─── Relations ────────────────────────────────────────────────────────────────
