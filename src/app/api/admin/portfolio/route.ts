@@ -2,7 +2,11 @@ import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { createAuthOptions } from '@/lib/auth-options'
-import { getPortfolioData } from '@/lib/portfolio-data'
+import {
+    clearPortfolioDataCache,
+    getPortfolioData,
+    primePortfolioDataCache,
+} from '@/lib/portfolio-data'
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import { db } from '@/db'
 import {
@@ -203,6 +207,10 @@ export async function PUT(request: Request) {
             }
         }
     })
+
+    // Make newly saved data visible immediately in this runtime.
+    clearPortfolioDataCache()
+    primePortfolioDataCache(d)
 
     revalidatePath('/', 'layout')
     revalidatePath('/admin')

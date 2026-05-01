@@ -19,9 +19,68 @@ import {
 import type { PortfolioData } from '@/types'
 
 const fallbackPortfolio = fallbackData as PortfolioData
+const parsePositiveInt = (value: string | undefined, fallback: number) => {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
+const DB_FETCH_TIMEOUT_MS = parsePositiveInt(
+    process.env.PORTFOLIO_DB_FETCH_TIMEOUT_MS,
+    process.env.NODE_ENV === 'production' ? 5000 : 4000
+)
+const DB_CACHE_TTL_MS = parsePositiveInt(
+    process.env.PORTFOLIO_DB_CACHE_TTL_MS,
+    process.env.NODE_ENV === 'production' ? 60_000 : 15_000
+)
+
+let cachedPortfolio: PortfolioData | null = null
+let cachedAt = 0
+
+const getFreshCachedPortfolio = () => {
+    if (!cachedPortfolio) return null
+    if (Date.now() - cachedAt > DB_CACHE_TTL_MS) return null
+    return cachedPortfolio
+}
+
+const setCachedPortfolio = (data: PortfolioData) => {
+    cachedPortfolio = data
+    cachedAt = Date.now()
+}
+
+export const clearPortfolioDataCache = () => {
+    cachedPortfolio = null
+    cachedAt = 0
+}
+
+export const primePortfolioDataCache = (data: PortfolioData) => {
+    setCachedPortfolio(data)
+}
+
+const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number) => {
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutHandle = setTimeout(() => {
+            reject(
+                new Error(
+                    `[portfolio-data] DB fetch timed out after ${timeoutMs}ms`
+                )
+            )
+        }, timeoutMs)
+    })
+
+    try {
+        return await Promise.race([promise, timeoutPromise])
+    } finally {
+        if (timeoutHandle) clearTimeout(timeoutHandle)
+    }
+}
 
 export const getPortfolioData = async (): Promise<PortfolioData> => {
     noStore()
+
+    const cached = getFreshCachedPortfolio()
+    if (cached) return cached
 
     try {
         const [
@@ -36,31 +95,43 @@ export const getPortfolioData = async (): Promise<PortfolioData> => {
             practices,
             educations,
             languages,
-        ] = await Promise.all([
-            db.select().from(personalInfo).limit(1),
-            db
-                .select()
-                .from(heroTypedLines)
-                .orderBy(asc(heroTypedLines.sortOrder)),
-            db.select().from(ogTechPills).orderBy(asc(ogTechPills.sortOrder)),
-            db.select().from(socialLinks).orderBy(asc(socialLinks.sortOrder)),
-            db.select().from(experience).orderBy(asc(experience.sortOrder)),
-            db
-                .select()
-                .from(experiencePoints)
-                .orderBy(asc(experiencePoints.sortOrder)),
-            db
-                .select()
-                .from(skillCategories)
-                .orderBy(asc(skillCategories.sortOrder)),
-            db.select().from(skills).orderBy(asc(skills.sortOrder)),
-            db.select().from(devPractices).orderBy(asc(devPractices.sortOrder)),
-            db.select().from(education).orderBy(asc(education.sortOrder)),
-            db
-                .select()
-                .from(learningLanguages)
-                .orderBy(asc(learningLanguages.sortOrder)),
-        ])
+        ] = await withTimeout(
+            Promise.all([
+                db.select().from(personalInfo).limit(1),
+                db
+                    .select()
+                    .from(heroTypedLines)
+                    .orderBy(asc(heroTypedLines.sortOrder)),
+                db
+                    .select()
+                    .from(ogTechPills)
+                    .orderBy(asc(ogTechPills.sortOrder)),
+                db
+                    .select()
+                    .from(socialLinks)
+                    .orderBy(asc(socialLinks.sortOrder)),
+                db.select().from(experience).orderBy(asc(experience.sortOrder)),
+                db
+                    .select()
+                    .from(experiencePoints)
+                    .orderBy(asc(experiencePoints.sortOrder)),
+                db
+                    .select()
+                    .from(skillCategories)
+                    .orderBy(asc(skillCategories.sortOrder)),
+                db.select().from(skills).orderBy(asc(skills.sortOrder)),
+                db
+                    .select()
+                    .from(devPractices)
+                    .orderBy(asc(devPractices.sortOrder)),
+                db.select().from(education).orderBy(asc(education.sortOrder)),
+                db
+                    .select()
+                    .from(learningLanguages)
+                    .orderBy(asc(learningLanguages.sortOrder)),
+            ]),
+            DB_FETCH_TIMEOUT_MS
+        )
 
         if (!personal[0]) {
             console.warn('[portfolio-data] No data in DB. Using JSON fallback.')
@@ -137,12 +208,15 @@ export const getPortfolioData = async (): Promise<PortfolioData> => {
             console.warn(
                 '[portfolio-data] DB data failed schema validation. Using JSON fallback.'
             )
+            setCachedPortfolio(fallbackPortfolio)
             return fallbackPortfolio
         }
 
+        setCachedPortfolio(parsed.data as PortfolioData)
         return parsed.data as PortfolioData
     } catch (err) {
-        console.error('[portfolio-data] DB error, using JSON fallback:', err)
+        console.warn('[portfolio-data] DB error, using JSON fallback:', err)
+        setCachedPortfolio(fallbackPortfolio)
         return fallbackPortfolio
     }
 }

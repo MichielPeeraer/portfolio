@@ -16,7 +16,7 @@ if (!databaseUrl) {
 }
 
 const client = postgres(databaseUrl, {
-    max: 1,
+    max: 5,
     // Required when connecting through a pgBouncer transaction-mode pooler
     // (e.g. Supabase Session Pooler / Transaction Pooler).
     prepare: false,
