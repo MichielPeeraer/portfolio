@@ -88,59 +88,59 @@ async function main() {
         await Promise.all([
             d.personal.heroTypedLines?.length
                 ? tx.insert(heroTypedLines).values(
-                      d.personal.heroTypedLines.map((text, i) => ({
-                          text,
-                          sortOrder: i,
-                      }))
-                  )
+                    d.personal.heroTypedLines.map((text, i) => ({
+                        text,
+                        sortOrder: i,
+                    }))
+                )
                 : Promise.resolve(),
 
             d.personal.ogTechPills?.length
                 ? tx.insert(ogTechPills).values(
-                      d.personal.ogTechPills.map((label, i) => ({
-                          label,
-                          sortOrder: i,
-                      }))
-                  )
+                    d.personal.ogTechPills.map((label, i) => ({
+                        label,
+                        sortOrder: i,
+                    }))
+                )
                 : Promise.resolve(),
 
             d.personal.contact.socialLinks.length
                 ? tx.insert(socialLinks).values(
-                      d.personal.contact.socialLinks.map((l, i) => ({
-                          name: l.name,
-                          icon: l.icon ?? '',
-                          url: l.url,
-                          sortOrder: i,
-                      }))
-                  )
+                    d.personal.contact.socialLinks.map((l, i) => ({
+                        name: l.name,
+                        icon: l.icon ?? '',
+                        url: l.url,
+                        sortOrder: i,
+                    }))
+                )
                 : Promise.resolve(),
 
             d.devPractices.length
                 ? tx
-                      .insert(devPractices)
-                      .values(
-                          d.devPractices.map((text, i) => ({
-                              text,
-                              sortOrder: i,
-                          }))
-                      )
+                    .insert(devPractices)
+                    .values(
+                        d.devPractices.map((text, i) => ({
+                            text,
+                            sortOrder: i,
+                        }))
+                    )
                 : Promise.resolve(),
 
             d.education.length
                 ? tx
-                      .insert(education)
-                      .values(
-                          d.education.map((e, i) => ({ ...e, sortOrder: i }))
-                      )
+                    .insert(education)
+                    .values(
+                        d.education.map((e, i) => ({ ...e, sortOrder: i }))
+                    )
                 : Promise.resolve(),
 
             d.learning.languages.length
                 ? tx.insert(learningLanguages).values(
-                      d.learning.languages.map((label, i) => ({
-                          label,
-                          sortOrder: i,
-                      }))
-                  )
+                    d.learning.languages.map((label, i) => ({
+                        label,
+                        sortOrder: i,
+                    }))
+                )
                 : Promise.resolve(),
         ])
 
@@ -197,7 +197,7 @@ async function main() {
     console.log('[seed] Portfolio data seeded.')
 
     // Ensure admin user record exists
-    const adminEmail = process.env.ADMIN_EMAIL
+    const adminEmail = process.env.ADMIN_EMAIL?.trim().replace(/^['"]|['"]$/g, '')
 
     if (adminEmail) {
         await db

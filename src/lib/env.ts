@@ -1,6 +1,7 @@
 type NodeEnv = 'development' | 'production' | 'test'
 
-const readEnv = (name: string) => process.env[name]?.trim() ?? ''
+const readEnv = (name: string) =>
+    process.env[name]?.trim().replace(/^['"]|['"]$/g, '') ?? ''
 
 const runtimeEnv =
     (process.env.NODE_ENV as NodeEnv | undefined) ?? 'development'
