@@ -27,10 +27,34 @@ const contactPayloadSchema = z.object({
 const SUBMIT_TIMEOUT_MS = 12000
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX_REQUESTS = 5
+const RATE_LIMIT_CLEANUP_INTERVAL = 30_000 // Clean expired buckets every 30 seconds
 const rateLimitBuckets = new Map<
     string,
     { count: number; windowStart: number }
 >()
+
+// Start cleanup interval once on module load
+let cleanupIntervalStarted = false
+const startRateLimitCleanup = () => {
+    if (cleanupIntervalStarted) return
+    cleanupIntervalStarted = true
+
+    setInterval(() => {
+        const now = Date.now()
+        let cleaned = 0
+        for (const [key, bucket] of rateLimitBuckets) {
+            if (now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
+                rateLimitBuckets.delete(key)
+                cleaned++
+            }
+        }
+        if (cleaned > 0) {
+            console.debug(
+                `[rate-limit] Cleaned ${cleaned} expired buckets, ${rateLimitBuckets.size} remaining`
+            )
+        }
+    }, RATE_LIMIT_CLEANUP_INTERVAL)
+}
 
 const getClientAddress = (request: Request) => {
     const forwarded = request.headers.get('x-forwarded-for')
@@ -48,18 +72,13 @@ const getClientAddress = (request: Request) => {
     return 'unknown'
 }
 
-const isRateLimited = (clientAddress: string) => {
+const isRateLimited = (clientAddress: string): boolean => {
+    startRateLimitCleanup() // Ensure cleanup is running
+
     const now = Date.now()
-
-    if (rateLimitBuckets.size > 1024) {
-        for (const [key, bucket] of rateLimitBuckets) {
-            if (now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
-                rateLimitBuckets.delete(key)
-            }
-        }
-    }
-
     const bucket = rateLimitBuckets.get(clientAddress)
+
+    // Bucket expired or doesn't exist
     if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
         rateLimitBuckets.set(clientAddress, {
             count: 1,
@@ -68,10 +87,15 @@ const isRateLimited = (clientAddress: string) => {
         return false
     }
 
+    // Check if already at limit
     if (bucket.count >= RATE_LIMIT_MAX_REQUESTS) {
+        console.warn(
+            `[rate-limit] Client ${clientAddress} exceeded limit (${bucket.count} requests)`
+        )
         return true
     }
 
+    // Increment counter
     bucket.count += 1
     return false
 }

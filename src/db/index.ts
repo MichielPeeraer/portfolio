@@ -9,7 +9,18 @@ declare global {
 const cleanConnectionString = (value: string | undefined) =>
     value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
 
+const parsePositiveInt = (value: string | undefined, fallback: number) => {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+}
+
 const databaseUrl = cleanConnectionString(process.env.DATABASE_URL)
+const directUrl = cleanConnectionString(process.env.DIRECT_URL)
+
+const selectedUrl =
+    process.env.NODE_ENV === 'development'
+        ? directUrl || databaseUrl
+        : databaseUrl || directUrl
 
 const createMissingDbProxy = () =>
     new Proxy(
@@ -22,17 +33,27 @@ const createMissingDbProxy = () =>
     ) as ReturnType<typeof drizzle>
 
 const createDb = () => {
-    if (!databaseUrl) {
+    if (!selectedUrl) {
         return createMissingDbProxy()
     }
 
-    const client = postgres(databaseUrl, {
-        max: 5,
+    const maxConnections = parsePositiveInt(process.env.DB_POOL_MAX, 5)
+    const idleTimeoutSeconds = parsePositiveInt(
+        process.env.DB_IDLE_TIMEOUT_S,
+        20
+    )
+    const connectTimeoutSeconds = parsePositiveInt(
+        process.env.DB_CONNECT_TIMEOUT_S,
+        10
+    )
+
+    const client = postgres(selectedUrl, {
+        max: maxConnections,
         // Required when connecting through a pgBouncer transaction-mode pooler
         // (e.g. Supabase Session Pooler / Transaction Pooler).
         prepare: false,
-        idle_timeout: 20,
-        connect_timeout: 10,
+        idle_timeout: idleTimeoutSeconds,
+        connect_timeout: connectTimeoutSeconds,
     })
 
     return drizzle(client, { schema })

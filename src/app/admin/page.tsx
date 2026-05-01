@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
-import { getPortfolioData } from '@/lib/portfolio-data'
+import { getPortfolioDataFromDb } from '@/lib/portfolio-data'
 import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
@@ -15,7 +15,16 @@ export default async function AdminPage() {
         redirect('/login')
     }
 
-    const data = await getPortfolioData()
+    let data: Awaited<ReturnType<typeof getPortfolioDataFromDb>> | null = null
+
+    try {
+        data = await getPortfolioDataFromDb()
+    } catch (error) {
+        console.error(
+            '[admin-page] Failed to load portfolio data from DB:',
+            error
+        )
+    }
 
     return (
         <main className="relative min-h-screen overflow-hidden bg-black px-4 py-6 font-mono text-green-400 md:px-8 md:py-10">
@@ -74,7 +83,27 @@ export default async function AdminPage() {
                     </div>
                 </header>
 
-                <PortfolioEditor initialData={data} />
+                {data ? (
+                    <PortfolioEditor initialData={data} />
+                ) : (
+                    <section className="rounded-2xl border border-red-900/70 bg-red-950/30 p-5 md:p-6">
+                        <h2 className="text-lg font-medium text-red-300">
+                            Database unavailable
+                        </h2>
+                        <p className="mt-2 text-sm text-red-200/80">
+                            The admin editor needs a live database connection.
+                            Please try again in a moment.
+                        </p>
+                        <div className="mt-4">
+                            <Link
+                                href="/admin"
+                                className="inline-flex rounded-lg border border-red-800/70 bg-black/30 px-3 py-2 text-sm text-red-200 transition hover:bg-red-900/20"
+                            >
+                                Retry
+                            </Link>
+                        </div>
+                    </section>
+                )}
             </div>
         </main>
     )

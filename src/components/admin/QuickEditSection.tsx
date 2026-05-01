@@ -2,6 +2,8 @@ import type {
     FieldErrors,
     UseFormHandleSubmit,
     UseFormRegister,
+    UseFormWatch,
+    UseFormSetValue,
 } from 'react-hook-form'
 import type { AdminFormValues } from '@/components/admin/editorSchemas'
 
@@ -13,6 +15,8 @@ interface QuickEditSectionProps {
     handleSubmit: UseFormHandleSubmit<AdminFormValues>
     onSubmit: (values: AdminFormValues) => Promise<void>
     onReset: () => void
+    watch: UseFormWatch<AdminFormValues>
+    setValue: UseFormSetValue<AdminFormValues>
 }
 
 function LoadingSpinner() {
@@ -106,7 +110,10 @@ export function QuickEditSection({
     handleSubmit,
     onSubmit,
     onReset,
+    watch,
+    setValue,
 }: QuickEditSectionProps) {
+    const openToWork = watch('openToWork')
     const inputClass =
         'w-full rounded-lg border border-green-900/70 bg-black/60 px-3 py-2 text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
     const textareaClass = `${inputClass} min-h-[100px] resize-y`
@@ -236,7 +243,12 @@ export function QuickEditSection({
                             <input
                                 id="openToWork"
                                 type="checkbox"
-                                {...register('openToWork')}
+                                checked={openToWork}
+                                onChange={(e) =>
+                                    setValue('openToWork', e.target.checked, {
+                                        shouldDirty: true,
+                                    })
+                                }
                                 autoComplete="off"
                                 className="h-4 w-4 accent-green-500"
                             />

@@ -1,11 +1,10 @@
 import { getServerSession } from 'next-auth'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { createAuthOptions } from '@/lib/auth-options'
 import {
-    clearPortfolioDataCache,
-    getPortfolioData,
-    primePortfolioDataCache,
+    PORTFOLIO_DATA_TAG,
+    getPortfolioDataFromDb,
 } from '@/lib/portfolio-data'
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import { db } from '@/db'
@@ -24,8 +23,19 @@ import {
 } from '@/db/schema'
 
 const isAdmin = async () => {
-    const session = await getServerSession(createAuthOptions())
-    return session?.user?.role === 'admin'
+    try {
+        const session = await getServerSession(createAuthOptions())
+        const isAdminUser = session?.user?.role === 'admin'
+
+        if (!isAdminUser) {
+            console.warn('[admin-portfolio] Unauthorized access attempt')
+        }
+
+        return isAdminUser
+    } catch (error) {
+        console.error('[admin-portfolio] Session validation failed:', error)
+        return false
+    }
 }
 
 export async function GET() {
@@ -33,8 +43,16 @@ export async function GET() {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = await getPortfolioData()
-    return NextResponse.json({ data })
+    try {
+        const data = await getPortfolioDataFromDb()
+        return NextResponse.json({ data })
+    } catch (error) {
+        console.error('[admin-portfolio] Failed to load DB data:', error)
+        return NextResponse.json(
+            { error: 'Database temporarily unavailable.' },
+            { status: 503 }
+        )
+    }
 }
 
 export async function PUT(request: Request) {
@@ -208,13 +226,12 @@ export async function PUT(request: Request) {
         }
     })
 
-    // Make newly saved data visible immediately in this runtime.
-    clearPortfolioDataCache()
-    primePortfolioDataCache(d)
+    revalidateTag(PORTFOLIO_DATA_TAG, 'max')
 
     revalidatePath('/', 'layout')
     revalidatePath('/admin')
     revalidatePath('/opengraph-image')
 
-    return NextResponse.json({ success: true })
+    // Return fresh data so client can immediately update forms and UI
+    return NextResponse.json({ success: true, data: d })
 }

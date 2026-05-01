@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState, type SetStateAction } from 'react'
+import { useState, type SetStateAction } from 'react'
+import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import {
@@ -18,6 +19,7 @@ import { portfolioSchema } from '@/lib/portfolio-schema'
 import type { PortfolioData } from '@/types'
 
 export const usePortfolioEditorState = (initialData: PortfolioData) => {
+    const router = useRouter()
     const [portfolioData, setPortfolioData] =
         useState<PortfolioData>(initialData)
     const [value, setValue] = useState(JSON.stringify(initialData, null, 2))
@@ -33,40 +35,55 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         buildSectionsDraft(initialData)
     )
 
+    // Track when we are programmatically resetting form defaults after save.
+    const [isResettingForm, setIsResettingForm] = useState(false)
+
     const {
         register,
         handleSubmit,
         reset,
         watch,
-        formState: { errors, isSubmitting },
+        setValue: setFormValue,
+        formState: { errors, isSubmitting, isDirty: isQuickFormDirty },
     } = useForm<AdminFormValues>({
         resolver: zodResolver(adminFormSchema),
         defaultValues: buildAdminFormDefaults(initialData),
     })
 
-    const watchedFormValues = watch()
-
-    const quickFormDefaults = buildAdminFormDefaults(portfolioData)
     const sectionsDefaults = buildSectionsDraft(portfolioData)
     const rawDefaults = JSON.stringify(portfolioData, null, 2)
-
-    const isQuickFormDirty =
-        JSON.stringify(watchedFormValues) !== JSON.stringify(quickFormDefaults)
     const isSectionsDirty =
         JSON.stringify(sectionsDraft) !== JSON.stringify(sectionsDefaults)
     const isRawJsonDirty = value !== rawDefaults
-
-    useEffect(() => {
-        if (formStatus) {
-            setFormStatus('')
-        }
-    }, [watchedFormValues, formStatus])
+    const visibleFormStatus =
+        formStatus && isQuickFormDirty && !isResettingForm ? '' : formStatus
 
     const syncEditorState = (nextData: PortfolioData) => {
         setPortfolioData(nextData)
         setValue(JSON.stringify(nextData, null, 2))
         setSectionsDraftState(buildSectionsDraft(nextData))
-        reset(buildAdminFormDefaults(nextData))
+
+        setIsResettingForm(true)
+        const newDefaults = buildAdminFormDefaults(nextData)
+        reset(newDefaults)
+        Promise.resolve().then(() => {
+            setIsResettingForm(false)
+        })
+    }
+
+    const syncFromApiResponse = (
+        result: {
+            success?: boolean
+            data?: PortfolioData
+            error?: string
+        } | null
+    ) => {
+        // If API returned fresh data, sync immediately so forms show saved state
+        if (result?.success && result.data) {
+            syncEditorState(result.data)
+            return true
+        }
+        return false
     }
 
     const setSectionsDraft = (next: SetStateAction<SectionsFormValues>) => {
@@ -108,6 +125,8 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         })
 
         const result = (await response.json().catch(() => null)) as {
+            success?: boolean
+            data?: PortfolioData
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -179,6 +198,8 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
 
         let response: Response
         let result: {
+            success?: boolean
+            data?: PortfolioData
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -200,8 +221,12 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        syncEditorState(parsed.data as PortfolioData)
+        // Sync from API response if available, otherwise fallback to submitted data
+        if (!syncFromApiResponse(result)) {
+            syncEditorState(parsed.data as PortfolioData)
+        }
         setFormStatus('Saved successfully.')
+        router.refresh()
     }
 
     const saveJson = async () => {
@@ -231,6 +256,8 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
 
         let response: Response
         let result: {
+            success?: boolean
+            data?: PortfolioData
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -264,9 +291,13 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        syncEditorState(validated.data as PortfolioData)
+        // Sync from API response if available, otherwise fallback to submitted data
+        if (!syncFromApiResponse(result)) {
+            syncEditorState(validated.data as PortfolioData)
+        }
         setRawIssues([])
         setRawStatus('Saved successfully.')
+        router.refresh()
         setIsSaving(false)
     }
 
@@ -389,6 +420,8 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
 
         let response: Response
         let result: {
+            success?: boolean
+            data?: PortfolioData
             error?: string
             issues?: Array<{
                 path?: Array<string | number>
@@ -424,17 +457,23 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
             return
         }
 
-        syncEditorState(parsedPortfolio.data as PortfolioData)
+        // Sync from API response if available, otherwise fallback to submitted data
+        if (!syncFromApiResponse(result)) {
+            syncEditorState(parsedPortfolio.data as PortfolioData)
+        }
         setSectionsStatus('Section changes saved successfully.')
+        router.refresh()
         setIsSavingSections(false)
     }
 
     return {
         register,
         handleSubmit,
+        watch,
+        setFormValue,
         errors,
         isSubmitting,
-        formStatus,
+        formStatus: visibleFormStatus,
         onSubmitForm,
         sectionsDraft,
         setSectionsDraft,

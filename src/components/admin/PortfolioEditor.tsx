@@ -107,6 +107,8 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
     const {
         register,
         handleSubmit,
+        watch,
+        setFormValue,
         errors,
         isSubmitting,
         formStatus,
@@ -152,6 +154,8 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     handleSubmit={handleSubmit}
                     onSubmit={onSubmitForm}
                     onReset={resetQuickForm}
+                    watch={watch}
+                    setValue={setFormValue}
                 />
             </Panel>
 

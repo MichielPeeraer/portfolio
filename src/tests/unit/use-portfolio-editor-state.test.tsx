@@ -4,6 +4,12 @@ import data from '@/data/portfolio.json'
 import { usePortfolioEditorState } from '@/components/admin/usePortfolioEditorState'
 import type { PortfolioData } from '@/types'
 
+vi.mock('next/navigation', () => ({
+    useRouter: () => ({
+        refresh: vi.fn(),
+    }),
+}))
+
 const initialData = data as PortfolioData
 
 describe('usePortfolioEditorState', () => {

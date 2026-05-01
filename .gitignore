@@ -41,7 +41,7 @@ yarn-error.log*
 .env*.local
 .env.*.local
 !.env.example
-TODO.txt
+CODEBASE_REVIEW.md
 
 # vercel
 .vercel
