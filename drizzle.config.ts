@@ -1,4 +1,8 @@
 import type { Config } from 'drizzle-kit'
+import { config } from 'dotenv'
+import { existsSync } from 'fs'
+
+if (existsSync('.env.local')) config({ path: '.env.local' })
 
 const cleanConnectionString = (value: string | undefined) =>
     value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
