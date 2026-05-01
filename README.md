@@ -4,6 +4,10 @@
 
 A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind CSS, and Framer Motion.
 
+## Motivation
+
+I wanted a personal portfolio that felt different from the usual clean-and-minimal templates. The Matrix rain aesthetic reflects my appreciation for retro hacker culture while still being a fully production-ready Next.js application with auth, a database-backed admin dashboard, and solid test coverage.
+
 ## Features
 
 - **Matrix Rain Effect**: Animated falling green characters in the background
@@ -25,6 +29,20 @@ A retro Matrix-themed portfolio website built with Next.js, TypeScript, Tailwind
 - **Formatting**: Prettier
 - **Database**: PostgreSQL + Prisma
 - **Authentication**: NextAuth (GitHub OAuth)
+
+## Quick Start
+
+```bash
+git clone https://github.com/MichielPeeraer/portfolio.git
+cd portfolio
+npm install
+cp .env.example .env.local   # then fill in the required values
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) — that's it for a local preview.
+
+For full functionality (admin dashboard, contact form, database) see the [Environment Variables](#environment-variables) and [Database and Admin Setup](#database-and-admin-setup) sections below.
 
 ## Getting Started
 
@@ -206,10 +224,48 @@ public/
 
 ## Customization
 
-- Update portfolio content in `src/data/portfolio.json`
-- Adjust global styles in `src/app/globals.css`
-- Tweak section components in `src/components/sections/`
-- Fine-tune visual effects in `src/components/effects/`
+If you're using this as a base for your own portfolio, make sure to replace all personal content with your own:
+
+- **Personal details**: Edit `src/data/portfolio.json` with your own name, bio, experience, education, and skills
+- **Profile picture**: Replace `public/profile.jpg` with your own photo
+- **Contact info & social links**: Update the relevant fields in `portfolio.json`
+- **Site metadata**: Set your name, URL, and description in `src/lib/site.ts`
+- **Global styles**: Adjust colours and fonts in `src/app/globals.css`
+- **Section components**: Tweak layout and copy in `src/components/sections/`
+- **Visual effects**: Fine-tune the Matrix rain and other effects in `src/components/effects/`
+
+## Usage
+
+| Command               | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `npm run dev`         | Start development server at `localhost:3000` |
+| `npm run build`       | Create an optimised production build         |
+| `npm start`           | Serve the production build                   |
+| `npm run test`        | Run unit & component tests (Vitest)          |
+| `npm run test:e2e`    | Run end-to-end tests (Playwright)            |
+| `npm run lint`        | Lint with ESLint                             |
+| `npm run format`      | Format all files with Prettier               |
+| `npm run typecheck`   | Type-check without emitting output           |
+| `npm run db:generate` | Generate Prisma client                       |
+| `npm run db:migrate`  | Create and apply a new DB migration          |
+| `npm run db:seed`     | Seed the database from `portfolio.json`      |
+
+The admin dashboard is available at `/admin` after signing in via `/login` with the GitHub account configured in `ADMIN_GITHUB_LOGIN`.
+
+## Contributing
+
+Contributions, bug reports, and feature requests are welcome!
+
+1. Fork the repository and create a branch: `git checkout -b feat/your-feature`
+2. Make your changes and ensure all checks pass:
+    ```bash
+    npm run typecheck
+    npm run lint
+    npm run test
+    ```
+3. Commit using a descriptive message and open a Pull Request against `main`.
+
+Please keep PRs focused — one feature or fix per PR makes review faster.
 
 ## License
 
