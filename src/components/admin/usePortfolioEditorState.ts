@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState, type SetStateAction } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import {
@@ -29,7 +29,7 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
     const [sectionsStatus, setSectionsStatus] = useState('')
     const [sectionIssues, setSectionIssues] = useState<string[]>([])
 
-    const [sectionsDraft, setSectionsDraft] = useState<SectionsFormValues>(
+    const [sectionsDraft, setSectionsDraftState] = useState<SectionsFormValues>(
         buildSectionsDraft(initialData)
     )
 
@@ -37,17 +37,65 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         register,
         handleSubmit,
         reset,
+        watch,
         formState: { errors, isSubmitting },
     } = useForm<AdminFormValues>({
         resolver: zodResolver(adminFormSchema),
         defaultValues: buildAdminFormDefaults(initialData),
     })
 
+    const watchedFormValues = watch()
+
+    const quickFormDefaults = buildAdminFormDefaults(portfolioData)
+    const sectionsDefaults = buildSectionsDraft(portfolioData)
+    const rawDefaults = JSON.stringify(portfolioData, null, 2)
+
+    const isQuickFormDirty =
+        JSON.stringify(watchedFormValues) !== JSON.stringify(quickFormDefaults)
+    const isSectionsDirty =
+        JSON.stringify(sectionsDraft) !== JSON.stringify(sectionsDefaults)
+    const isRawJsonDirty = value !== rawDefaults
+
+    useEffect(() => {
+        if (formStatus) {
+            setFormStatus('')
+        }
+    }, [watchedFormValues, formStatus])
+
     const syncEditorState = (nextData: PortfolioData) => {
         setPortfolioData(nextData)
         setValue(JSON.stringify(nextData, null, 2))
-        setSectionsDraft(buildSectionsDraft(nextData))
+        setSectionsDraftState(buildSectionsDraft(nextData))
         reset(buildAdminFormDefaults(nextData))
+    }
+
+    const setSectionsDraft = (next: SetStateAction<SectionsFormValues>) => {
+        setSectionsStatus('')
+        setSectionIssues([])
+        setSectionsDraftState(next)
+    }
+
+    const setRawValue = (next: string) => {
+        setRawStatus('')
+        setRawIssues([])
+        setValue(next)
+    }
+
+    const resetQuickForm = () => {
+        reset(buildAdminFormDefaults(portfolioData))
+        setFormStatus('')
+    }
+
+    const resetSections = () => {
+        setSectionsDraftState(buildSectionsDraft(portfolioData))
+        setSectionsStatus('')
+        setSectionIssues([])
+    }
+
+    const resetRawJson = () => {
+        setValue(JSON.stringify(portfolioData, null, 2))
+        setRawStatus('')
+        setRawIssues([])
     }
 
     const persist = async (payload: PortfolioData) => {
@@ -227,7 +275,9 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         field: keyof SectionsFormValues['experience'][number],
         fieldValue: string
     ) => {
-        setSectionsDraft((current) => ({
+        setSectionsStatus('')
+        setSectionIssues([])
+        setSectionsDraftState((current) => ({
             ...current,
             experience: current.experience.map((item, itemIndex) =>
                 itemIndex === index ? { ...item, [field]: fieldValue } : item
@@ -240,7 +290,9 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         field: keyof SectionsFormValues['education'][number],
         fieldValue: string
     ) => {
-        setSectionsDraft((current) => ({
+        setSectionsStatus('')
+        setSectionIssues([])
+        setSectionsDraftState((current) => ({
             ...current,
             education: current.education.map((item, itemIndex) =>
                 itemIndex === index ? { ...item, [field]: fieldValue } : item
@@ -253,7 +305,9 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         field: keyof SectionsFormValues['skillCategories'][number],
         fieldValue: string | boolean
     ) => {
-        setSectionsDraft((current) => ({
+        setSectionsStatus('')
+        setSectionIssues([])
+        setSectionsDraftState((current) => ({
             ...current,
             skillCategories: current.skillCategories.map((item, itemIndex) =>
                 itemIndex === index ? { ...item, [field]: fieldValue } : item
@@ -392,10 +446,16 @@ export const usePortfolioEditorState = (initialData: PortfolioData) => {
         sectionsStatus,
         sectionIssues,
         value,
-        setValue,
+        setValue: setRawValue,
         saveJson,
         isSaving,
         rawStatus,
         rawIssues,
+        resetQuickForm,
+        resetSections,
+        resetRawJson,
+        isQuickFormDirty,
+        isSectionsDirty,
+        isRawJsonDirty,
     }
 }

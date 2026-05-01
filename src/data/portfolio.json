@@ -125,7 +125,7 @@
             "skills": [
                 { "label": "PostgreSQL", "icon": "postgresql" },
                 { "label": "MongoDB", "icon": "mongodb" },
-                { "label": "Prisma", "icon": "prisma" },
+                { "label": "Drizzle ORM", "icon": "drizzle" },
                 { "label": "SQLAlchemy", "icon": "sqlalchemy" }
             ]
         },

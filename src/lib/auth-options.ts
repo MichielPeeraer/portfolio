@@ -1,8 +1,11 @@
 import type { NextAuthOptions } from 'next-auth'
+import type { Adapter } from 'next-auth/adapters'
 import GithubProvider from 'next-auth/providers/github'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import { DrizzleAdapter } from '@auth/drizzle-adapter'
+import { eq } from 'drizzle-orm'
 import { getAuthEnv } from '@/lib/env'
-import { prisma } from '@/lib/prisma'
+import { db } from '@/db'
+import { users, accounts, sessions, verificationTokens } from '@/db/schema'
 
 type TokenWithGithubLogin = { githubLogin?: unknown }
 type GithubProfile = { login?: unknown }
@@ -21,7 +24,12 @@ export const createAuthOptions = (): NextAuthOptions => {
     const adminGithubLogin = authEnv.adminGithubLogin
 
     return {
-        adapter: PrismaAdapter(prisma),
+        adapter: DrizzleAdapter(db, {
+            usersTable: users,
+            accountsTable: accounts,
+            sessionsTable: sessions,
+            verificationTokensTable: verificationTokens,
+        }) as Adapter,
         secret: authEnv.nextAuthSecret,
         session: {
             strategy: 'jwt',
@@ -73,15 +81,19 @@ export const createAuthOptions = (): NextAuthOptions => {
                 ;(token as { githubLogin?: string }).githubLogin = githubLogin
 
                 const dbUser = token.sub
-                    ? await prisma.user.findUnique({
-                          where: { id: token.sub },
-                          select: { role: true, email: true },
-                      })
+                    ? await db
+                          .select({ role: users.role, email: users.email })
+                          .from(users)
+                          .where(eq(users.id, token.sub))
+                          .limit(1)
+                          .then((rows) => rows[0] ?? null)
                     : email
-                      ? await prisma.user.findUnique({
-                            where: { email },
-                            select: { role: true, email: true },
-                        })
+                      ? await db
+                            .select({ role: users.role, email: users.email })
+                            .from(users)
+                            .where(eq(users.email, email))
+                            .limit(1)
+                            .then((rows) => rows[0] ?? null)
                       : null
 
                 if (dbUser?.role) {

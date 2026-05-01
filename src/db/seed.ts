@@ -1,10 +1,17 @@
-import { getServerSession } from 'next-auth'
-import { revalidatePath } from 'next/cache'
-import { NextResponse } from 'next/server'
-import { createAuthOptions } from '@/lib/auth-options'
-import { getPortfolioData } from '@/lib/portfolio-data'
-import { portfolioSchema } from '@/lib/portfolio-schema'
-import { db } from '@/db'
+/**
+ * Seed script — run with: npm run db:seed
+ *
+ * Reads src/data/portfolio.json and inserts all rows into the normalized
+ * Drizzle schema, then ensures the admin user record exists.
+ *
+ * Uses the DIRECT_URL (non-pooled) connection so that the script works even
+ * when DATABASE_URL points at a pgBouncer transaction-mode pooler.
+ */
+
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import {
     personalInfo,
     heroTypedLines,
@@ -17,52 +24,33 @@ import {
     devPractices,
     education,
     learningLanguages,
-} from '@/db/schema'
+    users,
+} from './schema'
+import type { PortfolioData } from '@/types'
 
-const isAdmin = async () => {
-    const session = await getServerSession(createAuthOptions())
-    return session?.user?.role === 'admin'
+const cleanConnectionString = (value: string | undefined) =>
+    value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
+
+const connectionString = cleanConnectionString(
+    process.env.DIRECT_URL ?? process.env.DATABASE_URL
+)
+
+if (!connectionString) {
+    console.error('[seed] No DATABASE_URL / DIRECT_URL found. Aborting.')
+    process.exit(1)
 }
 
-export async function GET() {
-    if (!(await isAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+const client = postgres(connectionString, { max: 1, prepare: false })
+const db = drizzle(client)
 
-    const data = await getPortfolioData()
-    return NextResponse.json({ data })
-}
+async function main() {
+    const portfolioPath = join(process.cwd(), 'src', 'data', 'portfolio.json')
+    const d = JSON.parse(readFileSync(portfolioPath, 'utf8')) as PortfolioData
 
-export async function PUT(request: Request) {
-    if (!(await isAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    let body: unknown
-
-    try {
-        body = await request.json()
-    } catch {
-        return NextResponse.json(
-            { error: 'Invalid JSON payload' },
-            { status: 400 }
-        )
-    }
-
-    const parsed = portfolioSchema.safeParse(body)
-    if (!parsed.success) {
-        return NextResponse.json(
-            { error: 'Validation failed', issues: parsed.error.issues },
-            { status: 400 }
-        )
-    }
-
-    const d = parsed.data
+    console.log('[seed] Seeding portfolio data…')
 
     await db.transaction(async (tx) => {
-        // Clear all portfolio tables.
-        // experience_points and skills are deleted via ON DELETE CASCADE
-        // when their parent rows are removed.
+        // Clear all portfolio tables (cascade handles child rows)
         await Promise.all([
             tx.delete(personalInfo),
             tx.delete(experience),
@@ -128,12 +116,14 @@ export async function PUT(request: Request) {
                 : Promise.resolve(),
 
             d.devPractices.length
-                ? tx.insert(devPractices).values(
-                      d.devPractices.map((text, i) => ({
-                          text,
-                          sortOrder: i,
-                      }))
-                  )
+                ? tx
+                      .insert(devPractices)
+                      .values(
+                          d.devPractices.map((text, i) => ({
+                              text,
+                              sortOrder: i,
+                          }))
+                      )
                 : Promise.resolve(),
 
             d.education.length
@@ -154,7 +144,7 @@ export async function PUT(request: Request) {
                 : Promise.resolve(),
         ])
 
-        // Experience rows + their bullet points (need parent ID first)
+        // Experience rows + bullet points (need parent ID first)
         for (let i = 0; i < d.experience.length; i++) {
             const exp = d.experience[i]
             const [inserted] = await tx
@@ -179,7 +169,7 @@ export async function PUT(request: Request) {
             }
         }
 
-        // Skill categories + their skills (need parent ID first)
+        // Skill categories + skills (need parent ID first)
         for (let i = 0; i < d.skillCategories.length; i++) {
             const cat = d.skillCategories[i]
             const [inserted] = await tx
@@ -204,9 +194,34 @@ export async function PUT(request: Request) {
         }
     })
 
-    revalidatePath('/', 'layout')
-    revalidatePath('/admin')
-    revalidatePath('/opengraph-image')
+    console.log('[seed] Portfolio data seeded.')
 
-    return NextResponse.json({ success: true })
+    // Ensure admin user record exists
+    const adminEmail = process.env.ADMIN_EMAIL
+
+    if (adminEmail) {
+        await db
+            .insert(users)
+            .values({
+                email: adminEmail,
+                role: 'admin',
+                name: 'Portfolio Admin',
+            })
+            .onConflictDoUpdate({
+                target: users.email,
+                set: { role: 'admin' },
+            })
+        console.log(`[seed] Admin user ensured: ${adminEmail}`)
+    } else {
+        console.warn('[seed] ADMIN_EMAIL is not set. Skipping admin bootstrap.')
+    }
+
+    console.log('[seed] Done.')
 }
+
+main()
+    .then(() => process.exit(0))
+    .catch((err) => {
+        console.error(err)
+        process.exit(1)
+    })

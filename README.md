@@ -27,7 +27,7 @@ I wanted a personal portfolio that felt different from the usual clean-and-minim
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
 - **Formatting**: Prettier
-- **Database**: PostgreSQL + Prisma
+- **Database**: PostgreSQL + Drizzle ORM
 - **Authentication**: NextAuth (GitHub OAuth)
 
 ## Quick Start
@@ -139,17 +139,19 @@ If any `.env` value is exposed, rotate secrets immediately and redeploy.
 
 ## Database and Admin Setup
 
-1. Generate Prisma client:
+1. Generate SQL migration files from the Drizzle schema:
 
 ```bash
 npm run db:generate
 ```
 
-2. Create and apply local migrations:
+2. Apply migrations to the database:
 
 ```bash
-npm run db:migrate -- --name init_auth_and_portfolio
+npm run db:migrate
 ```
+
+> **Tip — dev shortcut:** `npm run db:push` applies schema changes directly without generating migration files. Use this for fast local iteration; use `db:generate` + `db:migrate` for production-grade change tracking.
 
 3. Seed database with current `src/data/portfolio.json` and bootstrap admin user:
 
@@ -168,18 +170,9 @@ https://<your-domain>/api/auth/callback/github
    Access is restricted to `ADMIN_GITHUB_LOGIN` (recommended), with
    `ADMIN_EMAIL` as fallback.
 
-The public site reads portfolio data from DB and falls back to JSON if DB is unavailable.
+The public site reads portfolio data from the normalized DB tables and falls back to `src/data/portfolio.json` if the DB is unavailable.
 
-### Prisma CLI note
-
-If you see this error:
-
-`The datasource property url is no longer supported in schema files...`
-
-you are likely running Prisma v7 globally. This project currently uses Prisma v6.
-
-- Use project scripts (`npm run db:generate`, `npm run db:migrate`) so the local Prisma version is used.
-- Avoid running a global `prisma` binary in this repo.
+> **Drizzle Studio:** run `npm run db:studio` to open a browser-based DB viewer/editor.
 
 ## Build for Production
 
@@ -246,9 +239,11 @@ If you're using this as a base for your own portfolio, make sure to replace all 
 | `npm run lint`        | Lint with ESLint                             |
 | `npm run format`      | Format all files with Prettier               |
 | `npm run typecheck`   | Type-check without emitting output           |
-| `npm run db:generate` | Generate Prisma client                       |
-| `npm run db:migrate`  | Create and apply a new DB migration          |
+| `npm run db:generate` | Generate Drizzle migration SQL files         |
+| `npm run db:migrate`  | Apply pending migrations to the database     |
+| `npm run db:push`     | Push schema directly (dev fast-path)         |
 | `npm run db:seed`     | Seed the database from `portfolio.json`      |
+| `npm run db:studio`   | Open Drizzle Studio (browser DB viewer)      |
 
 The admin dashboard is available at `/admin` after signing in via `/login` with the GitHub account configured in `ADMIN_GITHUB_LOGIN`.
 

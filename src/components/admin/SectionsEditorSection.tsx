@@ -76,6 +76,24 @@ function TrashIcon() {
     )
 }
 
+function DuplicateIcon() {
+    return (
+        <svg
+            className="h-3.5 w-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+        >
+            <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 10h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
+        </svg>
+    )
+}
+
 function ToggleArrowIcon({ open }: { open: boolean }) {
     return (
         <svg
@@ -160,6 +178,7 @@ interface SectionsEditorSectionProps {
     isSavingSections: boolean
     sectionsStatus: string
     sectionIssues: string[]
+    onReset: () => void
 }
 
 export function SectionsEditorSection({
@@ -172,6 +191,7 @@ export function SectionsEditorSection({
     isSavingSections,
     sectionsStatus,
     sectionIssues,
+    onReset,
 }: SectionsEditorSectionProps) {
     const [experienceOpen, setExperienceOpen] = useState(true)
     const [educationOpen, setEducationOpen] = useState(true)
@@ -190,7 +210,7 @@ export function SectionsEditorSection({
     const iconButtonClass =
         'flex h-7 w-7 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30 disabled:opacity-30'
     const destructiveIconButtonClass =
-        'flex h-7 w-7 items-center justify-center rounded-lg border border-red-900/60 text-red-400 transition hover:bg-red-950/30'
+        'flex h-7 w-7 items-center justify-center rounded-lg border border-red-900/60 text-red-400 transition hover:bg-red-950/30 disabled:opacity-30'
     const addButtonClass =
         'flex items-center gap-1.5 rounded-lg border border-green-700/70 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-green-400 transition hover:bg-green-900/30'
     const statusClass = sectionsStatus.startsWith('Section changes saved')
@@ -321,6 +341,36 @@ export function SectionsEditorSection({
                                           </button>
                                           <button
                                               type="button"
+                                              onClick={() =>
+                                                  setSectionsDraft(
+                                                      (current) => ({
+                                                          ...current,
+                                                          experience: [
+                                                              ...current.experience.slice(
+                                                                  0,
+                                                                  index + 1
+                                                              ),
+                                                              {
+                                                                  ...item,
+                                                              },
+                                                              ...current.experience.slice(
+                                                                  index + 1
+                                                              ),
+                                                          ],
+                                                      })
+                                                  )
+                                              }
+                                              className={iconButtonClass}
+                                              title="Duplicate item"
+                                          >
+                                              <DuplicateIcon />
+                                          </button>
+                                          <button
+                                              type="button"
+                                              disabled={
+                                                  sectionsDraft.experience
+                                                      .length <= 1
+                                              }
                                               onClick={() =>
                                                   setSectionsDraft(
                                                       (current) => ({
@@ -581,6 +631,36 @@ export function SectionsEditorSection({
                                                   setSectionsDraft(
                                                       (current) => ({
                                                           ...current,
+                                                          education: [
+                                                              ...current.education.slice(
+                                                                  0,
+                                                                  index + 1
+                                                              ),
+                                                              {
+                                                                  ...item,
+                                                              },
+                                                              ...current.education.slice(
+                                                                  index + 1
+                                                              ),
+                                                          ],
+                                                      })
+                                                  )
+                                              }
+                                              className={iconButtonClass}
+                                              title="Duplicate item"
+                                          >
+                                              <DuplicateIcon />
+                                          </button>
+                                          <button
+                                              type="button"
+                                              disabled={
+                                                  sectionsDraft.education
+                                                      .length <= 1
+                                              }
+                                              onClick={() =>
+                                                  setSectionsDraft(
+                                                      (current) => ({
+                                                          ...current,
                                                           education:
                                                               current.education.filter(
                                                                   (
@@ -831,6 +911,36 @@ export function SectionsEditorSection({
                                           </button>
                                           <button
                                               type="button"
+                                              onClick={() =>
+                                                  setSectionsDraft(
+                                                      (current) => ({
+                                                          ...current,
+                                                          skillCategories: [
+                                                              ...current.skillCategories.slice(
+                                                                  0,
+                                                                  index + 1
+                                                              ),
+                                                              {
+                                                                  ...item,
+                                                              },
+                                                              ...current.skillCategories.slice(
+                                                                  index + 1
+                                                              ),
+                                                          ],
+                                                      })
+                                                  )
+                                              }
+                                              className={iconButtonClass}
+                                              title="Duplicate item"
+                                          >
+                                              <DuplicateIcon />
+                                          </button>
+                                          <button
+                                              type="button"
+                                              disabled={
+                                                  sectionsDraft.skillCategories
+                                                      .length <= 1
+                                              }
                                               onClick={() =>
                                                   setSectionsDraft(
                                                       (current) => ({
@@ -1171,15 +1281,25 @@ export function SectionsEditorSection({
                         </p>
                     ) : null}
                 </div>
-                <button
-                    type="button"
-                    onClick={saveSections}
-                    disabled={isSavingSections}
-                    className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60 md:ml-4"
-                >
-                    {isSavingSections ? <LoadingSpinner /> : <CheckIcon />}
-                    {isSavingSections ? 'Saving…' : 'Save Sections'}
-                </button>
+                <div className="flex shrink-0 gap-2 md:ml-4">
+                    <button
+                        type="button"
+                        onClick={onReset}
+                        disabled={isSavingSections}
+                        className="rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-sm text-green-300 transition hover:bg-green-900/30 disabled:opacity-60"
+                    >
+                        Reset
+                    </button>
+                    <button
+                        type="button"
+                        onClick={saveSections}
+                        disabled={isSavingSections}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
+                    >
+                        {isSavingSections ? <LoadingSpinner /> : <CheckIcon />}
+                        {isSavingSections ? 'Saving…' : 'Save Sections'}
+                    </button>
+                </div>
             </div>
 
             {sectionIssues.length > 0 ? (

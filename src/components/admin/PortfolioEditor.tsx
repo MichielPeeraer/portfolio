@@ -15,6 +15,7 @@ interface PanelProps {
     index: number
     label: string
     badge?: string
+    statusBadge?: string
     open: boolean
     onToggle: () => void
     children: React.ReactNode
@@ -44,6 +45,7 @@ function Panel({
     index,
     label,
     badge,
+    statusBadge,
     open,
     onToggle,
     children,
@@ -79,6 +81,11 @@ function Panel({
                 {badge ? (
                     <span className="hidden rounded-full border border-green-900/60 bg-black/40 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-green-600 sm:inline-block">
                         {badge}
+                    </span>
+                ) : null}
+                {statusBadge ? (
+                    <span className="hidden rounded-full border border-amber-800/70 bg-amber-950/30 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-amber-300 sm:inline-block">
+                        {statusBadge}
                     </span>
                 ) : null}
                 <ChevronIcon open={open} />
@@ -119,6 +126,12 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
         isSaving,
         rawStatus,
         rawIssues,
+        resetQuickForm,
+        resetSections,
+        resetRawJson,
+        isQuickFormDirty,
+        isSectionsDirty,
+        isRawJsonDirty,
     } = usePortfolioEditorState(initialData)
 
     return (
@@ -127,6 +140,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                 index={1}
                 label="Quick Edit"
                 badge="Identity & contact"
+                statusBadge={isQuickFormDirty ? 'Unsaved' : undefined}
                 open={quickEditOpen}
                 onToggle={() => setQuickEditOpen((o) => !o)}
             >
@@ -137,6 +151,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     formStatus={formStatus}
                     handleSubmit={handleSubmit}
                     onSubmit={onSubmitForm}
+                    onReset={resetQuickForm}
                 />
             </Panel>
 
@@ -144,6 +159,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                 index={2}
                 label="Sections Editor"
                 badge="Experience, education & skills"
+                statusBadge={isSectionsDirty ? 'Unsaved' : undefined}
                 open={sectionsOpen}
                 onToggle={() => setSectionsOpen((o) => !o)}
             >
@@ -157,6 +173,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     isSavingSections={isSavingSections}
                     sectionsStatus={sectionsStatus}
                     sectionIssues={sectionIssues}
+                    onReset={resetSections}
                 />
             </Panel>
 
@@ -164,6 +181,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                 index={3}
                 label="Advanced JSON"
                 badge="Raw editing"
+                statusBadge={isRawJsonDirty ? 'Unsaved' : undefined}
                 open={jsonOpen}
                 onToggle={() => setJsonOpen((o) => !o)}
                 danger
@@ -175,6 +193,7 @@ export function PortfolioEditor({ initialData }: PortfolioEditorProps) {
                     isSaving={isSaving}
                     rawStatus={rawStatus}
                     rawIssues={rawIssues}
+                    onReset={resetRawJson}
                 />
             </Panel>
         </div>

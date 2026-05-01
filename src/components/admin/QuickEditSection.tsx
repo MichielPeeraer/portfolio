@@ -12,6 +12,7 @@ interface QuickEditSectionProps {
     formStatus: string
     handleSubmit: UseFormHandleSubmit<AdminFormValues>
     onSubmit: (values: AdminFormValues) => Promise<void>
+    onReset: () => void
 }
 
 function LoadingSpinner() {
@@ -104,6 +105,7 @@ export function QuickEditSection({
     formStatus,
     handleSubmit,
     onSubmit,
+    onReset,
 }: QuickEditSectionProps) {
     const inputClass =
         'w-full rounded-lg border border-green-900/70 bg-black/60 px-3 py-2 text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
@@ -306,14 +308,24 @@ export function QuickEditSection({
                         </p>
                     ) : null}
                 </div>
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60 sm:ml-4"
-                >
-                    {isSubmitting ? <LoadingSpinner /> : <CheckIcon />}
-                    {isSubmitting ? 'Saving…' : 'Save Quick Form'}
-                </button>
+                <div className="flex shrink-0 gap-2 sm:ml-4">
+                    <button
+                        type="button"
+                        onClick={onReset}
+                        disabled={isSubmitting}
+                        className="rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-sm text-green-300 transition hover:bg-green-900/30 disabled:opacity-60"
+                    >
+                        Reset
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
+                    >
+                        {isSubmitting ? <LoadingSpinner /> : <CheckIcon />}
+                        {isSubmitting ? 'Saving…' : 'Save Quick Form'}
+                    </button>
+                </div>
             </div>
         </form>
     )
