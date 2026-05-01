@@ -11,20 +11,34 @@ const cleanConnectionString = (value: string | undefined) =>
 
 const databaseUrl = cleanConnectionString(process.env.DATABASE_URL)
 
-if (!databaseUrl) {
-    throw new Error('[db] Missing DATABASE_URL')
+const createMissingDbProxy = () =>
+    new Proxy(
+        {},
+        {
+            get() {
+                throw new Error('[db] Missing DATABASE_URL')
+            },
+        }
+    ) as ReturnType<typeof drizzle>
+
+const createDb = () => {
+    if (!databaseUrl) {
+        return createMissingDbProxy()
+    }
+
+    const client = postgres(databaseUrl, {
+        max: 5,
+        // Required when connecting through a pgBouncer transaction-mode pooler
+        // (e.g. Supabase Session Pooler / Transaction Pooler).
+        prepare: false,
+        idle_timeout: 20,
+        connect_timeout: 10,
+    })
+
+    return drizzle(client, { schema })
 }
 
-const client = postgres(databaseUrl, {
-    max: 5,
-    // Required when connecting through a pgBouncer transaction-mode pooler
-    // (e.g. Supabase Session Pooler / Transaction Pooler).
-    prepare: false,
-    idle_timeout: 20,
-    connect_timeout: 10,
-})
-
-export const db = globalThis.__db ?? drizzle(client, { schema })
+export const db = globalThis.__db ?? createDb()
 
 if (process.env.NODE_ENV !== 'production') {
     globalThis.__db = db
