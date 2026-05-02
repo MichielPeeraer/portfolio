@@ -1,5 +1,39 @@
-import { describe, it, expect } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import type { PortfolioData } from '@/types'
+
+const getServerSessionMock = vi.hoisted(() => vi.fn())
+const mockDbTransaction = vi.hoisted(() => vi.fn())
+
+vi.mock('next-auth', () => ({ getServerSession: getServerSessionMock }))
+vi.mock('@/lib/auth-options', () => ({
+    createAuthOptions: vi.fn().mockReturnValue({}),
+}))
+vi.mock('next/cache', () => ({
+    revalidatePath: vi.fn(),
+    revalidateTag: vi.fn(),
+}))
+vi.mock('@/lib/portfolio-data', () => ({
+    PORTFOLIO_DATA_TAG: 'portfolio',
+    getPortfolioDataFromDb: vi.fn(),
+}))
+vi.mock('@/db', () => ({ db: { transaction: mockDbTransaction } }))
+vi.mock('@/db/schema', () => ({
+    personalInfo: { version: null },
+    experience: {},
+    skillCategories: {},
+    heroTypedLines: {},
+    ogTechPills: {},
+    socialLinks: {},
+    devPractices: {},
+    education: {},
+    learningLanguages: {},
+    experiencePoints: {},
+    skills: {},
+    users: {},
+    accounts: {},
+    sessions: {},
+    verificationTokens: {},
+}))
 
 /**
  * Admin API integration tests for portfolio save operations.
@@ -93,12 +127,40 @@ describe('Admin Portfolio API', () => {
         })
 
         it('should return 409 Conflict when version mismatch occurs', async () => {
-            // Simulates two concurrent edits where second client has stale version
-            const staleVersion = 0
-            const currentDatabaseVersion = 1
+            getServerSessionMock.mockResolvedValue({ user: { role: 'admin' } })
 
-            // Expected behavior: reject if _version doesn't match DB version
-            expect(staleVersion).not.toBe(currentDatabaseVersion)
+            // DB row has version 1; client sends _version: 0 (stale)
+            mockDbTransaction.mockImplementation(
+                async (callback: (tx: unknown) => Promise<void>) => {
+                    const mockTx = {
+                        select: vi.fn().mockReturnValue({
+                            from: vi.fn().mockReturnValue({
+                                limit: vi.fn().mockReturnValue({
+                                    for: vi
+                                        .fn()
+                                        .mockResolvedValue([{ version: 1 }]),
+                                }),
+                            }),
+                        }),
+                    }
+                    await callback(mockTx)
+                }
+            )
+
+            vi.resetModules()
+            const { PUT } = await import('@/app/api/admin/portfolio/route')
+
+            const response = await PUT(
+                new Request('http://localhost/api/admin/portfolio', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ _version: 0, ...mockPortfolioData }),
+                })
+            )
+
+            expect(response.status).toBe(409)
+            const body = (await response.json()) as { error: string }
+            expect(body.error).toMatch(/modified by another session/i)
         })
 
         it('should return 400 for invalid portfolio data', async () => {

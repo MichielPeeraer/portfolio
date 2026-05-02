@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import data from '@/data/portfolio.json'
+import { portfolioSchema } from '@/lib/portfolio-schema'
 import type { PortfolioData } from '@/types'
 
 const portfolio = data as PortfolioData
@@ -49,5 +50,16 @@ describe('portfolio.json', () => {
 
     it('has devPractices entries', () => {
         expect(portfolio.devPractices.length).toBeGreaterThan(0)
+    })
+
+    it('passes portfolioSchema Zod validation', () => {
+        const result = portfolioSchema.safeParse(data)
+        if (!result.success) {
+            // Surface the first issue to make failures actionable
+            throw new Error(
+                `portfolio.json failed schema validation: ${JSON.stringify(result.error.issues[0], null, 2)}`
+            )
+        }
+        expect(result.success).toBe(true)
     })
 })
