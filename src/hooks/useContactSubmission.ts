@@ -130,6 +130,12 @@ export const useContactSubmission = ({
 
                         if (canRetry) {
                             attempt += 1
+                            // Exponential backoff with jitter: ~100ms for first retry
+                            const backoffMs =
+                                Math.pow(2, attempt) * 50 + Math.random() * 50
+                            await new Promise((resolve) =>
+                                setTimeout(resolve, backoffMs)
+                            )
                             continue
                         }
 

@@ -81,8 +81,16 @@ export default function MatrixRain() {
             rafId = null
         }
 
+        // Debounce resize to prevent excessive canvas recreation (150ms threshold)
+        let resizeTimeoutId: ReturnType<typeof setTimeout> | null = null
         const handleResize = () => {
-            setupCanvas()
+            if (resizeTimeoutId !== null) {
+                clearTimeout(resizeTimeoutId)
+            }
+            resizeTimeoutId = setTimeout(() => {
+                setupCanvas()
+                resizeTimeoutId = null
+            }, 150)
         }
 
         const handleVisibility = () => {
@@ -100,6 +108,9 @@ export default function MatrixRain() {
         document.addEventListener('visibilitychange', handleVisibility)
 
         return () => {
+            if (resizeTimeoutId !== null) {
+                clearTimeout(resizeTimeoutId)
+            }
             stopAnimation()
             window.removeEventListener('resize', handleResize)
             document.removeEventListener('visibilitychange', handleVisibility)

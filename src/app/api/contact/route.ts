@@ -75,8 +75,10 @@ const isRateLimited = async (key: string): Promise<boolean> => {
                 END
             RETURNING count
         `)
-        const count =
-            (result as unknown as Array<{ count: number }>)[0]?.count ?? 1
+
+        // Type-safe extraction of count from postgres.js result
+        const count = (result?.[0]?.count as number | undefined) ?? 1
+
         if (count > RATE_LIMIT_MAX_REQUESTS) {
             console.warn(
                 `[rate-limit] Client exceeded rate limit (${count} requests in window)`

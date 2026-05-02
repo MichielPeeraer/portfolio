@@ -43,6 +43,7 @@ yarn-error.log*
 .env.production
 !.env.example
 CODEBASE_REVIEW.md
+CODEBASE_REVIEW_FRESH.md
 
 # vercel
 .vercel
