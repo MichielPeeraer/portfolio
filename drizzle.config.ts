@@ -2,7 +2,11 @@ import type { Config } from 'drizzle-kit'
 import { config } from 'dotenv'
 import { existsSync } from 'fs'
 
-if (existsSync('.env.local')) config({ path: '.env.local' })
+if (process.env.DRIZZLE_ENV === 'production' && existsSync('.env.production')) {
+    config({ path: '.env.production', override: true })
+} else if (existsSync('.env.local')) {
+    config({ path: '.env.local' })
+}
 
 const cleanConnectionString = (value: string | undefined) =>
     value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
