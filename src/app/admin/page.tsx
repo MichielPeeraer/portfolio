@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
-import { getPortfolioDataFromDb } from '@/lib/portfolio-data'
+import { getCachedPortfolioData } from '@/lib/portfolio-data'
 import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
@@ -17,12 +17,12 @@ export default async function AdminPage() {
         redirect('/login')
     }
 
-    let data: Awaited<ReturnType<typeof getPortfolioDataFromDb>> | null = null
+    let data: Awaited<ReturnType<typeof getCachedPortfolioData>> | null = null
     let dbVersion = 0
 
     try {
         const [fetchedData, versionRows] = await Promise.all([
-            getPortfolioDataFromDb(),
+            getCachedPortfolioData(),
             db
                 .select({ version: personalInfo.version })
                 .from(personalInfo)

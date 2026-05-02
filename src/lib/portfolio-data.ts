@@ -182,7 +182,7 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
     return parsed.data as PortfolioData
 }
 
-const getCachedPortfolioData = unstable_cache(
+export const getCachedPortfolioData = unstable_cache(
     buildPortfolioFromDb,
     ['portfolio-data'],
     {
