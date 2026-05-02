@@ -32,11 +32,15 @@ const cleanConnectionString = (value: string | undefined) =>
     value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
 
 const connectionString = cleanConnectionString(
-    process.env.DIRECT_URL ?? process.env.DATABASE_URL
+    process.env.DATABASE_URL_UNPOOLED ??
+        process.env.DIRECT_URL ??
+        process.env.DATABASE_URL
 )
 
 if (!connectionString) {
-    console.error('[seed] No DATABASE_URL / DIRECT_URL found. Aborting.')
+    console.error(
+        '[seed] No DATABASE_URL_UNPOOLED / DATABASE_URL found. Aborting.'
+    )
     process.exit(1)
 }
 

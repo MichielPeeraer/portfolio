@@ -12,11 +12,15 @@ const cleanConnectionString = (value: string | undefined) =>
     value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
 
 const connectionUrl = cleanConnectionString(
-    process.env.DIRECT_URL ?? process.env.DATABASE_URL
+    process.env.DATABASE_URL_UNPOOLED ??
+        process.env.DIRECT_URL ??
+        process.env.DATABASE_URL
 )
 
 if (!connectionUrl) {
-    throw new Error('[drizzle] Missing DIRECT_URL or DATABASE_URL')
+    throw new Error(
+        '[drizzle] Missing DATABASE_URL_UNPOOLED, DIRECT_URL or DATABASE_URL'
+    )
 }
 
 export default {
