@@ -1,5 +1,5 @@
 import fallbackData from '@/data/portfolio.json'
-import { unstable_cache, unstable_noStore as noStore } from 'next/cache'
+import { unstable_cache } from 'next/cache'
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import { asc } from 'drizzle-orm'
 import { db } from '@/db'
@@ -37,8 +37,6 @@ export const PORTFOLIO_DATA_TAG = 'portfolio-data'
 type DbReadOptions = {
     strict?: boolean
 }
-
-let ongoingDirectFetch: Promise<PortfolioData> | null = null
 
 const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number) => {
     let timeoutHandle: ReturnType<typeof setTimeout> | undefined
@@ -193,8 +191,6 @@ const getCachedPortfolioData = unstable_cache(
 )
 
 export const getPortfolioData = async (): Promise<PortfolioData> => {
-    noStore()
-
     try {
         return await getCachedPortfolioData()
     } catch (error) {
@@ -204,48 +200,32 @@ export const getPortfolioData = async (): Promise<PortfolioData> => {
 }
 
 export const getPortfolioDataFromDb = async (): Promise<PortfolioData> => {
-    noStore()
+    let lastError: unknown
 
-    if (ongoingDirectFetch) {
-        return ongoingDirectFetch
-    }
-
-    ongoingDirectFetch = (async () => {
-        let lastError: unknown
-
-        for (let attempt = 0; attempt <= DB_FETCH_RETRIES; attempt++) {
-            try {
-                return await buildPortfolioFromDb()
-            } catch (error) {
-                lastError = error
-                const shouldRetry =
-                    isTimeoutError(error) && attempt < DB_FETCH_RETRIES
-                if (!shouldRetry) {
-                    break
-                }
-                console.warn(
-                    `[portfolio-data] Direct DB fetch attempt ${attempt + 1} timed out, retrying...`
-                )
+    for (let attempt = 0; attempt <= DB_FETCH_RETRIES; attempt++) {
+        try {
+            return await buildPortfolioFromDb()
+        } catch (error) {
+            lastError = error
+            const shouldRetry =
+                isTimeoutError(error) && attempt < DB_FETCH_RETRIES
+            if (!shouldRetry) {
+                break
             }
+            console.warn(
+                `[portfolio-data] Direct DB fetch attempt ${attempt + 1} timed out, retrying...`
+            )
         }
-
-        throw lastError instanceof Error
-            ? lastError
-            : new Error('[portfolio-data] Direct DB fetch failed.')
-    })()
-
-    try {
-        return await ongoingDirectFetch
-    } finally {
-        ongoingDirectFetch = null
     }
+
+    throw lastError instanceof Error
+        ? lastError
+        : new Error('[portfolio-data] Direct DB fetch failed.')
 }
 
 export const getPortfolioDataFromDbOrFallback = async (
     options: DbReadOptions = {}
 ): Promise<PortfolioData> => {
-    noStore()
-
     const { strict = false } = options
 
     try {

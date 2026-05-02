@@ -21,30 +21,13 @@ export default async function AdminPage() {
     let dbVersion = 0
 
     try {
-        console.log('[admin-page] Starting DB fetch...')
-        const t0 = Date.now()
-
-        console.log('[admin-page] Fetching portfolio data from DB...')
-        const fetchedData = await getPortfolioDataFromDb()
-        console.log(
-            '[admin-page] Portfolio data fetched in',
-            Date.now() - t0,
-            'ms'
-        )
-
-        console.log('[admin-page] Fetching version...')
-        const versionRows = await db
-            .select({ version: personalInfo.version })
-            .from(personalInfo)
-            .limit(1)
-        console.log(
-            '[admin-page] Version fetched:',
-            versionRows[0]?.version,
-            'total time:',
-            Date.now() - t0,
-            'ms'
-        )
-
+        const [fetchedData, versionRows] = await Promise.all([
+            getPortfolioDataFromDb(),
+            db
+                .select({ version: personalInfo.version })
+                .from(personalInfo)
+                .limit(1),
+        ])
         data = fetchedData
         dbVersion = versionRows[0]?.version ?? 0
     } catch (error) {
