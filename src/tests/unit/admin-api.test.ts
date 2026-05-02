@@ -1,27 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { POST as contactRoute } from '@/app/api/contact/route'
-import {
-    GET as adminGetRoute,
-    PUT as adminPutRoute,
-} from '@/app/api/admin/portfolio/route'
+import { describe, it, expect } from 'vitest'
 import type { PortfolioData } from '@/types'
 
 /**
  * Admin API integration tests for portfolio save operations.
  * Tests concurrency handling, version conflicts, and error cases.
  */
-
-const mockSessionData: Awaited<
-    ReturnType<typeof import('next-auth').getServerSession>
-> = {
-    user: {
-        id: 'test-user',
-        email: 'admin@test.com',
-        name: 'Test Admin',
-        role: 'admin',
-    },
-    expires: new Date(Date.now() + 86400000).toISOString(),
-}
 
 const mockPortfolioData: PortfolioData = {
     personal: {
@@ -165,7 +148,6 @@ describe('Admin Portfolio API', () => {
             // Session B: Reads version 1, saves -> version 2 ✓
             // Session A: Reads version 1, saves -> version 2 ✗ (stale)
 
-            const sessionA_readVersion = 0
             const sessionA_saveToVersion = 1
             const sessionB_readVersion = 1
             const sessionB_saveToVersion = 2

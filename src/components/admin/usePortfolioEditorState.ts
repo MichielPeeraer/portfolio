@@ -161,10 +161,8 @@ export const usePortfolioEditorState = (
 
     // Derived state
     const sectionsDefaults = buildSectionsDraft(state.portfolioData)
-    const rawDefaults = JSON.stringify(state.portfolioData, null, 2)
     const isSectionsDirty =
         JSON.stringify(state.sectionsDraft) !== JSON.stringify(sectionsDefaults)
-    const isRawJsonDirty = state.rawJsonValue !== rawDefaults
     const visibleFormStatus =
         state.formStatus && isQuickFormDirty && !state.isResettingForm
             ? ''

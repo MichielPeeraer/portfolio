@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
 import type { PortfolioData } from '@/types'
 
@@ -36,41 +36,60 @@ function Spinner() {
 
 export function AdminDashboard() {
     const [state, setState] = useState<LoadState>({ status: 'loading' })
-
-    const load = useCallback(async () => {
-        setState({ status: 'loading' })
-        try {
-            const res = await fetch('/api/admin/portfolio')
-            const body = (await res.json().catch(() => null)) as {
-                data?: PortfolioData
-                version?: number
-                error?: string
-            } | null
-
-            if (!res.ok || !body?.data) {
-                setState({
-                    status: 'error',
-                    message: body?.error ?? 'Failed to load editor data.',
-                })
-                return
-            }
-
-            setState({
-                status: 'loaded',
-                data: body.data,
-                version: body.version ?? 0,
-            })
-        } catch {
-            setState({
-                status: 'error',
-                message: 'Network error. Please try again.',
-            })
-        }
-    }, [])
+    const [retryCount, setRetryCount] = useState(0)
 
     useEffect(() => {
-        load()
-    }, [load])
+        let active = true
+
+        fetch('/api/admin/portfolio')
+            .then((res) =>
+                res
+                    .json()
+                    .catch(() => null)
+                    .then(
+                        (
+                            body: {
+                                data?: PortfolioData
+                                version?: number
+                                error?: string
+                            } | null
+                        ) => {
+                            if (!active) return
+                            if (!res.ok || !body?.data) {
+                                setState({
+                                    status: 'error',
+                                    message:
+                                        body?.error ??
+                                        'Failed to load editor data.',
+                                })
+                            } else {
+                                setState({
+                                    status: 'loaded',
+                                    data: body.data,
+                                    version: body.version ?? 0,
+                                })
+                            }
+                        }
+                    )
+            )
+            .catch(() => {
+                if (active) {
+                    setState({
+                        status: 'error',
+                        message: 'Network error. Please try again.',
+                    })
+                }
+            })
+
+        return () => {
+            active = false
+        }
+    }, [retryCount])
+
+    const retry = () => {
+        setState({ status: 'loading' })
+        setRetryCount((c) => c + 1)
+    }
 
     if (state.status === 'loading') {
         return (
@@ -100,7 +119,7 @@ export function AdminDashboard() {
                 <div className="mt-4 sm:mt-5">
                     <button
                         type="button"
-                        onClick={load}
+                        onClick={retry}
                         className="inline-flex rounded-lg border border-red-800/70 bg-black/30 px-3 py-2 text-xs font-medium text-red-200 transition hover:bg-red-900/20 sm:px-4 sm:py-2.5 sm:text-sm"
                     >
                         Retry
