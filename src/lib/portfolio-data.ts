@@ -195,13 +195,6 @@ const getCachedPortfolioData = unstable_cache(
 export const getPortfolioData = async (): Promise<PortfolioData> => {
     noStore()
 
-    if (
-        process.env.NODE_ENV === 'development' &&
-        process.env.ENABLE_DB_IN_DEV !== '1'
-    ) {
-        return fallbackPortfolio
-    }
-
     try {
         return await getCachedPortfolioData()
     } catch (error) {
