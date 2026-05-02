@@ -44,16 +44,19 @@ const createDb = () => {
     )
     const connectTimeoutSeconds = parsePositiveInt(
         process.env.DB_CONNECT_TIMEOUT_S,
-        10
+        30
     )
 
     const client = postgres(selectedUrl, {
         max: maxConnections,
-        // Required when connecting through a pgBouncer transaction-mode pooler
-        // (e.g. Supabase Session Pooler / Transaction Pooler).
+        // Required for Neon serverless and any pgBouncer transaction-mode pooler.
         prepare: false,
         idle_timeout: idleTimeoutSeconds,
         connect_timeout: connectTimeoutSeconds,
+        // Disable built-in statement timeout so app-level timeouts take priority
+        connection: {
+            statement_timeout: 0,
+        },
     })
 
     return drizzle(client, { schema })

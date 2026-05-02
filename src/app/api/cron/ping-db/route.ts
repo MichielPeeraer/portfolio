@@ -3,8 +3,7 @@ import { db } from '@/db'
 import { NextResponse } from 'next/server'
 
 /**
- * Cron endpoint to keep the Supabase project alive.
- * Free-tier Supabase projects pause after 1 week of inactivity.
+ * Cron endpoint to keep the database connection warm.
  * Configure via vercel.json: runs daily at 06:00 UTC.
  * Protected by CRON_SECRET (Vercel sets Authorization header automatically).
  */
