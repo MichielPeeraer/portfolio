@@ -106,7 +106,13 @@ export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="text-green-400 hover:text-green-300 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-1 focus-visible:ring-offset-black rounded"
-                        aria-label="Toggle menu"
+                        aria-label={
+                            mobileMenuOpen
+                                ? 'Close navigation menu'
+                                : 'Open navigation menu'
+                        }
+                        aria-expanded={mobileMenuOpen}
+                        aria-controls="mobile-nav-menu"
                     >
                         {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
@@ -140,6 +146,7 @@ export default function FloatingNavbar({ socialLinks }: FloatingNavbarProps) {
             {/* Mobile Menu */}
             {mobileMenuOpen && (
                 <motion.div
+                    id="mobile-nav-menu"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}

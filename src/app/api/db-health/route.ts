@@ -12,14 +12,8 @@ export async function GET() {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const dbUrl = process.env.DATABASE_URL ?? ''
-    const maskUrl = (u: string) =>
-        u ? u.replace(/:([^:@]{4})[^:@]*@/, ':$1***@') : '(not set)'
-
     const result: Record<string, unknown> = {
         nodeEnv: process.env.NODE_ENV,
-        databaseUrl: maskUrl(dbUrl),
-        dbUrlProject: dbUrl.match(/postgres\.([^:]+):/)?.[1] ?? 'unknown',
     }
 
     const start = Date.now()
