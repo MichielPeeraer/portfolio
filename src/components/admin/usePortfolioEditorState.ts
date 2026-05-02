@@ -322,83 +322,6 @@ export const usePortfolioEditorState = (
         }
     }
 
-    const saveJson = async () => {
-        dispatch({ type: 'SET_RAW_STATUS', payload: '' })
-        dispatch({ type: 'SET_RAW_ISSUES', payload: [] })
-        dispatch({ type: 'SET_SAVING_RAW', payload: true })
-
-        let parsed: unknown
-
-        try {
-            parsed = JSON.parse(state.rawJsonValue)
-        } catch {
-            dispatch({
-                type: 'SET_RAW_STATUS',
-                payload: 'Invalid JSON format.',
-            })
-            dispatch({ type: 'SET_SAVING_RAW', payload: false })
-            return
-        }
-
-        const validated = portfolioSchema.safeParse(parsed)
-        if (!validated.success) {
-            dispatch({
-                type: 'SET_RAW_ISSUES',
-                payload: getRawIssues(validated.error),
-            })
-            dispatch({
-                type: 'SET_RAW_STATUS',
-                payload:
-                    'Validation failed. Fix the listed fields and try again.',
-            })
-            dispatch({ type: 'SET_SAVING_RAW', payload: false })
-            return
-        }
-
-        try {
-            const { response, result } = await persist(
-                validated.data as PortfolioData
-            )
-
-            if (!response.ok) {
-                const serverIssues =
-                    result?.issues?.map((issue) => {
-                        const path = issue.path?.join('.') ?? 'root'
-                        return `${path}: ${issue.message ?? 'Invalid value'}`
-                    }) ?? []
-
-                if (serverIssues.length > 0) {
-                    dispatch({
-                        type: 'SET_RAW_ISSUES',
-                        payload: serverIssues,
-                    })
-                }
-
-                dispatch({
-                    type: 'SET_RAW_STATUS',
-                    payload: result?.error ?? 'Failed to save changes.',
-                })
-                dispatch({ type: 'SET_SAVING_RAW', payload: false })
-                return
-            }
-
-            if (!syncFromApiResponse(result)) {
-                syncEditorState(validated.data as PortfolioData)
-            }
-            dispatch({
-                type: 'SET_RAW_STATUS',
-                payload: 'Saved successfully.',
-            })
-            dispatch({ type: 'SET_SAVING_RAW', payload: false })
-        } catch {
-            dispatch({
-                type: 'SET_RAW_STATUS',
-                payload: 'Failed to save changes.',
-            })
-            dispatch({ type: 'SET_SAVING_RAW', payload: false })
-        }
-    }
-
     const updateExperienceField = (
         index: number,
         field: keyof SectionsFormValues['experience'][number],
@@ -584,13 +507,6 @@ export const usePortfolioEditorState = (
         })
     }
 
-    const resetRawJson = () => {
-        dispatch({
-            type: 'UPDATE_RAW_JSON',
-            payload: JSON.stringify(state.portfolioData, null, 2),
-        })
-    }
-
     return {
         register,
         handleSubmit,
@@ -618,19 +534,9 @@ export const usePortfolioEditorState = (
         sectionsStatus: state.sectionsStatus,
         sectionIssues: state.sectionIssues,
         isSectionsDirty,
-        value: state.rawJsonValue,
-        setValue: (next: string) => {
-            dispatch({ type: 'UPDATE_RAW_JSON', payload: next })
-        },
-        saveJson,
-        isSaving: state.isSavingRaw,
-        rawStatus: state.rawStatus,
-        rawIssues: state.rawIssues,
         resetQuickForm,
         resetSections,
-        resetRawJson,
         isQuickFormDirty,
-        isRawJsonDirty,
         portfolioData: state.portfolioData,
     }
 }

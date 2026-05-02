@@ -70,12 +70,16 @@ interface FieldProps {
 
 function Field({ label, error, children }: FieldProps) {
     return (
-        <div className="flex flex-col gap-1">
-            <label className="text-xs font-medium uppercase tracking-[0.15em] text-green-600">
+        <div className="flex flex-col gap-1 sm:gap-1.5">
+            <label className="text-[9px] font-medium uppercase tracking-[0.15em] text-green-600 sm:text-[10px] sm:tracking-[0.2em]">
                 {label}
             </label>
             {children}
-            {error ? <p className="text-[11px] text-red-400">{error}</p> : null}
+            {error ? (
+                <p className="text-[10px] text-red-400 sm:text-[11px]">
+                    {error}
+                </p>
+            ) : null}
         </div>
     )
 }
@@ -88,16 +92,18 @@ interface FieldGroupProps {
 
 function FieldGroup({ title, description, children }: FieldGroupProps) {
     return (
-        <div className="rounded-xl border border-green-900/50 bg-black/30">
-            <div className="border-b border-green-900/40 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-green-500">
+        <div className="rounded-lg border border-green-900/50 bg-black/30 sm:rounded-xl">
+            <div className="border-b border-green-900/40 px-3 py-2 sm:px-4 sm:py-3 md:px-5 md:py-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-green-500 sm:text-xs">
                     {title}
                 </p>
-                <p className="mt-0.5 text-[11px] text-green-700">
+                <p className="mt-0.5 text-[10px] leading-relaxed text-green-700 sm:text-xs sm:leading-normal">
                     {description}
                 </p>
             </div>
-            <div className="space-y-4 p-4">{children}</div>
+            <div className="space-y-3 p-3 sm:space-y-4 sm:p-4 md:p-5 lg:p-6">
+                {children}
+            </div>
         </div>
     )
 }
@@ -115,17 +121,20 @@ export function QuickEditSection({
 }: QuickEditSectionProps) {
     const openToWork = watch('openToWork')
     const inputClass =
-        'w-full rounded-lg border border-green-900/70 bg-black/60 px-3 py-2 text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
-    const textareaClass = `${inputClass} min-h-[100px] resize-y`
+        'w-full rounded-lg border border-green-900/70 bg-black/60 px-2.5 py-2 text-xs sm:px-3 sm:py-2.5 sm:text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
+    const textareaClass = `${inputClass} min-h-[100px] sm:min-h-[120px] resize-y`
     const statusIsSuccess = formStatus.startsWith('Saved')
     const statusClass = statusIsSuccess
         ? 'border-green-800/60 bg-green-950/30 text-green-300'
         : 'border-red-900/60 bg-red-950/20 text-red-300'
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-3 sm:space-y-4 md:space-y-5"
+        >
             {/* Two-column identity + contact row */}
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-3 sm:gap-4 lg:grid-cols-2 md:gap-5">
                 <FieldGroup
                     title="Identity"
                     description="Core hero text and personal summary"
@@ -160,12 +169,12 @@ export function QuickEditSection({
                     </Field>
                 </FieldGroup>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4 md:space-y-5">
                     <FieldGroup
                         title="Contact & Availability"
                         description="Public contact details and CV link"
                     >
-                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-1 xl:grid-cols-2">
                             <Field
                                 label="Email"
                                 error={errors.contactEmail?.message}
@@ -239,7 +248,7 @@ export function QuickEditSection({
                                 />
                             </Field>
                         </div>
-                        <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-green-900/50 bg-black/30 px-3 py-2.5 text-sm text-green-300 transition hover:bg-green-950/20">
+                        <label className="flex cursor-pointer items-center gap-2 sm:gap-3 rounded-lg border border-green-900/50 bg-black/30 px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-green-300 transition hover:bg-green-950/20">
                             <input
                                 id="openToWork"
                                 type="checkbox"
@@ -263,7 +272,7 @@ export function QuickEditSection({
                 title="Repeating Content"
                 description="One value per line — drives typewriter, OG image, and about section"
             >
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-5">
                     <Field
                         label="Hero typed lines"
                         error={errors.heroTypedLinesText?.message}
@@ -307,32 +316,32 @@ export function QuickEditSection({
             </FieldGroup>
 
             {/* Save bar */}
-            <div className="flex flex-col gap-3 rounded-xl border border-green-900/50 bg-black/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 rounded-lg border border-green-900/50 bg-black/30 p-3 sm:rounded-xl sm:gap-4 sm:p-4 md:flex-row md:items-center md:justify-between md:p-5 md:gap-5 lg:rounded-2xl lg:p-6">
                 <div className="min-w-0 flex-1">
-                    <p className="text-xs text-green-600">
+                    <p className="text-[10px] text-green-600 sm:text-xs">
                         Changes publish directly to the live portfolio.
                     </p>
                     {formStatus ? (
                         <p
-                            className={`mt-2 rounded-lg border px-3 py-2 text-sm ${statusClass}`}
+                            className={`mt-2 rounded-lg border px-2.5 py-2 text-xs sm:px-3 sm:py-2.5 sm:text-sm ${statusClass}`}
                         >
                             {formStatus}
                         </p>
                     ) : null}
                 </div>
-                <div className="flex shrink-0 gap-2 sm:ml-4">
+                <div className="flex shrink-0 w-full gap-2 sm:w-auto md:ml-4 sm:gap-3">
                     <button
                         type="button"
                         onClick={onReset}
                         disabled={isSubmitting}
-                        className="rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-sm text-green-300 transition hover:bg-green-900/30 disabled:opacity-60"
+                        className="flex-1 sm:flex-none rounded-lg border border-green-800/70 bg-black/30 px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-green-300 transition hover:bg-green-900/30 disabled:opacity-60 sm:rounded-xl"
                     >
                         Reset
                     </button>
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-lg sm:rounded-xl bg-green-700 px-3 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
                     >
                         {isSubmitting ? <LoadingSpinner /> : <CheckIcon />}
                         {isSubmitting ? 'Saving…' : 'Save Quick Form'}

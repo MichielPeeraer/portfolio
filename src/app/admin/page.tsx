@@ -38,23 +38,23 @@ export default async function AdminPage() {
     }
 
     return (
-        <main className="relative min-h-screen overflow-hidden bg-black px-4 py-6 font-mono text-green-400 md:px-8 md:py-10">
+        <main className="relative min-h-screen overflow-hidden bg-black px-3 py-4 font-mono text-green-400 sm:px-4 sm:py-6 md:px-6 md:py-8 lg:px-8 lg:py-10">
             <MatrixRain />
 
-            <div className="relative z-10 mx-auto max-w-7xl space-y-5">
-                <header className="rounded-2xl border border-green-900/60 bg-[radial-gradient(ellipse_at_top_left,rgba(34,197,94,0.12),transparent_55%),rgba(3,14,9,0.95)] p-5 md:p-7">
-                    <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+            <div className="relative z-10 mx-auto w-full max-w-6xl space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8">
+                <header className="rounded-xl border border-green-900/60 bg-[radial-gradient(ellipse_at_top_left,rgba(34,197,94,0.12),transparent_55%),rgba(3,14,9,0.95)] p-4 sm:rounded-2xl sm:p-5 md:p-6 lg:p-8">
+                    <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
                         {/* Left: title block */}
-                        <div className="space-y-3">
-                            <span className="inline-flex items-center gap-1.5 rounded-full border border-green-800/70 bg-black/50 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-green-500">
+                        <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-green-800/70 bg-black/50 px-2.5 py-1 text-[9px] uppercase tracking-[0.3em] text-green-500 sm:text-[10px] sm:px-3">
                                 <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                                 Live portfolio control
                             </span>
-                            <div>
-                                <h1 className="text-3xl font-light text-green-100 md:text-4xl">
+                            <div className="space-y-1 sm:space-y-2">
+                                <h1 className="wrap-break-word text-2xl font-light text-green-100 sm:text-3xl md:text-4xl lg:text-5xl">
                                     Admin Dashboard
                                 </h1>
-                                <p className="mt-2 max-w-xl text-sm leading-6 text-green-600 md:text-base">
+                                <p className="max-w-2xl text-xs leading-relaxed text-green-600 sm:text-sm md:text-base">
                                     Update content, reorder sections, and
                                     publish changes without touching source
                                     files.
@@ -63,8 +63,8 @@ export default async function AdminPage() {
                         </div>
 
                         {/* Right: meta + actions */}
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end xl:flex-col xl:items-end xl:shrink-0">
-                            <div className="grid grid-cols-3 gap-2 text-center text-xs sm:grid-cols-3">
+                        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-end lg:w-auto lg:flex-col lg:items-end lg:shrink-0">
+                            <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:gap-3 sm:text-xs md:gap-4 md:text-sm">
                                 {[
                                     { label: 'Source', value: 'Database' },
                                     { label: 'Access', value: 'Admin only' },
@@ -72,12 +72,12 @@ export default async function AdminPage() {
                                 ].map(({ label, value }) => (
                                     <div
                                         key={label}
-                                        className="rounded-xl border border-green-900/60 bg-black/40 px-3 py-2.5"
+                                        className="rounded-lg border border-green-900/60 bg-black/40 px-2 py-2 sm:rounded-xl sm:px-3 sm:py-2.5"
                                     >
-                                        <p className="text-[10px] uppercase tracking-[0.2em] text-green-700">
+                                        <p className="uppercase tracking-[0.2em] text-green-700 text-[9px] sm:text-[10px]">
                                             {label}
                                         </p>
-                                        <p className="mt-1 text-sm font-medium text-green-300">
+                                        <p className="mt-0.5 font-medium text-green-300 text-xs sm:text-sm sm:mt-1">
                                             {value}
                                         </p>
                                     </div>
@@ -86,7 +86,7 @@ export default async function AdminPage() {
 
                             <Link
                                 href="/signout"
-                                className="w-full rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-center text-sm text-green-300 transition hover:bg-green-900/30 hover:text-green-100 sm:w-auto"
+                                className="w-full rounded-lg border border-green-800/70 bg-black/30 px-3 py-2 text-center text-xs font-medium text-green-300 transition hover:bg-green-900/30 hover:text-green-100 sm:w-auto sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm"
                             >
                                 Sign out
                             </Link>
@@ -100,18 +100,18 @@ export default async function AdminPage() {
                         initialVersion={dbVersion}
                     />
                 ) : (
-                    <section className="rounded-2xl border border-red-900/70 bg-red-950/30 p-5 md:p-6">
-                        <h2 className="text-lg font-medium text-red-300">
+                    <section className="rounded-lg border border-red-900/70 bg-red-950/30 p-4 sm:rounded-xl sm:p-5 md:p-6 lg:rounded-2xl lg:p-8">
+                        <h2 className="text-base font-medium text-red-300 sm:text-lg md:text-xl">
                             Database unavailable
                         </h2>
-                        <p className="mt-2 text-sm text-red-200/80">
+                        <p className="mt-2 text-xs leading-relaxed text-red-200/80 sm:mt-3 sm:text-sm md:text-base">
                             The admin editor needs a live database connection.
                             Please try again in a moment.
                         </p>
-                        <div className="mt-4">
+                        <div className="mt-4 sm:mt-5">
                             <Link
                                 href="/admin"
-                                className="inline-flex rounded-lg border border-red-800/70 bg-black/30 px-3 py-2 text-sm text-red-200 transition hover:bg-red-900/20"
+                                className="inline-flex rounded-lg border border-red-800/70 bg-black/30 px-3 py-2 text-xs font-medium text-red-200 transition hover:bg-red-900/20 sm:px-4 sm:py-2.5 sm:text-sm"
                             >
                                 Retry
                             </Link>

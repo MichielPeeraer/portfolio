@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { AdvancedJsonSection } from '@/components/admin/AdvancedJsonSection'
 import { QuickEditSection } from '@/components/admin/QuickEditSection'
 import { SectionsEditorSection } from '@/components/admin/SectionsEditorSection'
 import { usePortfolioEditorState } from '@/components/admin/usePortfolioEditorState'
@@ -52,22 +51,23 @@ function Panel({
     children,
     danger,
 }: PanelProps) {
-    const borderColor = danger ? 'border-amber-900/60' : 'border-green-900/60'
-    const accentColor = danger ? 'text-amber-400' : 'text-green-400'
+    const borderColor = danger ? 'border-red-900/60' : 'border-green-900/60'
+    const accentColor = danger ? 'text-red-400' : 'text-green-400'
     const badgeBg = danger
-        ? 'border-amber-900/70 bg-amber-950/30 text-amber-400'
+        ? 'border-red-900/70 bg-red-950/30 text-red-400'
         : 'border-green-900/70 bg-green-950/30 text-green-500'
+    const hoverBg = danger ? 'hover:bg-red-950/20' : 'hover:bg-green-950/10'
 
     return (
         <section
-            className={`rounded-2xl border ${borderColor} bg-black/25 overflow-hidden`}
+            className={`rounded-2xl border ${borderColor} bg-black/25 overflow-hidden transition`}
         >
             <button
                 type="button"
                 onClick={onToggle}
                 aria-expanded={open}
                 aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
-                className="group flex w-full items-center gap-4 px-5 py-4 text-left transition hover:bg-white/2"
+                className={`group flex w-full items-center gap-3 px-4 py-3 text-left transition sm:gap-4 sm:px-5 sm:py-4 md:px-6 md:py-5 ${hoverBg}`}
             >
                 <span
                     className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold tracking-wider ${badgeBg}`}
@@ -75,24 +75,24 @@ function Panel({
                     {index}
                 </span>
                 <span
-                    className={`flex-1 text-sm font-medium uppercase tracking-[0.2em] ${accentColor}`}
+                    className={`flex-1 text-xs font-medium uppercase tracking-[0.2em] sm:text-sm md:tracking-[0.25em] ${accentColor}`}
                 >
                     {label}
                 </span>
                 {badge ? (
-                    <span className="hidden rounded-full border border-green-900/60 bg-black/40 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-green-600 sm:inline-block">
+                    <span className="hidden rounded-full border border-green-900/60 bg-black/40 px-2 py-0.5 text-[9px] uppercase tracking-wider text-green-600 sm:px-2.5 sm:py-0.5 sm:text-[10px] md:inline-block">
                         {badge}
                     </span>
                 ) : null}
                 {statusBadge ? (
-                    <span className="hidden rounded-full border border-amber-800/70 bg-amber-950/30 px-2.5 py-0.5 text-[10px] uppercase tracking-wider text-amber-300 sm:inline-block">
+                    <span className="hidden rounded-full border border-amber-800/70 bg-amber-950/30 px-2 py-0.5 text-[9px] uppercase tracking-wider text-amber-300 sm:px-2.5 sm:py-0.5 sm:text-[10px] md:inline-block">
                         {statusBadge}
                     </span>
                 ) : null}
                 <ChevronIcon open={open} />
             </button>
             {open ? (
-                <div className="border-t border-green-900/40 p-5 md:p-6">
+                <div className="border-t border-green-900/40 p-4 sm:p-5 md:p-6 lg:p-7">
                     {children}
                 </div>
             ) : null}
@@ -106,7 +106,6 @@ export function PortfolioEditor({
 }: PortfolioEditorProps) {
     const [quickEditOpen, setQuickEditOpen] = useState(true)
     const [sectionsOpen, setSectionsOpen] = useState(true)
-    const [jsonOpen, setJsonOpen] = useState(false)
 
     const {
         register,
@@ -126,22 +125,14 @@ export function PortfolioEditor({
         isSavingSections,
         sectionsStatus,
         sectionIssues,
-        value,
-        setValue,
-        saveJson,
-        isSaving,
-        rawStatus,
-        rawIssues,
         resetQuickForm,
         resetSections,
-        resetRawJson,
         isQuickFormDirty,
         isSectionsDirty,
-        isRawJsonDirty,
     } = usePortfolioEditorState(initialData, initialVersion)
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 md:space-y-5">
             <Panel
                 index={1}
                 label="Quick Edit"
@@ -182,26 +173,6 @@ export function PortfolioEditor({
                     sectionsStatus={sectionsStatus}
                     sectionIssues={sectionIssues}
                     onReset={resetSections}
-                />
-            </Panel>
-
-            <Panel
-                index={3}
-                label="Advanced JSON"
-                badge="Raw editing"
-                statusBadge={isRawJsonDirty ? 'Unsaved' : undefined}
-                open={jsonOpen}
-                onToggle={() => setJsonOpen((o) => !o)}
-                danger
-            >
-                <AdvancedJsonSection
-                    value={value}
-                    setValue={setValue}
-                    save={saveJson}
-                    isSaving={isSaving}
-                    rawStatus={rawStatus}
-                    rawIssues={rawIssues}
-                    onReset={resetRawJson}
                 />
             </Panel>
         </div>

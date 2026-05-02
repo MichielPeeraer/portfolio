@@ -18,23 +18,6 @@ describe('usePortfolioEditorState', () => {
         vi.stubGlobal('fetch', vi.fn())
     })
 
-    it('does not call API when JSON payload is invalid', async () => {
-        const { result } = renderHook(() =>
-            usePortfolioEditorState(initialData)
-        )
-
-        act(() => {
-            result.current.setValue('{ invalid json')
-        })
-
-        await act(async () => {
-            await result.current.saveJson()
-        })
-
-        expect(result.current.rawStatus).toBe('Invalid JSON format.')
-        expect(globalThis.fetch).not.toHaveBeenCalled()
-    })
-
     it('shows sections validation errors before network call', async () => {
         const { result } = renderHook(() =>
             usePortfolioEditorState(initialData)
@@ -110,49 +93,15 @@ describe('usePortfolioEditorState', () => {
         )
     })
 
-    it('resyncs derived section state after a successful JSON save', async () => {
-        vi.stubGlobal(
-            'fetch',
-            vi.fn().mockResolvedValue({
-                ok: true,
-                json: async () => ({ success: true }),
-            })
-        )
-
+    it('returns proper quick form state after initialization', () => {
         const { result } = renderHook(() =>
             usePortfolioEditorState(initialData)
         )
 
-        const nextData = {
-            ...initialData,
-            experience: [
-                {
-                    period: '2027',
-                    title: 'Lead Engineer',
-                    company: 'Contoso',
-                    location: 'Ghent',
-                    points: ['Built admin tooling'],
-                },
-            ],
-        }
-
-        act(() => {
-            result.current.setValue(JSON.stringify(nextData, null, 2))
-        })
-
-        await act(async () => {
-            await result.current.saveJson()
-        })
-
-        expect(result.current.sectionsDraft.experience).toEqual([
-            {
-                period: '2027',
-                title: 'Lead Engineer',
-                company: 'Contoso',
-                location: 'Ghent',
-                pointsText: 'Built admin tooling',
-            },
-        ])
-        expect(result.current.rawStatus).toBe('Saved successfully.')
+        expect(result.current.register).toBeDefined()
+        expect(result.current.handleSubmit).toBeDefined()
+        expect(result.current.watch).toBeDefined()
+        expect(result.current.isQuickFormDirty).toBe(false)
+        expect(result.current.isSectionsDirty).toBe(false)
     })
 })
