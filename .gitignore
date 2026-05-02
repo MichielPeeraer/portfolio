@@ -42,6 +42,7 @@ yarn-error.log*
 .env.*.local
 .env.production
 !.env.example
+CODEBASE_REVIEW.md
 
 # vercel
 .vercel

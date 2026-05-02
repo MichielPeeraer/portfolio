@@ -141,6 +141,9 @@ export async function POST(request: Request) {
     }
 
     const clientAddress = getClientAddress(request)
+    // Rate limit is keyed on IP only. This is reliable on Vercel because
+    // x-vercel-forwarded-for is injected by the edge network and cannot be
+    // spoofed. Do not rely on this outside a trusted-proxy environment.
     if (await isRateLimited(clientAddress)) {
         return NextResponse.json(
             { error: 'Too many requests. Please try again later.' },

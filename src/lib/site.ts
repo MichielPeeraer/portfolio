@@ -27,8 +27,16 @@ const toHttpsOrigin = (value: string | undefined) => {
     }
 }
 
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
+const parsedSiteUrl = toHttpsOrigin(rawSiteUrl)
+if (rawSiteUrl && !parsedSiteUrl) {
+    console.warn(
+        `[site] NEXT_PUBLIC_SITE_URL="${rawSiteUrl}" could not be parsed as a valid HTTPS origin — falling back to ${SITE_URL_FALLBACK}`
+    )
+}
+
 const resolvedSiteUrl =
-    toHttpsOrigin(process.env.NEXT_PUBLIC_SITE_URL) ??
+    parsedSiteUrl ??
     toHttpsOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL) ??
     toHttpsOrigin(process.env.VERCEL_URL) ??
     SITE_URL_FALLBACK

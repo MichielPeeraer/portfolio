@@ -43,7 +43,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     <div className="crt-lines rounded-full w-32 h-32 sm:w-48 sm:h-48 mx-auto">
                         <Image
                             src="/profile.jpg"
-                            alt={data.name}
+                            alt={`Profile photo of ${data.name}`}
                             width={200}
                             height={200}
                             priority

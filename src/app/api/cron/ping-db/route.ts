@@ -11,14 +11,6 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
-    // Validate HTTP method
-    if (request.method !== 'GET') {
-        return NextResponse.json(
-            { error: 'Method not allowed' },
-            { status: 405 }
-        )
-    }
-
     const authHeader = request.headers.get('authorization')
     const cronSecret = process.env.CRON_SECRET
 

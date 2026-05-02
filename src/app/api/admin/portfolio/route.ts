@@ -101,25 +101,22 @@ export async function PUT(request: Request) {
 
     const d = parsed.data
 
-    // Optimistic concurrency check: compare client's version against the DB.
-    const currentVersionRows = await db
-        .select({ version: personalInfo.version })
-        .from(personalInfo)
-        .limit(1)
-    const currentVersion = currentVersionRows[0]?.version ?? 0
-
-    if (currentVersion !== clientVersion) {
-        return NextResponse.json(
-            {
-                error: 'The data has been modified by another session. Please reload and try again.',
-            },
-            { status: 409 }
-        )
-    }
-
     const nextVersion = clientVersion + 1
+    let versionConflict = false
 
     await db.transaction(async (tx) => {
+        // Atomic CAS: lock the row before reading the version to eliminate the
+        // TOCTOU window between the version check and the DELETE/INSERT.
+        const lockedRows = await tx
+            .select({ version: personalInfo.version })
+            .from(personalInfo)
+            .limit(1)
+            .for('update')
+        if ((lockedRows[0]?.version ?? 0) !== clientVersion) {
+            versionConflict = true
+            return
+        }
+
         // Clear all portfolio tables.
         // experience_points and skills are deleted via ON DELETE CASCADE
         // when their parent rows are removed.
@@ -264,6 +261,15 @@ export async function PUT(request: Request) {
             }
         }
     })
+
+    if (versionConflict) {
+        return NextResponse.json(
+            {
+                error: 'The data has been modified by another session. Please reload and try again.',
+            },
+            { status: 409 }
+        )
+    }
 
     revalidateTag(PORTFOLIO_DATA_TAG, 'max')
 
