@@ -68,7 +68,6 @@ export const createAuthOptions = (): NextAuthOptions => {
                 return matchesEmail || matchesGithubLogin
             },
             async jwt({ token, user, profile }) {
-                const email = normalize(user?.email ?? token.email)
                 const githubLoginFromProfile = readGithubLoginFromProfile(
                     profile as GithubProfile | null | undefined
                 )
@@ -79,6 +78,16 @@ export const createAuthOptions = (): NextAuthOptions => {
                     githubLoginFromProfile || githubLoginFromToken
 
                 ;(token as { githubLogin?: string }).githubLogin = githubLogin
+
+                // Only query the DB on the initial sign-in (when `user` is
+                // present). On subsequent requests the role is already stored
+                // in the JWT and the middleware runs in Edge (no TCP available).
+                const isSignIn = !!user
+                if (!isSignIn && token.role) {
+                    return token
+                }
+
+                const email = normalize(user?.email ?? token.email)
 
                 const dbUser = token.sub
                     ? await db
