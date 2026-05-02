@@ -2,7 +2,7 @@
     "personal": {
         "name": "Michiel Peeraer",
         "title": "Full-Stack TypeScript Developer",
-        "openToWork": true,
+        "openToWork": false,
         "openToWorkLabel": "Open to opportunities",
         "cvPath": "/CV_Michiel_Peeraer.pdf",
         "ogTechPills": ["React", "TypeScript", "Next.js", "Node.js", "Python"],
