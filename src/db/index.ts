@@ -23,19 +23,16 @@ const parsePositiveInt = (value: string | undefined, fallback: number) => {
 const databaseUrl = cleanConnectionString(
     process.env.DATABASE_URL ?? process.env.POSTGRES_URL
 )
-const unpooledUrl = cleanConnectionString(
-    process.env.DATABASE_URL_UNPOOLED ??
-        process.env.POSTGRES_URL_NON_POOLING ??
-        process.env.DIRECT_URL
-)
-const directUrl = cleanConnectionString(
-    process.env.DIRECT_URL ?? process.env.POSTGRES_URL_NON_POOLING
-)
 
 // Prefer the direct/unpooled URL when available. For this portfolio app the
 // simpler direct connection path is more reliable for Auth.js and admin writes,
 // while the pooler URL remains as a fallback.
-const selectedUrl = unpooledUrl || directUrl || databaseUrl
+const selectedUrl =
+    cleanConnectionString(
+        process.env.DATABASE_URL_UNPOOLED ??
+            process.env.DIRECT_URL ??
+            process.env.POSTGRES_URL_NON_POOLING
+    ) || databaseUrl
 
 const createMissingDbProxy = () =>
     new Proxy(
