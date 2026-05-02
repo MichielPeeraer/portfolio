@@ -128,3 +128,47 @@ test.describe('Portfolio smoke tests', () => {
         )
     })
 })
+
+test.describe('Admin access tests', () => {
+    test('unauthenticated /admin redirects to /login', async ({ page }) => {
+        await page.goto('/admin', { waitUntil: 'domcontentloaded' })
+        await expect(page).toHaveURL(/\/login/)
+    })
+
+    test('login page renders GitHub sign-in button', async ({ page }) => {
+        await page.goto('/login', { waitUntil: 'domcontentloaded' })
+        await expect(
+            page.getByRole('button', { name: /github/i })
+        ).toBeVisible()
+    })
+
+    test('login page has admin heading', async ({ page }) => {
+        await page.goto('/login', { waitUntil: 'domcontentloaded' })
+        await expect(
+            page.getByRole('heading', { name: 'Admin Login' })
+        ).toBeVisible()
+    })
+
+    test('signout page renders confirm button', async ({ page }) => {
+        await page.goto('/signout', { waitUntil: 'domcontentloaded' })
+        await expect(
+            page.getByRole('button', { name: /confirm sign out/i })
+        ).toBeVisible()
+    })
+
+    test('/api/admin/portfolio returns 401 when unauthenticated', async ({
+        request,
+    }) => {
+        const response = await request.get('/api/admin/portfolio')
+        expect(response.status()).toBe(401)
+    })
+
+    test('/api/admin/portfolio PUT returns 401 when unauthenticated', async ({
+        request,
+    }) => {
+        const response = await request.put('/api/admin/portfolio', {
+            data: { _version: 0 },
+        })
+        expect(response.status()).toBe(401)
+    })
+})

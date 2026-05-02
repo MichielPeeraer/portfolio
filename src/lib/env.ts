@@ -30,6 +30,7 @@ export const getAuthEnv = () => {
         githubId: requireEnv('GITHUB_ID', 'authentication'),
         githubSecret: requireEnv('GITHUB_SECRET', 'authentication'),
         nextAuthSecret: requireEnv('NEXTAUTH_SECRET', 'authentication'),
+        nextAuthUrl: requireEnv('NEXTAUTH_URL', 'authentication'),
     }
 }
 
