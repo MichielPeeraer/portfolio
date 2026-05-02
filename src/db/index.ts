@@ -32,12 +32,10 @@ const directUrl = cleanConnectionString(
     process.env.DIRECT_URL ?? process.env.POSTGRES_URL_NON_POOLING
 )
 
-// Prefer the direct/unpooled URL in development (simpler, no pgBouncer).
-// In production (Vercel serverless) the pooler URL is preferred.
-const selectedUrl =
-    process.env.NODE_ENV === 'development'
-        ? unpooledUrl || directUrl || databaseUrl
-        : databaseUrl || unpooledUrl || directUrl
+// Prefer the direct/unpooled URL when available. For this portfolio app the
+// simpler direct connection path is more reliable for Auth.js and admin writes,
+// while the pooler URL remains as a fallback.
+const selectedUrl = unpooledUrl || directUrl || databaseUrl
 
 const createMissingDbProxy = () =>
     new Proxy(
