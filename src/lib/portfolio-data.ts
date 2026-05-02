@@ -192,7 +192,7 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
             duolingoEmbed: {
                 src: p.duolingoEmbedSrc,
                 alt: p.duolingoEmbedAlt,
-                unoptimized: p.duolingoEmbedUnoptimized || undefined,
+                unoptimized: p.duolingoEmbedUnoptimized ?? true,
             },
         },
     }
