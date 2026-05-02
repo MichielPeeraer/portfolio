@@ -52,6 +52,7 @@ export default function LearningSection({ data }: LearningSectionProps) {
                                     unoptimized={
                                         data.duolingoEmbed.unoptimized ?? true
                                     }
+                                    referrerPolicy="no-referrer"
                                     sizes="(max-width: 767px) 100vw, 50vw"
                                     className="rounded-lg grayscale block"
                                     style={{ width: '100%', height: 'auto' }}
