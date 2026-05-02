@@ -1,12 +1,9 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import Link from 'next/link'
-import { getPortfolioDataFromDbOrFallback } from '@/lib/portfolio-data'
 import { createAuthOptions } from '@/lib/auth-options'
 import { MatrixRain } from '@/components/effects'
-import { PortfolioEditor } from '@/components/admin/PortfolioEditor'
-import { db } from '@/db'
-import { personalInfo } from '@/db/schema'
+import { AdminDashboard } from '@/components/admin/AdminDashboard'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,28 +12,6 @@ export default async function AdminPage() {
 
     if (!session?.user || session.user.role !== 'admin') {
         redirect('/login')
-    }
-
-    let data: Awaited<
-        ReturnType<typeof getPortfolioDataFromDbOrFallback>
-    > | null = null
-    let dbVersion = 0
-
-    try {
-        const [fetchedData, versionRows] = await Promise.all([
-            getPortfolioDataFromDbOrFallback({ strict: false }),
-            db
-                .select({ version: personalInfo.version })
-                .from(personalInfo)
-                .limit(1),
-        ])
-        data = fetchedData
-        dbVersion = versionRows[0]?.version ?? 0
-    } catch (error) {
-        console.error(
-            '[admin-page] Failed to load portfolio data from DB:',
-            error
-        )
     }
 
     return (
@@ -96,30 +71,7 @@ export default async function AdminPage() {
                     </div>
                 </header>
 
-                {data ? (
-                    <PortfolioEditor
-                        initialData={data}
-                        initialVersion={dbVersion}
-                    />
-                ) : (
-                    <section className="rounded-lg border border-red-900/70 bg-red-950/30 p-4 sm:rounded-xl sm:p-5 md:p-6 lg:rounded-2xl lg:p-8">
-                        <h2 className="text-base font-medium text-red-300 sm:text-lg md:text-xl">
-                            Database unavailable
-                        </h2>
-                        <p className="mt-2 text-xs leading-relaxed text-red-200/80 sm:mt-3 sm:text-sm md:text-base">
-                            The admin editor needs a live database connection.
-                            Please try again in a moment.
-                        </p>
-                        <div className="mt-4 sm:mt-5">
-                            <Link
-                                href="/admin"
-                                className="inline-flex rounded-lg border border-red-800/70 bg-black/30 px-3 py-2 text-xs font-medium text-red-200 transition hover:bg-red-900/20 sm:px-4 sm:py-2.5 sm:text-sm"
-                            >
-                                Retry
-                            </Link>
-                        </div>
-                    </section>
-                )}
+                <AdminDashboard />
             </div>
         </main>
     )
