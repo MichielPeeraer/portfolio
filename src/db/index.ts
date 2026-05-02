@@ -22,12 +22,22 @@ const selectedUrl =
         ? directUrl || databaseUrl
         : databaseUrl || directUrl
 
-const maskUrl = (url: string) =>
-    url.replace(/:([^:@]{4})[^:@]*@/, ':$1***@')
+const maskUrl = (url: string) => url.replace(/:([^:@]{4})[^:@]*@/, ':$1***@')
 console.log('[db] NODE_ENV:', process.env.NODE_ENV)
-console.log('[db] DATABASE_URL present:', !!databaseUrl, databaseUrl ? maskUrl(databaseUrl) : 'MISSING')
-console.log('[db] DIRECT_URL present:', !!directUrl, directUrl ? maskUrl(directUrl) : 'MISSING')
-console.log('[db] selectedUrl:', selectedUrl ? maskUrl(selectedUrl) : 'NONE — will use proxy')
+console.log(
+    '[db] DATABASE_URL present:',
+    !!databaseUrl,
+    databaseUrl ? maskUrl(databaseUrl) : 'MISSING'
+)
+console.log(
+    '[db] DIRECT_URL present:',
+    !!directUrl,
+    directUrl ? maskUrl(directUrl) : 'MISSING'
+)
+console.log(
+    '[db] selectedUrl:',
+    selectedUrl ? maskUrl(selectedUrl) : 'NONE — will use proxy'
+)
 
 const createMissingDbProxy = () =>
     new Proxy(
