@@ -64,7 +64,7 @@ const isTimeoutError = (error: unknown) => {
 }
 
 const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
-    // Fetch all data with nested relations in 4 parallel queries instead of 11
+    // Fetch all base data in true parallel (9 queries)
     const [
         personalRows,
         typedLines,
@@ -73,13 +73,13 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
         practicesRows,
         educationsRows,
         languagesRows,
-        experiencesWithPoints,
-        categoriesWithSkills,
+        experiencesRows,
+        experiencePointsRows,
+        skillCategoriesRows,
+        skillsRows,
     ] = await withTimeout(
         Promise.all([
-            // Personal info
             db.select().from(personalInfo).limit(1),
-            // Flat tables (no relations)
             db
                 .select()
                 .from(heroTypedLines)
@@ -92,72 +92,30 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
                 .select()
                 .from(learningLanguages)
                 .orderBy(asc(learningLanguages.sortOrder)),
-            // Relations: fetch experiences with their child points (as typed array)
+            db.select().from(experience).orderBy(asc(experience.sortOrder)),
             db
                 .select()
-                .from(experience)
-                .orderBy(asc(experience.sortOrder))
-                .then(async (exps) => {
-                    const pointsResults = await db
-                        .select()
-                        .from(experiencePoints)
-                        .orderBy(asc(experiencePoints.sortOrder))
-                    return exps.map((exp) => ({
-                        ...exp,
-                        points: pointsResults.filter(
-                            (pt) => pt.experienceId === exp.id
-                        ),
-                    }))
-                }) as Promise<
-                Array<{
-                    id: number
-                    period: string
-                    title: string
-                    company: string
-                    location: string
-                    sortOrder: number
-                    points: Array<{
-                        id: number
-                        experienceId: number
-                        text: string
-                        sortOrder: number
-                    }>
-                }>
-            >,
-            // Relations: fetch skill categories with their child skills
+                .from(experiencePoints)
+                .orderBy(asc(experiencePoints.sortOrder)),
             db
                 .select()
                 .from(skillCategories)
-                .orderBy(asc(skillCategories.sortOrder))
-                .then(async (cats) => {
-                    const skillsResults = await db
-                        .select()
-                        .from(skills)
-                        .orderBy(asc(skills.sortOrder))
-                    return cats.map((cat) => ({
-                        ...cat,
-                        skills: skillsResults.filter(
-                            (sk) => sk.categoryId === cat.id
-                        ),
-                    }))
-                }) as Promise<
-                Array<{
-                    id: number
-                    label: string
-                    wide: boolean
-                    sortOrder: number
-                    skills: Array<{
-                        id: number
-                        skillCategoryId: number
-                        label: string
-                        icon: string | null
-                        sortOrder: number
-                    }>
-                }>
-            >,
+                .orderBy(asc(skillCategories.sortOrder)),
+            db.select().from(skills).orderBy(asc(skills.sortOrder)),
         ]),
         DB_FETCH_TIMEOUT_MS
     )
+
+    // Join relations after all data is fetched
+    const experiencesWithPoints = experiencesRows.map((exp) => ({
+        ...exp,
+        points: experiencePointsRows.filter((pt) => pt.experienceId === exp.id),
+    }))
+
+    const categoriesWithSkills = skillCategoriesRows.map((cat) => ({
+        ...cat,
+        skills: skillsRows.filter((sk) => sk.categoryId === cat.id),
+    }))
 
     if (!personalRows[0]) {
         throw new Error('[portfolio-data] Missing personalInfo row in DB')
