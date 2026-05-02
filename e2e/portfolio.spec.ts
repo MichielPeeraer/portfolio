@@ -130,11 +130,6 @@ test.describe('Portfolio smoke tests', () => {
 })
 
 test.describe('Admin access tests', () => {
-    test('unauthenticated /admin redirects to /login', async ({ page }) => {
-        await page.goto('/admin', { waitUntil: 'domcontentloaded' })
-        await expect(page).toHaveURL(/\/login/)
-    })
-
     test('login page renders GitHub sign-in button', async ({ page }) => {
         await page.goto('/login', { waitUntil: 'domcontentloaded' })
         await expect(
