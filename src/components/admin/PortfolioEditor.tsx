@@ -125,8 +125,6 @@ export function PortfolioEditor({
         isSavingSections,
         sectionsStatus,
         sectionIssues,
-        resetQuickForm,
-        resetSections,
         isQuickFormDirty,
         isSectionsDirty,
     } = usePortfolioEditorState(initialData, initialVersion)
@@ -148,7 +146,6 @@ export function PortfolioEditor({
                     formStatus={formStatus}
                     handleSubmit={handleSubmit}
                     onSubmit={onSubmitForm}
-                    onReset={resetQuickForm}
                     watch={watch}
                     setValue={setFormValue}
                 />
@@ -172,7 +169,6 @@ export function PortfolioEditor({
                     isSavingSections={isSavingSections}
                     sectionsStatus={sectionsStatus}
                     sectionIssues={sectionIssues}
-                    onReset={resetSections}
                 />
             </Panel>
         </div>

@@ -89,31 +89,41 @@ export const createAuthOptions = (): NextAuthOptions => {
 
                 const email = normalize(user?.email ?? token.email)
 
-                const dbUser = token.sub
-                    ? await db
-                          .select({ role: users.role, email: users.email })
-                          .from(users)
-                          .where(eq(users.id, token.sub))
-                          .limit(1)
-                          .then((rows) => rows[0] ?? null)
-                    : email
-                      ? await db
-                            .select({ role: users.role, email: users.email })
-                            .from(users)
-                            .where(eq(users.email, email))
-                            .limit(1)
-                            .then((rows) => rows[0] ?? null)
-                      : null
+                let dbUser: {
+                    role: string | null
+                    email: string | null
+                } | null = null
+                try {
+                    dbUser = token.sub
+                        ? await db
+                              .select({ role: users.role, email: users.email })
+                              .from(users)
+                              .where(eq(users.id, token.sub))
+                              .limit(1)
+                              .then((rows) => rows[0] ?? null)
+                        : email
+                          ? await db
+                                .select({
+                                    role: users.role,
+                                    email: users.email,
+                                })
+                                .from(users)
+                                .where(eq(users.email, email))
+                                .limit(1)
+                                .then((rows) => rows[0] ?? null)
+                          : null
+                } catch {
+                    // Fall back to env-based admin matching when DB is unreachable.
+                }
 
-                if (dbUser?.role) {
+                const isAdminByEnv =
+                    (adminEmail && email === adminEmail) ||
+                    (adminGithubLogin && githubLogin === adminGithubLogin)
+
+                if (isAdminByEnv) {
+                    token.role = 'admin'
+                } else if (dbUser?.role) {
                     token.role = dbUser.role
-                } else if (adminEmail && email === adminEmail) {
-                    token.role = 'admin'
-                } else if (
-                    adminGithubLogin &&
-                    githubLogin === adminGithubLogin
-                ) {
-                    token.role = 'admin'
                 } else {
                     token.role = 'guest'
                 }

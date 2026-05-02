@@ -45,7 +45,6 @@ interface AdvancedJsonSectionProps {
     value: string
     setValue: (next: string) => void
     save: () => Promise<void>
-    onReset: () => void
     isSaving: boolean
     rawStatus: string
     rawIssues: string[]
@@ -55,7 +54,6 @@ export function AdvancedJsonSection({
     value,
     setValue,
     save,
-    onReset,
     isSaving,
     rawStatus,
     rawIssues,

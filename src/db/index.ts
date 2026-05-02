@@ -6,8 +6,14 @@ declare global {
     var __db: ReturnType<typeof drizzle> | undefined
 }
 
-const cleanConnectionString = (value: string | undefined) =>
-    value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
+const cleanConnectionString = (value: string | undefined) => {
+    const s = value?.trim().replace(/^['\"]|['\"]$/g, '') ?? ''
+    // Remove channel_binding param — not supported by postgres.js
+    return s
+        .replace(/[?&]channel_binding=[^&]*/g, '')
+        .replace(/\?&/, '?')
+        .replace(/[?&]$/, '')
+}
 
 const parsePositiveInt = (value: string | undefined, fallback: number) => {
     const parsed = Number(value)
@@ -15,12 +21,15 @@ const parsePositiveInt = (value: string | undefined, fallback: number) => {
 }
 
 const databaseUrl = cleanConnectionString(process.env.DATABASE_URL)
+const unpooledUrl = cleanConnectionString(process.env.DATABASE_URL_UNPOOLED)
 const directUrl = cleanConnectionString(process.env.DIRECT_URL)
 
+// Prefer the direct/unpooled URL in development (simpler, no pgBouncer).
+// In production (Vercel serverless) the pooler URL is preferred.
 const selectedUrl =
     process.env.NODE_ENV === 'development'
-        ? directUrl || databaseUrl
-        : databaseUrl || directUrl
+        ? unpooledUrl || directUrl || databaseUrl
+        : databaseUrl || unpooledUrl || directUrl
 
 const createMissingDbProxy = () =>
     new Proxy(

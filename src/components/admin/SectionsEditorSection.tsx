@@ -178,7 +178,6 @@ interface SectionsEditorSectionProps {
     isSavingSections: boolean
     sectionsStatus: string
     sectionIssues: string[]
-    onReset: () => void
 }
 
 export function SectionsEditorSection({
@@ -191,7 +190,6 @@ export function SectionsEditorSection({
     isSavingSections,
     sectionsStatus,
     sectionIssues,
-    onReset,
 }: SectionsEditorSectionProps) {
     const [experienceOpen, setExperienceOpen] = useState(true)
     const [educationOpen, setEducationOpen] = useState(true)

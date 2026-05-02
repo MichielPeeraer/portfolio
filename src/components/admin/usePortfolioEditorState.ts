@@ -490,21 +490,6 @@ export const usePortfolioEditorState = (
         }
     }
 
-    const resetQuickForm = () => {
-        dispatch({ type: 'SET_RESETTING_FORM', payload: true })
-        reset(buildAdminFormDefaults(state.portfolioData))
-        Promise.resolve().then(() => {
-            dispatch({ type: 'SET_RESETTING_FORM', payload: false })
-        })
-    }
-
-    const resetSections = () => {
-        dispatch({
-            type: 'UPDATE_SECTIONS_DRAFT',
-            payload: buildSectionsDraft(state.portfolioData),
-        })
-    }
-
     return {
         register,
         handleSubmit,
@@ -532,8 +517,6 @@ export const usePortfolioEditorState = (
         sectionsStatus: state.sectionsStatus,
         sectionIssues: state.sectionIssues,
         isSectionsDirty,
-        resetQuickForm,
-        resetSections,
         isQuickFormDirty,
         portfolioData: state.portfolioData,
     }

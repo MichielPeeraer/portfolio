@@ -14,7 +14,6 @@ interface QuickEditSectionProps {
     formStatus: string
     handleSubmit: UseFormHandleSubmit<AdminFormValues>
     onSubmit: (values: AdminFormValues) => Promise<void>
-    onReset: () => void
     watch: UseFormWatch<AdminFormValues>
     setValue: UseFormSetValue<AdminFormValues>
 }
@@ -115,7 +114,6 @@ export function QuickEditSection({
     formStatus,
     handleSubmit,
     onSubmit,
-    onReset,
     watch,
     setValue,
 }: QuickEditSectionProps) {
