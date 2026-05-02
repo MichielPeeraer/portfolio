@@ -331,14 +331,6 @@ export function QuickEditSection({
                 </div>
                 <div className="flex shrink-0 w-full gap-2 sm:w-auto md:ml-4 sm:gap-3">
                     <button
-                        type="button"
-                        onClick={onReset}
-                        disabled={isSubmitting}
-                        className="flex-1 sm:flex-none rounded-lg border border-green-800/70 bg-black/30 px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-medium text-green-300 transition hover:bg-green-900/30 disabled:opacity-60 sm:rounded-xl"
-                    >
-                        Reset
-                    </button>
-                    <button
                         type="submit"
                         disabled={isSubmitting}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-lg sm:rounded-xl bg-green-700 px-3 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"

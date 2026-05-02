@@ -117,14 +117,6 @@ export function AdvancedJsonSection({
                 <div className="grid gap-2">
                     <button
                         type="button"
-                        onClick={onReset}
-                        disabled={isSaving}
-                        className="w-full rounded-xl border border-amber-800/70 bg-black/30 px-4 py-2.5 text-sm text-amber-300 transition hover:bg-amber-950/30 disabled:opacity-60"
-                    >
-                        Reset JSON
-                    </button>
-                    <button
-                        type="button"
                         onClick={save}
                         disabled={isSaving}
                         className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-700 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-600 disabled:opacity-60"

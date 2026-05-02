@@ -1284,14 +1284,6 @@ export function SectionsEditorSection({
                 <div className="flex shrink-0 gap-2 md:ml-4">
                     <button
                         type="button"
-                        onClick={onReset}
-                        disabled={isSavingSections}
-                        className="rounded-xl border border-green-800/70 bg-black/30 px-4 py-2.5 text-sm text-green-300 transition hover:bg-green-900/30 disabled:opacity-60"
-                    >
-                        Reset
-                    </button>
-                    <button
-                        type="button"
                         onClick={saveSections}
                         disabled={isSavingSections}
                         className="flex items-center justify-center gap-2 rounded-xl bg-green-700 px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-green-500 disabled:opacity-60"
