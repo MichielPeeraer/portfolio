@@ -26,11 +26,11 @@ const parsePositiveInt = (value: string | undefined, fallback: number) => {
 
 const DB_FETCH_TIMEOUT_MS = parsePositiveInt(
     process.env.PORTFOLIO_DB_FETCH_TIMEOUT_MS,
-    process.env.NODE_ENV === 'production' ? 5000 : 4000
+    process.env.NODE_ENV === 'production' ? 20000 : 15000
 )
 const DB_FETCH_RETRIES = parsePositiveInt(
     process.env.PORTFOLIO_DB_FETCH_RETRIES,
-    process.env.NODE_ENV === 'production' ? 0 : 1
+    process.env.NODE_ENV === 'production' ? 2 : 1
 )
 export const PORTFOLIO_DATA_TAG = 'portfolio-data'
 
@@ -277,9 +277,12 @@ export const getPortfolioDataFromDb = async (): Promise<PortfolioData> => {
             if (!shouldRetry) {
                 break
             }
+            // Exponential backoff: 2s, 4s, 8s... to give paused DB time to wake
+            const delayMs = Math.pow(2, attempt + 1) * 1000
             console.warn(
-                `[portfolio-data] Direct DB fetch attempt ${attempt + 1} timed out, retrying...`
+                `[portfolio-data] Direct DB fetch attempt ${attempt + 1} timed out. Retrying in ${delayMs}ms...`
             )
+            await new Promise((resolve) => setTimeout(resolve, delayMs))
         }
     }
 
