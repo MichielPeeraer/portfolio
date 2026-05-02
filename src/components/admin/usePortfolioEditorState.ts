@@ -1,7 +1,6 @@
 ﻿'use client'
 
 import { useState, type SetStateAction } from 'react'
-import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import {
@@ -22,7 +21,6 @@ export const usePortfolioEditorState = (
     initialData: PortfolioData,
     initialVersion = 0
 ) => {
-    const router = useRouter()
     const [portfolioData, setPortfolioData] =
         useState<PortfolioData>(initialData)
     const [value, setValue] = useState(JSON.stringify(initialData, null, 2))
@@ -238,7 +236,6 @@ export const usePortfolioEditorState = (
             syncEditorState(parsed.data as PortfolioData)
         }
         setFormStatus('Saved successfully.')
-        router.refresh()
     }
 
     const saveJson = async () => {
@@ -310,7 +307,6 @@ export const usePortfolioEditorState = (
         }
         setRawIssues([])
         setRawStatus('Saved successfully.')
-        router.refresh()
         setIsSaving(false)
     }
 
@@ -476,7 +472,6 @@ export const usePortfolioEditorState = (
             syncEditorState(parsedPortfolio.data as PortfolioData)
         }
         setSectionsStatus('Section changes saved successfully.')
-        router.refresh()
         setIsSavingSections(false)
     }
 
