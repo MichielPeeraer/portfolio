@@ -63,14 +63,18 @@ function CheckIcon() {
 
 interface FieldProps {
     label: string
+    htmlFor: string
     error?: string
     children: React.ReactNode
 }
 
-function Field({ label, error, children }: FieldProps) {
+function Field({ label, htmlFor, error, children }: FieldProps) {
     return (
         <div className="flex flex-col gap-1 sm:gap-1.5">
-            <label className="text-[9px] font-medium uppercase tracking-[0.15em] text-green-600 sm:text-[10px] sm:tracking-[0.2em]">
+            <label
+                htmlFor={htmlFor}
+                className="text-[9px] font-medium uppercase tracking-[0.15em] text-green-600 sm:text-[10px] sm:tracking-[0.2em]"
+            >
                 {label}
             </label>
             {children}
@@ -137,7 +141,11 @@ export function QuickEditSection({
                     title="Identity"
                     description="Core hero text and personal summary"
                 >
-                    <Field label="Name" error={errors.name?.message}>
+                    <Field
+                        label="Name"
+                        htmlFor="name"
+                        error={errors.name?.message}
+                    >
                         <input
                             id="name"
                             {...register('name')}
@@ -146,7 +154,11 @@ export function QuickEditSection({
                             className={inputClass}
                         />
                     </Field>
-                    <Field label="Title" error={errors.title?.message}>
+                    <Field
+                        label="Title"
+                        htmlFor="title"
+                        error={errors.title?.message}
+                    >
                         <input
                             id="title"
                             {...register('title')}
@@ -155,7 +167,11 @@ export function QuickEditSection({
                             className={inputClass}
                         />
                     </Field>
-                    <Field label="About" error={errors.about?.message}>
+                    <Field
+                        label="About"
+                        htmlFor="about"
+                        error={errors.about?.message}
+                    >
                         <textarea
                             id="about"
                             {...register('about')}
@@ -175,6 +191,7 @@ export function QuickEditSection({
                         <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-1 xl:grid-cols-2">
                             <Field
                                 label="Email"
+                                htmlFor="contactEmail"
                                 error={errors.contactEmail?.message}
                             >
                                 <input
@@ -187,6 +204,7 @@ export function QuickEditSection({
                             </Field>
                             <Field
                                 label="Phone"
+                                htmlFor="contactPhone"
                                 error={errors.contactPhone?.message}
                             >
                                 <input
@@ -199,6 +217,7 @@ export function QuickEditSection({
                             </Field>
                             <Field
                                 label="GitHub URL"
+                                htmlFor="githubUrl"
                                 error={errors.githubUrl?.message}
                             >
                                 <input
@@ -211,6 +230,7 @@ export function QuickEditSection({
                             </Field>
                             <Field
                                 label="LinkedIn URL"
+                                htmlFor="linkedinUrl"
                                 error={errors.linkedinUrl?.message}
                             >
                                 <input
@@ -223,6 +243,7 @@ export function QuickEditSection({
                             </Field>
                             <Field
                                 label="CV URL / Path"
+                                htmlFor="cvPath"
                                 error={errors.cvPath?.message}
                             >
                                 <input
@@ -235,6 +256,7 @@ export function QuickEditSection({
                             </Field>
                             <Field
                                 label="Open-to-work label"
+                                htmlFor="openToWorkLabel"
                                 error={errors.openToWorkLabel?.message}
                             >
                                 <input
@@ -273,6 +295,7 @@ export function QuickEditSection({
                 <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-5">
                     <Field
                         label="Hero typed lines"
+                        htmlFor="heroTypedLinesText"
                         error={errors.heroTypedLinesText?.message}
                     >
                         <textarea
@@ -286,6 +309,7 @@ export function QuickEditSection({
                     </Field>
                     <Field
                         label="OG tech pills"
+                        htmlFor="ogTechPillsText"
                         error={errors.ogTechPillsText?.message}
                     >
                         <textarea
@@ -299,6 +323,7 @@ export function QuickEditSection({
                     </Field>
                     <Field
                         label="Dev practices"
+                        htmlFor="devPracticesText"
                         error={errors.devPracticesText?.message}
                     >
                         <textarea
