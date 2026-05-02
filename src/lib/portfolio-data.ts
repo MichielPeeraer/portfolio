@@ -64,52 +64,106 @@ const isTimeoutError = (error: unknown) => {
 }
 
 const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
+    // Fetch all data with nested relations in 4 parallel queries instead of 11
     const [
-        personal,
+        personalRows,
         typedLines,
         pills,
         links,
-        experiences,
-        allPoints,
-        categories,
-        allSkills,
-        practices,
-        educations,
-        languages,
+        practicesRows,
+        educationsRows,
+        languagesRows,
+        experiencesWithPoints,
+        categoriesWithSkills,
     ] = await withTimeout(
         Promise.all([
+            // Personal info
             db.select().from(personalInfo).limit(1),
+            // Flat tables (no relations)
             db
                 .select()
                 .from(heroTypedLines)
                 .orderBy(asc(heroTypedLines.sortOrder)),
             db.select().from(ogTechPills).orderBy(asc(ogTechPills.sortOrder)),
             db.select().from(socialLinks).orderBy(asc(socialLinks.sortOrder)),
-            db.select().from(experience).orderBy(asc(experience.sortOrder)),
-            db
-                .select()
-                .from(experiencePoints)
-                .orderBy(asc(experiencePoints.sortOrder)),
-            db
-                .select()
-                .from(skillCategories)
-                .orderBy(asc(skillCategories.sortOrder)),
-            db.select().from(skills).orderBy(asc(skills.sortOrder)),
             db.select().from(devPractices).orderBy(asc(devPractices.sortOrder)),
             db.select().from(education).orderBy(asc(education.sortOrder)),
             db
                 .select()
                 .from(learningLanguages)
                 .orderBy(asc(learningLanguages.sortOrder)),
+            // Relations: fetch experiences with their child points (as typed array)
+            db
+                .select()
+                .from(experience)
+                .orderBy(asc(experience.sortOrder))
+                .then(async (exps) => {
+                    const pointsResults = await db
+                        .select()
+                        .from(experiencePoints)
+                        .orderBy(asc(experiencePoints.sortOrder))
+                    return exps.map((exp) => ({
+                        ...exp,
+                        points: pointsResults.filter(
+                            (pt) => pt.experienceId === exp.id
+                        ),
+                    }))
+                }) as Promise<
+                Array<{
+                    id: number
+                    period: string
+                    title: string
+                    company: string
+                    location: string
+                    sortOrder: number
+                    points: Array<{
+                        id: number
+                        experienceId: number
+                        text: string
+                        sortOrder: number
+                    }>
+                }>
+            >,
+            // Relations: fetch skill categories with their child skills
+            db
+                .select()
+                .from(skillCategories)
+                .orderBy(asc(skillCategories.sortOrder))
+                .then(async (cats) => {
+                    const skillsResults = await db
+                        .select()
+                        .from(skills)
+                        .orderBy(asc(skills.sortOrder))
+                    return cats.map((cat) => ({
+                        ...cat,
+                        skills: skillsResults.filter(
+                            (sk) => sk.categoryId === cat.id
+                        ),
+                    }))
+                }) as Promise<
+                Array<{
+                    id: number
+                    label: string
+                    wide: boolean
+                    sortOrder: number
+                    skills: Array<{
+                        id: number
+                        skillCategoryId: number
+                        label: string
+                        icon: string | null
+                        sortOrder: number
+                    }>
+                }>
+            >,
         ]),
         DB_FETCH_TIMEOUT_MS
     )
 
-    if (!personal[0]) {
+    if (!personalRows[0]) {
         throw new Error('[portfolio-data] Missing personalInfo row in DB')
     }
 
-    const p = personal[0]
+    const p = personalRows[0]
 
     const built: PortfolioData = {
         personal: {
@@ -119,49 +173,60 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
             openToWork: p.openToWork,
             openToWorkLabel: p.openToWorkLabel ?? undefined,
             cvPath: p.cvPath ?? undefined,
-            ogTechPills: pills.map((x) => x.label),
-            heroTypedLines: typedLines.map((x) => x.text),
+            ogTechPills: pills.map((x: (typeof pills)[number]) => x.label),
+            heroTypedLines: typedLines.map(
+                (x: (typeof typedLines)[number]) => x.text
+            ),
             contact: {
                 phone: p.contactPhone,
                 email: p.contactEmail,
-                socialLinks: links.map((x) => ({
+                socialLinks: links.map((x: (typeof links)[number]) => ({
                     name: x.name,
                     icon: x.icon,
                     url: x.url,
                 })),
             },
         },
-        experience: experiences.map((exp) => ({
-            period: exp.period,
-            title: exp.title,
-            company: exp.company,
-            location: exp.location,
-            points: allPoints
-                .filter((pt) => pt.experienceId === exp.id)
-                .map((pt) => pt.text),
-        })),
-        skillCategories: categories.map((cat) => ({
-            label: cat.label,
-            wide: cat.wide || undefined,
-            skills: allSkills
-                .filter((sk) => sk.categoryId === cat.id)
-                .map((sk) =>
+        // Use pre-loaded relations instead of filtering
+        experience: experiencesWithPoints.map(
+            (exp: (typeof experiencesWithPoints)[number]) => ({
+                period: exp.period,
+                title: exp.title,
+                company: exp.company,
+                location: exp.location,
+                points: exp.points.map(
+                    (pt: (typeof exp.points)[number]) => pt.text
+                ),
+            })
+        ),
+        skillCategories: categoriesWithSkills.map(
+            (cat: (typeof categoriesWithSkills)[number]) => ({
+                label: cat.label,
+                wide: cat.wide || undefined,
+                skills: cat.skills.map((sk: (typeof cat.skills)[number]) =>
                     sk.icon ? { label: sk.label, icon: sk.icon } : sk.label
                 ),
-        })),
+            })
+        ),
         devPracticesLabel: p.devPracticesLabel ?? undefined,
-        devPractices: practices.map((x) => x.text),
-        education: educations.map((edu) => ({
-            degree: edu.degree,
-            institution: edu.institution,
-            location: edu.location,
-            year: edu.year,
-            details: edu.details,
-        })),
+        devPractices: practicesRows.map(
+            (x: (typeof practicesRows)[number]) => x.text
+        ),
+        education: educationsRows.map(
+            (edu: (typeof educationsRows)[number]) => ({
+                degree: edu.degree,
+                institution: edu.institution,
+                location: edu.location,
+                year: edu.year,
+                details: edu.details,
+            })
+        ),
         learning: {
             heading: p.learningHeading,
             description: p.learningDescription,
-            languages: languages.map((x) => x.label),
+            languages: languagesRows.map(
+                (x: (typeof languagesRows)[number]) => x.label
+            ),
             bootDevEmbed: {
                 src: p.bootDevEmbedSrc,
                 alt: p.bootDevEmbedAlt,

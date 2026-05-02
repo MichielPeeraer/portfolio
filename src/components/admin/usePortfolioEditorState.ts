@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState, type SetStateAction } from 'react'
+import { useReducer } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import {
@@ -17,30 +17,135 @@ import {
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import type { PortfolioData } from '@/types'
 
+/**
+ * Consolidated editor state using useReducer for single source of truth.
+ * Replaces 15+ scattered useState variables with one coordinated state object.
+ */
+interface EditorState {
+    portfolioData: PortfolioData
+    rawJsonValue: string
+    sectionsDraft: SectionsFormValues
+    version: number
+    isSavingForm: boolean
+    isSavingRaw: boolean
+    isSavingSections: boolean
+    formStatus: string
+    rawStatus: string
+    rawIssues: string[]
+    sectionsStatus: string
+    sectionIssues: string[]
+    isResettingForm: boolean
+}
+
+type EditorAction =
+    | {
+          type: 'SYNC_FROM_DATA'
+          payload: {
+              data: PortfolioData
+              version: number
+          }
+      }
+    | {
+          type: 'UPDATE_RAW_JSON'
+          payload: string
+      }
+    | {
+          type: 'UPDATE_SECTIONS_DRAFT'
+          payload: SectionsFormValues
+      }
+    | { type: 'SET_FORM_STATUS'; payload: string }
+    | { type: 'SET_RAW_STATUS'; payload: string }
+    | { type: 'SET_SECTIONS_STATUS'; payload: string }
+    | { type: 'SET_RAW_ISSUES'; payload: string[] }
+    | { type: 'SET_SECTION_ISSUES'; payload: string[] }
+    | { type: 'SET_SAVING_FORM'; payload: boolean }
+    | { type: 'SET_SAVING_RAW'; payload: boolean }
+    | { type: 'SET_SAVING_SECTIONS'; payload: boolean }
+    | { type: 'SET_RESETTING_FORM'; payload: boolean }
+
+const createInitialState = (
+    initialData: PortfolioData,
+    initialVersion: number
+): EditorState => ({
+    portfolioData: initialData,
+    rawJsonValue: JSON.stringify(initialData, null, 2),
+    sectionsDraft: buildSectionsDraft(initialData),
+    version: initialVersion,
+    isSavingForm: false,
+    isSavingRaw: false,
+    isSavingSections: false,
+    formStatus: '',
+    rawStatus: '',
+    rawIssues: [],
+    sectionsStatus: '',
+    sectionIssues: [],
+    isResettingForm: false,
+})
+
+const editorReducer = (
+    state: EditorState,
+    action: EditorAction
+): EditorState => {
+    switch (action.type) {
+        case 'SYNC_FROM_DATA':
+            return {
+                ...state,
+                portfolioData: action.payload.data,
+                rawJsonValue: JSON.stringify(action.payload.data, null, 2),
+                sectionsDraft: buildSectionsDraft(action.payload.data),
+                version: action.payload.version,
+                formStatus: '',
+                rawStatus: '',
+                rawIssues: [],
+                sectionsStatus: '',
+                sectionIssues: [],
+            }
+        case 'UPDATE_RAW_JSON':
+            return {
+                ...state,
+                rawJsonValue: action.payload,
+                rawStatus: '',
+                rawIssues: [],
+            }
+        case 'UPDATE_SECTIONS_DRAFT':
+            return {
+                ...state,
+                sectionsDraft: action.payload,
+                sectionsStatus: '',
+                sectionIssues: [],
+            }
+        case 'SET_FORM_STATUS':
+            return { ...state, formStatus: action.payload }
+        case 'SET_RAW_STATUS':
+            return { ...state, rawStatus: action.payload }
+        case 'SET_SECTIONS_STATUS':
+            return { ...state, sectionsStatus: action.payload }
+        case 'SET_RAW_ISSUES':
+            return { ...state, rawIssues: action.payload }
+        case 'SET_SECTION_ISSUES':
+            return { ...state, sectionIssues: action.payload }
+        case 'SET_SAVING_FORM':
+            return { ...state, isSavingForm: action.payload }
+        case 'SET_SAVING_RAW':
+            return { ...state, isSavingRaw: action.payload }
+        case 'SET_SAVING_SECTIONS':
+            return { ...state, isSavingSections: action.payload }
+        case 'SET_RESETTING_FORM':
+            return { ...state, isResettingForm: action.payload }
+        default:
+            return state
+    }
+}
+
 export const usePortfolioEditorState = (
     initialData: PortfolioData,
     initialVersion = 0
 ) => {
-    const [portfolioData, setPortfolioData] =
-        useState<PortfolioData>(initialData)
-    const [value, setValue] = useState(JSON.stringify(initialData, null, 2))
-    const [isSaving, setIsSaving] = useState(false)
-    const [isSavingSections, setIsSavingSections] = useState(false)
-    const [formStatus, setFormStatus] = useState('')
-    const [rawStatus, setRawStatus] = useState('')
-    const [rawIssues, setRawIssues] = useState<string[]>([])
-    const [sectionsStatus, setSectionsStatus] = useState('')
-    const [sectionIssues, setSectionIssues] = useState<string[]>([])
-
-    const [sectionsDraft, setSectionsDraftState] = useState<SectionsFormValues>(
-        buildSectionsDraft(initialData)
+    const [state, dispatch] = useReducer(
+        editorReducer,
+        initialData,
+        (initial) => createInitialState(initial, initialVersion)
     )
-
-    // Track when we are programmatically resetting form defaults after save.
-    const [version, setVersion] = useState(initialVersion)
-
-    // Track when we are programmatically resetting form defaults after save.
-    const [isResettingForm, setIsResettingForm] = useState(false)
 
     const {
         register,
@@ -54,24 +159,27 @@ export const usePortfolioEditorState = (
         defaultValues: buildAdminFormDefaults(initialData),
     })
 
-    const sectionsDefaults = buildSectionsDraft(portfolioData)
-    const rawDefaults = JSON.stringify(portfolioData, null, 2)
+    // Derived state
+    const sectionsDefaults = buildSectionsDraft(state.portfolioData)
+    const rawDefaults = JSON.stringify(state.portfolioData, null, 2)
     const isSectionsDirty =
-        JSON.stringify(sectionsDraft) !== JSON.stringify(sectionsDefaults)
-    const isRawJsonDirty = value !== rawDefaults
+        JSON.stringify(state.sectionsDraft) !== JSON.stringify(sectionsDefaults)
+    const isRawJsonDirty = state.rawJsonValue !== rawDefaults
     const visibleFormStatus =
-        formStatus && isQuickFormDirty && !isResettingForm ? '' : formStatus
+        state.formStatus && isQuickFormDirty && !state.isResettingForm
+            ? ''
+            : state.formStatus
 
     const syncEditorState = (nextData: PortfolioData) => {
-        setPortfolioData(nextData)
-        setValue(JSON.stringify(nextData, null, 2))
-        setSectionsDraftState(buildSectionsDraft(nextData))
+        dispatch({
+            type: 'SYNC_FROM_DATA',
+            payload: { data: nextData, version: state.version + 1 },
+        })
 
-        setIsResettingForm(true)
-        const newDefaults = buildAdminFormDefaults(nextData)
-        reset(newDefaults)
+        dispatch({ type: 'SET_RESETTING_FORM', payload: true })
+        reset(buildAdminFormDefaults(nextData))
         Promise.resolve().then(() => {
-            setIsResettingForm(false)
+            dispatch({ type: 'SET_RESETTING_FORM', payload: false })
         })
     }
 
@@ -82,54 +190,33 @@ export const usePortfolioEditorState = (
             version?: number
             error?: string
         } | null
-    ) => {
-        // If API returned fresh data, sync immediately so forms show saved state
+    ): boolean => {
         if (result?.success && result.data) {
-            syncEditorState(result.data)
-            if (typeof result.version === 'number') {
-                setVersion(result.version)
-            }
+            dispatch({
+                type: 'SYNC_FROM_DATA',
+                payload: {
+                    data: result.data,
+                    version:
+                        typeof result.version === 'number'
+                            ? result.version
+                            : state.version,
+                },
+            })
+            dispatch({ type: 'SET_RESETTING_FORM', payload: true })
+            reset(buildAdminFormDefaults(result.data))
+            Promise.resolve().then(() => {
+                dispatch({ type: 'SET_RESETTING_FORM', payload: false })
+            })
             return true
         }
         return false
     }
 
-    const setSectionsDraft = (next: SetStateAction<SectionsFormValues>) => {
-        setSectionsStatus('')
-        setSectionIssues([])
-        setSectionsDraftState(next)
-    }
-
-    const setRawValue = (next: string) => {
-        setRawStatus('')
-        setRawIssues([])
-        setValue(next)
-    }
-
-    const resetQuickForm = () => {
-        reset(buildAdminFormDefaults(portfolioData))
-        setFormStatus('')
-    }
-
-    const resetSections = () => {
-        setSectionsDraftState(buildSectionsDraft(portfolioData))
-        setSectionsStatus('')
-        setSectionIssues([])
-    }
-
-    const resetRawJson = () => {
-        setValue(JSON.stringify(portfolioData, null, 2))
-        setRawStatus('')
-        setRawIssues([])
-    }
-
     const persist = async (payload: PortfolioData) => {
         const response = await fetch('/api/admin/portfolio', {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ _version: version, ...payload }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ _version: state.version, ...payload }),
         })
 
         const result = (await response.json().catch(() => null)) as {
@@ -147,9 +234,10 @@ export const usePortfolioEditorState = (
     }
 
     const onSubmitForm = async (formValues: AdminFormValues) => {
-        setFormStatus('')
+        dispatch({ type: 'SET_FORM_STATUS', payload: '' })
 
-        const existingSocialLinks = portfolioData.personal.contact.socialLinks
+        const existingSocialLinks =
+            state.portfolioData.personal.contact.socialLinks
         const nonEditableSocials = existingSocialLinks.filter(
             (link) => link.name !== 'GitHub' && link.name !== 'LinkedIn'
         )
@@ -176,9 +264,9 @@ export const usePortfolioEditorState = (
         ]
 
         const nextData: PortfolioData = {
-            ...portfolioData,
+            ...state.portfolioData,
             personal: {
-                ...portfolioData.personal,
+                ...state.portfolioData.personal,
                 name: formValues.name.trim(),
                 title: formValues.title.trim(),
                 about: formValues.about.trim(),
@@ -188,7 +276,7 @@ export const usePortfolioEditorState = (
                 heroTypedLines: fromMultiline(formValues.heroTypedLinesText),
                 ogTechPills: fromMultiline(formValues.ogTechPillsText),
                 contact: {
-                    ...portfolioData.personal.contact,
+                    ...state.portfolioData.personal.contact,
                     email: formValues.contactEmail.trim(),
                     phone: formValues.contactPhone.trim(),
                     socialLinks,
@@ -199,115 +287,116 @@ export const usePortfolioEditorState = (
 
         const parsed = portfolioSchema.safeParse(nextData)
         if (!parsed.success) {
-            setFormStatus(
-                `Validation failed: ${parsed.error.issues[0]?.message ?? 'Invalid data'}`
-            )
+            dispatch({
+                type: 'SET_FORM_STATUS',
+                payload: `Validation failed: ${parsed.error.issues[0]?.message ?? 'Invalid data'}`,
+            })
             return
         }
-
-        let response: Response
-        let result: {
-            success?: boolean
-            data?: PortfolioData
-            version?: number
-            error?: string
-            issues?: Array<{
-                path?: Array<string | number>
-                message?: string
-            }>
-        } | null
 
         try {
-            ;({ response, result } = await persist(
+            const { response, result } = await persist(
                 parsed.data as PortfolioData
-            ))
+            )
+
+            if (!response.ok) {
+                dispatch({
+                    type: 'SET_FORM_STATUS',
+                    payload: result?.error ?? 'Failed to save changes.',
+                })
+                return
+            }
+
+            if (!syncFromApiResponse(result)) {
+                syncEditorState(parsed.data as PortfolioData)
+            }
+            dispatch({
+                type: 'SET_FORM_STATUS',
+                payload: 'Saved successfully.',
+            })
         } catch {
-            setFormStatus('Failed to save changes.')
-            return
+            dispatch({
+                type: 'SET_FORM_STATUS',
+                payload: 'Failed to save changes.',
+            })
         }
-
-        if (!response.ok) {
-            setFormStatus(result?.error ?? 'Failed to save changes.')
-            return
-        }
-
-        // Sync from API response if available, otherwise fallback to submitted data
-        if (!syncFromApiResponse(result)) {
-            syncEditorState(parsed.data as PortfolioData)
-        }
-        setFormStatus('Saved successfully.')
     }
 
     const saveJson = async () => {
-        setRawStatus('')
-        setRawIssues([])
-        setIsSaving(true)
+        dispatch({ type: 'SET_RAW_STATUS', payload: '' })
+        dispatch({ type: 'SET_RAW_ISSUES', payload: [] })
+        dispatch({ type: 'SET_SAVING_RAW', payload: true })
 
         let parsed: unknown
 
         try {
-            parsed = JSON.parse(value)
+            parsed = JSON.parse(state.rawJsonValue)
         } catch {
-            setRawStatus('Invalid JSON format.')
-            setIsSaving(false)
+            dispatch({
+                type: 'SET_RAW_STATUS',
+                payload: 'Invalid JSON format.',
+            })
+            dispatch({ type: 'SET_SAVING_RAW', payload: false })
             return
         }
 
         const validated = portfolioSchema.safeParse(parsed)
         if (!validated.success) {
-            setRawIssues(getRawIssues(validated.error))
-            setRawStatus(
-                'Validation failed. Fix the listed fields and try again.'
-            )
-            setIsSaving(false)
+            dispatch({
+                type: 'SET_RAW_ISSUES',
+                payload: getRawIssues(validated.error),
+            })
+            dispatch({
+                type: 'SET_RAW_STATUS',
+                payload:
+                    'Validation failed. Fix the listed fields and try again.',
+            })
+            dispatch({ type: 'SET_SAVING_RAW', payload: false })
             return
         }
-
-        let response: Response
-        let result: {
-            success?: boolean
-            data?: PortfolioData
-            version?: number
-            error?: string
-            issues?: Array<{
-                path?: Array<string | number>
-                message?: string
-            }>
-        } | null
 
         try {
-            ;({ response, result } = await persist(
+            const { response, result } = await persist(
                 validated.data as PortfolioData
-            ))
-        } catch {
-            setRawStatus('Failed to save changes.')
-            setIsSaving(false)
-            return
-        }
+            )
 
-        if (!response.ok) {
-            const serverIssues =
-                result?.issues?.map((issue) => {
-                    const path = issue.path?.join('.') ?? 'root'
-                    return `${path}: ${issue.message ?? 'Invalid value'}`
-                }) ?? []
+            if (!response.ok) {
+                const serverIssues =
+                    result?.issues?.map((issue) => {
+                        const path = issue.path?.join('.') ?? 'root'
+                        return `${path}: ${issue.message ?? 'Invalid value'}`
+                    }) ?? []
 
-            if (serverIssues.length > 0) {
-                setRawIssues(serverIssues)
+                if (serverIssues.length > 0) {
+                    dispatch({
+                        type: 'SET_RAW_ISSUES',
+                        payload: serverIssues,
+                    })
+                }
+
+                dispatch({
+                    type: 'SET_RAW_STATUS',
+                    payload: result?.error ?? 'Failed to save changes.',
+                })
+                dispatch({ type: 'SET_SAVING_RAW', payload: false })
+                return
             }
 
-            setRawStatus(result?.error ?? 'Failed to save changes.')
-            setIsSaving(false)
-            return
+            if (!syncFromApiResponse(result)) {
+                syncEditorState(validated.data as PortfolioData)
+            }
+            dispatch({
+                type: 'SET_RAW_STATUS',
+                payload: 'Saved successfully.',
+            })
+            dispatch({ type: 'SET_SAVING_RAW', payload: false })
+        } catch {
+            dispatch({
+                type: 'SET_RAW_STATUS',
+                payload: 'Failed to save changes.',
+            })
+            dispatch({ type: 'SET_SAVING_RAW', payload: false })
         }
-
-        // Sync from API response if available, otherwise fallback to submitted data
-        if (!syncFromApiResponse(result)) {
-            syncEditorState(validated.data as PortfolioData)
-        }
-        setRawIssues([])
-        setRawStatus('Saved successfully.')
-        setIsSaving(false)
     }
 
     const updateExperienceField = (
@@ -315,14 +404,13 @@ export const usePortfolioEditorState = (
         field: keyof SectionsFormValues['experience'][number],
         fieldValue: string
     ) => {
-        setSectionsStatus('')
-        setSectionIssues([])
-        setSectionsDraftState((current) => ({
-            ...current,
-            experience: current.experience.map((item, itemIndex) =>
-                itemIndex === index ? { ...item, [field]: fieldValue } : item
+        const updated = {
+            ...state.sectionsDraft,
+            experience: state.sectionsDraft.experience.map((item, i) =>
+                i === index ? { ...item, [field]: fieldValue } : item
             ),
-        }))
+        }
+        dispatch({ type: 'UPDATE_SECTIONS_DRAFT', payload: updated })
     }
 
     const updateEducationField = (
@@ -330,14 +418,13 @@ export const usePortfolioEditorState = (
         field: keyof SectionsFormValues['education'][number],
         fieldValue: string
     ) => {
-        setSectionsStatus('')
-        setSectionIssues([])
-        setSectionsDraftState((current) => ({
-            ...current,
-            education: current.education.map((item, itemIndex) =>
-                itemIndex === index ? { ...item, [field]: fieldValue } : item
+        const updated = {
+            ...state.sectionsDraft,
+            education: state.sectionsDraft.education.map((item, i) =>
+                i === index ? { ...item, [field]: fieldValue } : item
             ),
-        }))
+        }
+        dispatch({ type: 'UPDATE_SECTIONS_DRAFT', payload: updated })
     }
 
     const updateSkillCategoryField = (
@@ -345,30 +432,34 @@ export const usePortfolioEditorState = (
         field: keyof SectionsFormValues['skillCategories'][number],
         fieldValue: string | boolean
     ) => {
-        setSectionsStatus('')
-        setSectionIssues([])
-        setSectionsDraftState((current) => ({
-            ...current,
-            skillCategories: current.skillCategories.map((item, itemIndex) =>
-                itemIndex === index ? { ...item, [field]: fieldValue } : item
+        const updated = {
+            ...state.sectionsDraft,
+            skillCategories: state.sectionsDraft.skillCategories.map(
+                (item, i) =>
+                    i === index ? { ...item, [field]: fieldValue } : item
             ),
-        }))
+        }
+        dispatch({ type: 'UPDATE_SECTIONS_DRAFT', payload: updated })
     }
 
     const saveSections = async () => {
-        setSectionsStatus('')
-        setSectionIssues([])
+        dispatch({ type: 'SET_SECTIONS_STATUS', payload: '' })
+        dispatch({ type: 'SET_SECTION_ISSUES', payload: [] })
 
-        const parsedSections = sectionsFormSchema.safeParse(sectionsDraft)
+        const parsedSections = sectionsFormSchema.safeParse(state.sectionsDraft)
         if (!parsedSections.success) {
-            setSectionIssues(getRawIssues(parsedSections.error))
-            setSectionsStatus(
-                'Validation failed. Fix highlighted section fields.'
-            )
+            dispatch({
+                type: 'SET_SECTION_ISSUES',
+                payload: getRawIssues(parsedSections.error),
+            })
+            dispatch({
+                type: 'SET_SECTIONS_STATUS',
+                payload: 'Validation failed. Fix highlighted section fields.',
+            })
             return
         }
 
-        setIsSavingSections(true)
+        dispatch({ type: 'SET_SAVING_SECTIONS', payload: true })
 
         const experience = parsedSections.data.experience.map((item) => ({
             period: item.period.trim(),
@@ -397,7 +488,7 @@ export const usePortfolioEditorState = (
         )
 
         const candidate = {
-            ...portfolioData,
+            ...state.portfolioData,
             experience,
             education,
             skillCategories,
@@ -422,57 +513,82 @@ export const usePortfolioEditorState = (
 
         const parsedPortfolio = portfolioSchema.safeParse(candidate)
         if (!parsedPortfolio.success) {
-            setSectionIssues(getRawIssues(parsedPortfolio.error))
-            setSectionsStatus('Validation failed against portfolio schema.')
+            dispatch({
+                type: 'SET_SECTION_ISSUES',
+                payload: getRawIssues(parsedPortfolio.error),
+            })
+            dispatch({
+                type: 'SET_SECTIONS_STATUS',
+                payload: 'Validation failed against portfolio schema.',
+            })
+            dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
             return
         }
-
-        let response: Response
-        let result: {
-            success?: boolean
-            data?: PortfolioData
-            version?: number
-            error?: string
-            issues?: Array<{
-                path?: Array<string | number>
-                message?: string
-            }>
-        } | null
 
         try {
-            ;({ response, result } = await persist(
+            const { response, result } = await persist(
                 parsedPortfolio.data as PortfolioData
-            ))
-        } catch {
-            setSectionsStatus('Failed to save section changes.')
-            setIsSavingSections(false)
-            return
-        }
+            )
 
-        if (!response.ok) {
-            const serverIssues =
-                result?.issues?.map((issue) => {
-                    const path = issue.path?.join('.') ?? 'root'
-                    return `${path}: ${issue.message ?? 'Invalid value'}`
-                }) ?? []
+            if (!response.ok) {
+                const serverIssues =
+                    result?.issues?.map((issue) => {
+                        const path = issue.path?.join('.') ?? 'root'
+                        return `${path}: ${issue.message ?? 'Invalid value'}`
+                    }) ?? []
 
-            if (serverIssues.length > 0) {
-                setSectionIssues(serverIssues)
+                if (serverIssues.length > 0) {
+                    dispatch({
+                        type: 'SET_SECTION_ISSUES',
+                        payload: serverIssues,
+                    })
+                }
+
+                dispatch({
+                    type: 'SET_SECTIONS_STATUS',
+                    payload: result?.error ?? 'Failed to save section changes.',
+                })
+                dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
+                return
             }
 
-            setSectionsStatus(
-                result?.error ?? 'Failed to save section changes.'
-            )
-            setIsSavingSections(false)
-            return
+            if (!syncFromApiResponse(result)) {
+                syncEditorState(parsedPortfolio.data as PortfolioData)
+            }
+            dispatch({
+                type: 'SET_SECTIONS_STATUS',
+                payload: 'Section changes saved successfully.',
+            })
+            dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
+        } catch {
+            dispatch({
+                type: 'SET_SECTIONS_STATUS',
+                payload: 'Failed to save section changes.',
+            })
+            dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
         }
+    }
 
-        // Sync from API response if available, otherwise fallback to submitted data
-        if (!syncFromApiResponse(result)) {
-            syncEditorState(parsedPortfolio.data as PortfolioData)
-        }
-        setSectionsStatus('Section changes saved successfully.')
-        setIsSavingSections(false)
+    const resetQuickForm = () => {
+        dispatch({ type: 'SET_RESETTING_FORM', payload: true })
+        reset(buildAdminFormDefaults(state.portfolioData))
+        Promise.resolve().then(() => {
+            dispatch({ type: 'SET_RESETTING_FORM', payload: false })
+        })
+    }
+
+    const resetSections = () => {
+        dispatch({
+            type: 'UPDATE_SECTIONS_DRAFT',
+            payload: buildSectionsDraft(state.portfolioData),
+        })
+    }
+
+    const resetRawJson = () => {
+        dispatch({
+            type: 'UPDATE_RAW_JSON',
+            payload: JSON.stringify(state.portfolioData, null, 2),
+        })
     }
 
     return {
@@ -484,26 +600,37 @@ export const usePortfolioEditorState = (
         isSubmitting,
         formStatus: visibleFormStatus,
         onSubmitForm,
-        sectionsDraft,
-        setSectionsDraft,
+        sectionsDraft: state.sectionsDraft,
+        setSectionsDraft: (
+            next:
+                | SectionsFormValues
+                | ((prev: SectionsFormValues) => SectionsFormValues)
+        ) => {
+            const updated =
+                typeof next === 'function' ? next(state.sectionsDraft) : next
+            dispatch({ type: 'UPDATE_SECTIONS_DRAFT', payload: updated })
+        },
         updateExperienceField,
         updateEducationField,
         updateSkillCategoryField,
         saveSections,
-        isSavingSections,
-        sectionsStatus,
-        sectionIssues,
-        value,
-        setValue: setRawValue,
+        isSavingSections: state.isSavingSections,
+        sectionsStatus: state.sectionsStatus,
+        sectionIssues: state.sectionIssues,
+        isSectionsDirty,
+        value: state.rawJsonValue,
+        setValue: (next: string) => {
+            dispatch({ type: 'UPDATE_RAW_JSON', payload: next })
+        },
         saveJson,
-        isSaving,
-        rawStatus,
-        rawIssues,
+        isSaving: state.isSavingRaw,
+        rawStatus: state.rawStatus,
+        rawIssues: state.rawIssues,
         resetQuickForm,
         resetSections,
         resetRawJson,
         isQuickFormDirty,
-        isSectionsDirty,
         isRawJsonDirty,
+        portfolioData: state.portfolioData,
     }
 }
