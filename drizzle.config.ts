@@ -13,13 +13,15 @@ const cleanConnectionString = (value: string | undefined) =>
 
 const connectionUrl = cleanConnectionString(
     process.env.DATABASE_URL_UNPOOLED ??
+        process.env.POSTGRES_URL_NON_POOLING ??
         process.env.DIRECT_URL ??
-        process.env.DATABASE_URL
+        process.env.DATABASE_URL ??
+        process.env.POSTGRES_URL
 )
 
 if (!connectionUrl) {
     throw new Error(
-        '[drizzle] Missing DATABASE_URL_UNPOOLED, DIRECT_URL or DATABASE_URL'
+        '[drizzle] Missing DATABASE_URL_UNPOOLED/POSTGRES_URL_NON_POOLING and DATABASE_URL/POSTGRES_URL'
     )
 }
 

@@ -20,9 +20,17 @@ const parsePositiveInt = (value: string | undefined, fallback: number) => {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
 }
 
-const databaseUrl = cleanConnectionString(process.env.DATABASE_URL)
-const unpooledUrl = cleanConnectionString(process.env.DATABASE_URL_UNPOOLED)
-const directUrl = cleanConnectionString(process.env.DIRECT_URL)
+const databaseUrl = cleanConnectionString(
+    process.env.DATABASE_URL ?? process.env.POSTGRES_URL
+)
+const unpooledUrl = cleanConnectionString(
+    process.env.DATABASE_URL_UNPOOLED ??
+        process.env.POSTGRES_URL_NON_POOLING ??
+        process.env.DIRECT_URL
+)
+const directUrl = cleanConnectionString(
+    process.env.DIRECT_URL ?? process.env.POSTGRES_URL_NON_POOLING
+)
 
 // Prefer the direct/unpooled URL in development (simpler, no pgBouncer).
 // In production (Vercel serverless) the pooler URL is preferred.
@@ -36,7 +44,9 @@ const createMissingDbProxy = () =>
         {},
         {
             get() {
-                throw new Error('[db] Missing DATABASE_URL')
+                throw new Error(
+                    '[db] Missing DATABASE_URL/POSTGRES_URL (and direct variants)'
+                )
             },
         }
     ) as ReturnType<typeof drizzle>

@@ -33,13 +33,15 @@ const cleanConnectionString = (value: string | undefined) =>
 
 const connectionString = cleanConnectionString(
     process.env.DATABASE_URL_UNPOOLED ??
+        process.env.POSTGRES_URL_NON_POOLING ??
         process.env.DIRECT_URL ??
-        process.env.DATABASE_URL
+        process.env.DATABASE_URL ??
+        process.env.POSTGRES_URL
 )
 
 if (!connectionString) {
     console.error(
-        '[seed] No DATABASE_URL_UNPOOLED / DATABASE_URL found. Aborting.'
+        '[seed] No DATABASE_URL_UNPOOLED/POSTGRES_URL_NON_POOLING or DATABASE_URL/POSTGRES_URL found. Aborting.'
     )
     process.exit(1)
 }
