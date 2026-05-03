@@ -83,10 +83,9 @@ describe('useContactSubmission', () => {
             await result.current.submit(validPayload)
         })
 
-        expect(result.current.formError).toBe(
-            '* Please wait a moment before submitting the form.'
-        )
-        expect(toastErrorMock).toHaveBeenCalledTimes(1)
+        expect(toastErrorMock).toHaveBeenCalledWith('Transmission failed', {
+            description: 'Please wait a moment before submitting the form.',
+        })
         expect(globalThis.fetch).not.toHaveBeenCalled()
     })
 })

@@ -23,7 +23,6 @@ export const useContactSubmission = ({
     reset,
 }: UseContactSubmissionOptions) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [formError, setFormError] = useState<string | null>(null)
     const startedAtRef = useRef<number>(Date.now())
     const trackedStartRef = useRef(false)
 
@@ -36,8 +35,6 @@ export const useContactSubmission = ({
 
     const submit = useCallback(
         async (data: ContactFormValues) => {
-            setFormError(null)
-
             if (data.website && data.website.trim().length > 0) {
                 track('contact_form_honeypot_triggered')
                 toast.success('Transmission complete', {
@@ -52,8 +49,7 @@ export const useContactSubmission = ({
 
             if (Date.now() - startedAtRef.current < MIN_FILL_DURATION_MS) {
                 const tooFastMessage =
-                    '* Please wait a moment before submitting the form.'
-                setFormError(tooFastMessage)
+                    'Please wait a moment before submitting the form.'
                 toast.error('Transmission failed', {
                     description: tooFastMessage,
                 })
@@ -115,7 +111,6 @@ export const useContactSubmission = ({
                         })
                         track('contact_form_success')
                         reset()
-                        setFormError(null)
                         startedAtRef.current = Date.now()
                         trackedStartRef.current = false
                         return
@@ -150,7 +145,6 @@ export const useContactSubmission = ({
                             : error.message
                         : 'Failed to send message. Please try again.'
 
-                setFormError(`* ${errorMessage}`)
                 track('contact_form_error', {
                     message: error instanceof Error ? error.message : 'unknown',
                 })
@@ -165,10 +159,8 @@ export const useContactSubmission = ({
     )
 
     return {
-        formError,
         isSubmitting,
         markFormStarted,
-        setFormError,
         submit,
     }
 }

@@ -3,6 +3,7 @@
 import { useReducer } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import {
     adminFormSchema,
     buildAdminFormDefaults,
@@ -163,10 +164,16 @@ export const usePortfolioEditorState = (
     const sectionsDefaults = buildSectionsDraft(state.portfolioData)
     const isSectionsDirty =
         JSON.stringify(state.sectionsDraft) !== JSON.stringify(sectionsDefaults)
-    const visibleFormStatus =
-        state.formStatus && isQuickFormDirty && !state.isResettingForm
-            ? ''
-            : state.formStatus
+    const formatIssuesForToast = (issues: string[]) => {
+        if (issues.length === 0) {
+            return undefined
+        }
+
+        const visibleIssues = issues.slice(0, 3).join(' | ')
+        return issues.length > 3
+            ? `${visibleIssues} | +${issues.length - 3} more`
+            : visibleIssues
+    }
 
     const syncEditorState = (nextData: PortfolioData) => {
         dispatch({
@@ -285,9 +292,10 @@ export const usePortfolioEditorState = (
 
         const parsed = portfolioSchema.safeParse(nextData)
         if (!parsed.success) {
-            dispatch({
-                type: 'SET_FORM_STATUS',
-                payload: `Validation failed: ${parsed.error.issues[0]?.message ?? 'Invalid data'}`,
+            toast.error('Quick form validation failed', {
+                description:
+                    parsed.error.issues[0]?.message ??
+                    'Invalid portfolio data.',
             })
             return
         }
@@ -298,9 +306,8 @@ export const usePortfolioEditorState = (
             )
 
             if (!response.ok) {
-                dispatch({
-                    type: 'SET_FORM_STATUS',
-                    payload: result?.error ?? 'Failed to save changes.',
+                toast.error('Failed to save quick form', {
+                    description: result?.error ?? 'Please try again.',
                 })
                 return
             }
@@ -308,14 +315,10 @@ export const usePortfolioEditorState = (
             if (!syncFromApiResponse(result)) {
                 syncEditorState(parsed.data as PortfolioData)
             }
-            dispatch({
-                type: 'SET_FORM_STATUS',
-                payload: 'Saved successfully.',
-            })
+            toast.success('Quick form saved')
         } catch {
-            dispatch({
-                type: 'SET_FORM_STATUS',
-                payload: 'Failed to save changes.',
+            toast.error('Failed to save quick form', {
+                description: 'Please try again.',
             })
         }
     }
@@ -364,18 +367,19 @@ export const usePortfolioEditorState = (
     }
 
     const saveSections = async () => {
-        dispatch({ type: 'SET_SECTIONS_STATUS', payload: '' })
         dispatch({ type: 'SET_SECTION_ISSUES', payload: [] })
 
         const parsedSections = sectionsFormSchema.safeParse(state.sectionsDraft)
         if (!parsedSections.success) {
+            const issues = getRawIssues(parsedSections.error)
             dispatch({
                 type: 'SET_SECTION_ISSUES',
-                payload: getRawIssues(parsedSections.error),
+                payload: issues,
             })
-            dispatch({
-                type: 'SET_SECTIONS_STATUS',
-                payload: 'Validation failed. Fix highlighted section fields.',
+            toast.error('Sections validation failed', {
+                description:
+                    formatIssuesForToast(issues) ??
+                    'Fix the highlighted section fields.',
             })
             return
         }
@@ -434,13 +438,15 @@ export const usePortfolioEditorState = (
 
         const parsedPortfolio = portfolioSchema.safeParse(candidate)
         if (!parsedPortfolio.success) {
+            const issues = getRawIssues(parsedPortfolio.error)
             dispatch({
                 type: 'SET_SECTION_ISSUES',
-                payload: getRawIssues(parsedPortfolio.error),
+                payload: issues,
             })
-            dispatch({
-                type: 'SET_SECTIONS_STATUS',
-                payload: 'Validation failed against portfolio schema.',
+            toast.error('Portfolio schema validation failed', {
+                description:
+                    formatIssuesForToast(issues) ??
+                    'Review the section content and try again.',
             })
             dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
             return
@@ -465,9 +471,11 @@ export const usePortfolioEditorState = (
                     })
                 }
 
-                dispatch({
-                    type: 'SET_SECTIONS_STATUS',
-                    payload: result?.error ?? 'Failed to save section changes.',
+                toast.error('Failed to save sections', {
+                    description:
+                        formatIssuesForToast(serverIssues) ??
+                        result?.error ??
+                        'Please try again.',
                 })
                 dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
                 return
@@ -476,15 +484,11 @@ export const usePortfolioEditorState = (
             if (!syncFromApiResponse(result)) {
                 syncEditorState(parsedPortfolio.data as PortfolioData)
             }
-            dispatch({
-                type: 'SET_SECTIONS_STATUS',
-                payload: 'Section changes saved successfully.',
-            })
+            toast.success('Sections saved')
             dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
         } catch {
-            dispatch({
-                type: 'SET_SECTIONS_STATUS',
-                payload: 'Failed to save section changes.',
+            toast.error('Failed to save sections', {
+                description: 'Please try again.',
             })
             dispatch({ type: 'SET_SAVING_SECTIONS', payload: false })
         }
@@ -497,7 +501,6 @@ export const usePortfolioEditorState = (
         setFormValue,
         errors,
         isSubmitting,
-        formStatus: visibleFormStatus,
         onSubmitForm,
         sectionsDraft: state.sectionsDraft,
         setSectionsDraft: (
@@ -514,8 +517,6 @@ export const usePortfolioEditorState = (
         updateSkillCategoryField,
         saveSections,
         isSavingSections: state.isSavingSections,
-        sectionsStatus: state.sectionsStatus,
-        sectionIssues: state.sectionIssues,
         isSectionsDirty,
         isQuickFormDirty,
         portfolioData: state.portfolioData,

@@ -114,7 +114,6 @@ export function PortfolioEditor({
         setFormValue,
         errors,
         isSubmitting,
-        formStatus,
         onSubmitForm,
         sectionsDraft,
         setSectionsDraft,
@@ -123,8 +122,6 @@ export function PortfolioEditor({
         updateSkillCategoryField,
         saveSections,
         isSavingSections,
-        sectionsStatus,
-        sectionIssues,
         isQuickFormDirty,
         isSectionsDirty,
     } = usePortfolioEditorState(initialData, initialVersion)
@@ -143,7 +140,6 @@ export function PortfolioEditor({
                     register={register}
                     errors={errors}
                     isSubmitting={isSubmitting}
-                    formStatus={formStatus}
                     handleSubmit={handleSubmit}
                     onSubmit={onSubmitForm}
                     watch={watch}
@@ -167,8 +163,6 @@ export function PortfolioEditor({
                     updateSkillCategoryField={updateSkillCategoryField}
                     saveSections={saveSections}
                     isSavingSections={isSavingSections}
-                    sectionsStatus={sectionsStatus}
-                    sectionIssues={sectionIssues}
                 />
             </Panel>
         </div>

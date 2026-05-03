@@ -11,7 +11,6 @@ interface QuickEditSectionProps {
     register: UseFormRegister<AdminFormValues>
     errors: FieldErrors<AdminFormValues>
     isSubmitting: boolean
-    formStatus: string
     handleSubmit: UseFormHandleSubmit<AdminFormValues>
     onSubmit: (values: AdminFormValues) => Promise<void>
     watch: UseFormWatch<AdminFormValues>
@@ -115,7 +114,6 @@ export function QuickEditSection({
     register,
     errors,
     isSubmitting,
-    formStatus,
     handleSubmit,
     onSubmit,
     watch,
@@ -125,10 +123,6 @@ export function QuickEditSection({
     const inputClass =
         'w-full rounded-lg border border-green-900/70 bg-black/60 px-2.5 py-2 text-xs sm:px-3 sm:py-2.5 sm:text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
     const textareaClass = `${inputClass} min-h-[100px] sm:min-h-[120px] resize-y`
-    const statusIsSuccess = formStatus.startsWith('Saved')
-    const statusClass = statusIsSuccess
-        ? 'border-green-800/60 bg-green-950/30 text-green-300'
-        : 'border-red-900/60 bg-red-950/20 text-red-300'
 
     return (
         <form
@@ -344,13 +338,6 @@ export function QuickEditSection({
                     <p className="text-[10px] text-green-600 sm:text-xs">
                         Changes publish directly to the live portfolio.
                     </p>
-                    {formStatus ? (
-                        <p
-                            className={`mt-2 rounded-lg border px-2.5 py-2 text-xs sm:px-3 sm:py-2.5 sm:text-sm ${statusClass}`}
-                        >
-                            {formStatus}
-                        </p>
-                    ) : null}
                 </div>
                 <div className="flex shrink-0 w-full gap-2 sm:w-auto md:ml-4 sm:gap-3">
                     <button

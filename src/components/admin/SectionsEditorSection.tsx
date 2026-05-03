@@ -176,8 +176,6 @@ interface SectionsEditorSectionProps {
     ) => void
     saveSections: () => Promise<void>
     isSavingSections: boolean
-    sectionsStatus: string
-    sectionIssues: string[]
 }
 
 export function SectionsEditorSection({
@@ -188,8 +186,6 @@ export function SectionsEditorSection({
     updateSkillCategoryField,
     saveSections,
     isSavingSections,
-    sectionsStatus,
-    sectionIssues,
 }: SectionsEditorSectionProps) {
     const [experienceOpen, setExperienceOpen] = useState(true)
     const [educationOpen, setEducationOpen] = useState(true)
@@ -211,9 +207,6 @@ export function SectionsEditorSection({
         'flex h-7 w-7 items-center justify-center rounded-lg border border-red-900/60 text-red-400 transition hover:bg-red-950/30 disabled:opacity-30'
     const addButtonClass =
         'flex items-center gap-1.5 rounded-lg border border-green-700/70 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-green-400 transition hover:bg-green-900/30'
-    const statusClass = sectionsStatus.startsWith('Section changes saved')
-        ? 'border-green-800/60 bg-green-950/30 text-green-300'
-        : 'border-red-900/60 bg-red-950/20 text-red-300'
 
     const updateLearningField = (
         field: keyof SectionsFormValues['learning'],
@@ -1271,13 +1264,6 @@ export function SectionsEditorSection({
                         Section changes keep list order and overwrite the live
                         portfolio record.
                     </p>
-                    {sectionsStatus ? (
-                        <p
-                            className={`mt-2 rounded-lg border px-3 py-2 text-sm ${statusClass}`}
-                        >
-                            {sectionsStatus}
-                        </p>
-                    ) : null}
                 </div>
                 <div className="flex shrink-0 gap-2 md:ml-4">
                     <button
@@ -1291,19 +1277,6 @@ export function SectionsEditorSection({
                     </button>
                 </div>
             </div>
-
-            {sectionIssues.length > 0 ? (
-                <div className="rounded-xl border border-red-900/60 bg-red-950/20 p-4">
-                    <p className="mb-2 text-sm text-red-300">
-                        Validation issues:
-                    </p>
-                    <ul className="max-h-48 space-y-1 overflow-auto text-xs text-red-300">
-                        {sectionIssues.map((issue) => (
-                            <li key={issue}>{issue}</li>
-                        ))}
-                    </ul>
-                </div>
-            ) : null}
         </div>
     )
 }

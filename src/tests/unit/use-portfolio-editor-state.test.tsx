@@ -4,6 +4,16 @@ import data from '@/data/portfolio.json'
 import { usePortfolioEditorState } from '@/components/admin/usePortfolioEditorState'
 import type { PortfolioData } from '@/types'
 
+const toastSuccessMock = vi.hoisted(() => vi.fn())
+const toastErrorMock = vi.hoisted(() => vi.fn())
+
+vi.mock('sonner', () => ({
+    toast: {
+        success: toastSuccessMock,
+        error: toastErrorMock,
+    },
+}))
+
 vi.mock('next/navigation', () => ({
     useRouter: () => ({
         refresh: vi.fn(),
@@ -34,9 +44,13 @@ describe('usePortfolioEditorState', () => {
             await result.current.saveSections()
         })
 
-        expect(result.current.sectionsStatus).toContain('Validation failed')
-        expect(result.current.sectionIssues.length).toBeGreaterThan(0)
         expect(globalThis.fetch).not.toHaveBeenCalled()
+        expect(toastErrorMock).toHaveBeenCalledWith(
+            'Sections validation failed',
+            expect.objectContaining({
+                description: expect.stringContaining('experience'),
+            })
+        )
     })
 
     it('persists transformed section payload on successful save', async () => {
@@ -88,9 +102,7 @@ describe('usePortfolioEditorState', () => {
             { label: 'React', icon: 'react' },
             'TypeScript',
         ])
-        expect(result.current.sectionsStatus).toBe(
-            'Section changes saved successfully.'
-        )
+        expect(toastSuccessMock).toHaveBeenCalledWith('Sections saved')
     })
 
     it('returns proper quick form state after initialization', () => {

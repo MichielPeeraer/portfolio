@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { Loader2, ShieldCheck } from 'lucide-react'
+import { toast } from 'sonner'
 import { useContactSubmission } from '@/hooks'
 import type { ContactFormValues } from '@/types'
 import { isValidPhoneNumber } from 'react-phone-number-input'
@@ -69,8 +70,9 @@ export default function ContactForm() {
         },
     })
 
-    const { isSubmitting, formError, markFormStarted, setFormError, submit } =
-        useContactSubmission({ reset })
+    const { isSubmitting, markFormStarted, submit } = useContactSubmission({
+        reset,
+    })
 
     useEffect(() => {
         markFormStarted(isDirty)
@@ -95,7 +97,9 @@ export default function ContactForm() {
             setFocus(firstInvalidField)
         }
 
-        setFormError('* Please fix the highlighted fields and try again.')
+        toast.error('Transmission failed', {
+            description: 'Please fix the highlighted fields and try again.',
+        })
         track('contact_form_validation_failed', {
             field: firstInvalidField ?? 'unknown',
         })
@@ -125,17 +129,6 @@ export default function ContactForm() {
                     {...register('website')}
                 />
             </div>
-
-            {formError && (
-                <p
-                    role="status"
-                    aria-live="polite"
-                    className="text-red-400 text-sm text-left"
-                >
-                    {formError}
-                </p>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label
