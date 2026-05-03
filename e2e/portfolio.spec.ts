@@ -119,9 +119,14 @@ test.describe('Portfolio smoke tests', () => {
         await fastForwardFormMinFillTimer(page)
         await page.getByRole('button', { name: 'Send Secure Message' }).click()
 
+        // Error now surfaces as a toast (sonner), not inline text
         await expect(
-            page.getByText('* Server unavailable', { exact: true })
+            page.getByText('Transmission failed', { exact: true })
         ).toBeVisible()
+        await expect(
+            page.getByText('Server unavailable', { exact: true })
+        ).toBeVisible()
+        // Form values should be preserved on error
         await expect(page.locator('input[name="firstname"]')).toHaveValue('Neo')
         await expect(page.locator('textarea[name="message"]')).toHaveValue(
             'This should fail and show an error.'
