@@ -128,8 +128,8 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
             name: p.name,
             title: p.title,
             about: p.about,
-            openToWork: p.openToWork,
-            openToWorkLabel: p.openToWorkLabel ?? undefined,
+            status: p.status,
+            statusLabel: p.statusLabel ?? undefined,
             cvPath: p.cvPath ?? undefined,
             ogTechPills: pills.map((x: (typeof pills)[number]) => x.label),
             heroTypedLines: typedLines.map(

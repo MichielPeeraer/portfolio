@@ -21,8 +21,8 @@ export interface PersonalInfo {
     name: string
     title: string
     about: string
-    openToWork?: boolean
-    openToWorkLabel?: string
+    status?: boolean
+    statusLabel?: string
     cvPath?: string
     ogTechPills?: string[]
     heroTypedLines?: string[]

@@ -138,7 +138,7 @@ export default async function Image() {
                         {data.personal.title}
                     </div>
 
-                    {data.personal.openToWork && (
+                    {data.personal.status && (
                         <div
                             style={{
                                 display: 'flex',
@@ -171,7 +171,7 @@ export default async function Image() {
                                     display: 'flex',
                                 }}
                             >
-                                {data.personal.openToWorkLabel ??
+                                {data.personal.statusLabel ??
                                     'Open to opportunities'}
                             </div>
                         </div>

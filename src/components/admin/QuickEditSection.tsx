@@ -119,7 +119,7 @@ export function QuickEditSection({
     watch,
     setValue,
 }: QuickEditSectionProps) {
-    const openToWork = watch('openToWork')
+    const status = watch('status')
     const inputClass =
         'w-full rounded-lg border border-green-900/70 bg-black/60 px-2.5 py-2 text-xs sm:px-3 sm:py-2.5 sm:text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
     const textareaClass = `${inputClass} min-h-[100px] sm:min-h-[120px] resize-y`
@@ -249,13 +249,13 @@ export function QuickEditSection({
                                 />
                             </Field>
                             <Field
-                                label="Open-to-work label"
-                                htmlFor="openToWorkLabel"
-                                error={errors.openToWorkLabel?.message}
+                                label="Status text"
+                                htmlFor="statusLabel"
+                                error={errors.statusLabel?.message}
                             >
                                 <input
-                                    id="openToWorkLabel"
-                                    {...register('openToWorkLabel')}
+                                    id="statusLabel"
+                                    {...register('statusLabel')}
                                     autoComplete="off"
                                     placeholder="Open to opportunities"
                                     className={inputClass}
@@ -264,18 +264,18 @@ export function QuickEditSection({
                         </div>
                         <label className="flex cursor-pointer items-center gap-2 sm:gap-3 rounded-lg border border-green-900/50 bg-black/30 px-2.5 sm:px-3 py-2 sm:py-2.5 text-xs sm:text-sm text-green-300 transition hover:bg-green-950/20">
                             <input
-                                id="openToWork"
+                                id="status"
                                 type="checkbox"
-                                checked={openToWork}
+                                checked={status}
                                 onChange={(e) =>
-                                    setValue('openToWork', e.target.checked, {
+                                    setValue('status', e.target.checked, {
                                         shouldDirty: true,
                                     })
                                 }
                                 autoComplete="off"
                                 className="h-4 w-4 accent-green-500"
                             />
-                            <span>Show open-to-work badge on portfolio</span>
+                            <span>Show status badge on portfolio</span>
                         </label>
                     </FieldGroup>
                 </div>

@@ -100,7 +100,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     </motion.div>
                 )}
 
-                {data.openToWork && (
+                {data.status && (
                     <motion.div
                         initial={{ opacity: 0, y: 12 }}
                         animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
@@ -113,7 +113,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     >
                         <span className="inline-flex items-center gap-2 border border-green-500/40 bg-green-950/40 text-green-400 text-sm px-4 py-1.5 rounded-full">
                             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                            {data.openToWorkLabel ?? 'Open to opportunities'}
+                            {data.statusLabel ?? 'Open to opportunities'}
                         </span>
                     </motion.div>
                 )}
