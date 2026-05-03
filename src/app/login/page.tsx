@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { MatrixRain } from '@/components/effects'
 
 function GitHubIcon() {
@@ -77,6 +78,13 @@ export default function LoginPage() {
                                 </>
                             )}
                         </button>
+
+                        <Link
+                            href="/"
+                            className="inline-flex w-full items-center justify-center rounded border border-green-800/70 bg-black/30 px-4 py-2 text-sm text-green-300 transition hover:bg-green-900/30 hover:text-green-100"
+                        >
+                            ← Back to Homepage
+                        </Link>
 
                         <p className="text-xs text-green-700">
                             Access is limited to your configured admin email.

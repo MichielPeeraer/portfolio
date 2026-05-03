@@ -46,6 +46,13 @@ export default function SignOutPage() {
                         </button>
 
                         <Link
+                            href="/"
+                            className="inline-flex w-full items-center justify-center rounded border border-green-800/70 bg-black/30 px-4 py-2 text-sm text-green-300 transition hover:bg-green-900/30 hover:text-green-100"
+                        >
+                            ← Back to Homepage
+                        </Link>
+
+                        <Link
                             href="/admin"
                             className="inline-flex w-full items-center justify-center rounded border border-green-800/70 bg-black/30 px-4 py-2 text-sm text-green-300 transition hover:bg-green-900/30 hover:text-green-100"
                         >
