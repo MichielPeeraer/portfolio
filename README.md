@@ -61,22 +61,23 @@ For full functionality (admin dashboard, contact form, database) see the [Enviro
 
 Copy `.env.example` to `.env.local` and set these values:
 
-| Variable                | Required | Description                                                            |
-| ----------------------- | -------- | ---------------------------------------------------------------------- |
-| `DATABASE_URL`          | ✅       | Pooled connection string (port 6543)                                   |
-| `DATABASE_URL_UNPOOLED` | ✅       | Direct connection string (port 5432) — used for migrations and seeding |
-| `NEXTAUTH_URL`          | ✅       | Full base URL of the app (e.g. `http://localhost:3000`)                |
-| `NEXTAUTH_SECRET`       | ✅       | Random secret for signing JWTs                                         |
-| `ADMIN_EMAIL`           | ✅       | Email address allowed to sign in as admin                              |
-| `ADMIN_GITHUB_LOGIN`    | ✅       | GitHub username allowed to sign in as admin                            |
-| `GITHUB_ID`             | ✅       | GitHub OAuth App client ID                                             |
-| `GITHUB_SECRET`         | ✅       | GitHub OAuth App client secret                                         |
-| `SMTP_HOST`             | ✅       | SMTP server hostname                                                   |
-| `SMTP_PORT`             | ✅       | SMTP server port (e.g. `465`)                                          |
-| `SMTP_USER`             | ✅       | SMTP login username                                                    |
-| `SMTP_PASS`             | ✅       | SMTP password / app password                                           |
-| `NEXT_PUBLIC_SITE_URL`  | ✅       | Public site URL used for canonical links and OpenGraph                 |
-| `CRON_SECRET`           | ✅       | Bearer token to authenticate the cron job at `/api/cron/ping-db`       |
+| Variable                | Required | Description                                                                       |
+| ----------------------- | -------- | --------------------------------------------------------------------------------- |
+| `DATABASE_URL`          | ✅       | Pooled connection string (port 6543)                                              |
+| `DATABASE_URL_UNPOOLED` | ✅       | Direct connection string (port 5432) — used for migrations and seeding            |
+| `NEXTAUTH_URL`          | ✅       | Full base URL of the app (e.g. `http://localhost:3000`)                           |
+| `NEXTAUTH_SECRET`       | ✅       | Random secret for signing JWTs                                                    |
+| `ADMIN_EMAIL`           | ✅       | Email address allowed to sign in as admin                                         |
+| `ADMIN_GITHUB_LOGIN`    | ✅       | GitHub username allowed to sign in as admin                                       |
+| `GITHUB_ID`             | ✅       | GitHub OAuth App client ID                                                        |
+| `GITHUB_SECRET`         | ✅       | GitHub OAuth App client secret                                                    |
+| `SMTP_HOST`             | ✅       | SMTP server hostname                                                              |
+| `SMTP_PORT`             | ✅       | SMTP server port (e.g. `465`)                                                     |
+| `SMTP_USER`             | ✅       | SMTP login username                                                               |
+| `SMTP_PASS`             | ✅       | SMTP password / app password                                                      |
+| `NEXT_PUBLIC_SITE_URL`  | ✅       | Public site URL used for canonical links and OpenGraph                            |
+| `CRON_SECRET`           | ⚠️ opt   | Bearer token to protect `/api/cron/ping-db`; if unset the endpoint is unprotected |
+| `BLOB_READ_WRITE_TOKEN` | ⚠️ opt   | Vercel Blob read/write token — required for profile photo uploads                 |
 
 Optional performance tuning (rarely needed):
 
@@ -89,6 +90,8 @@ Optional performance tuning (rarely needed):
 | `PORTFOLIO_DB_FETCH_RETRIES`    | `2` (prod) / `1` (dev)         | Retry attempts for portfolio data queries |
 
 > If you use the **Neon Vercel integration**, `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `POSTGRES_URL`, and `POSTGRES_URL_NON_POOLING` are injected automatically into all Vercel environments — you only need to set them locally in `.env.local`.
+
+> If you use the **Vercel Blob integration**, `BLOB_READ_WRITE_TOKEN` is injected automatically into all Vercel environments. Pull it locally with `vercel env pull .env.local`.
 
 Notes:
 
@@ -185,14 +188,30 @@ npx playwright install
 
 ```
 src/
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-└── components/
-    └── MatrixRain.tsx
+├── app/                  # Next.js App Router pages and API routes
+│   ├── api/
+│   │   ├── admin/        # Portfolio PUT + profile image upload
+│   │   ├── auth/         # NextAuth handlers
+│   │   ├── contact/      # Contact form endpoint
+│   │   └── cron/         # DB keep-warm cron
+│   ├── admin/            # Admin dashboard page
+│   ├── login/
+│   └── page.tsx          # Public portfolio
+├── components/
+│   ├── admin/            # Admin dashboard UI and state
+│   ├── cards/            # Experience, Education, Skill cards
+│   ├── effects/          # Matrix rain, loader, toaster
+│   ├── layout/           # Navbar, footer, back-to-top
+│   ├── sections/         # Hero, About, Experience, Skills, Education, Contact
+│   └── ui/               # Shared UI primitives
+├── db/                   # Drizzle schema, client, seed script
+├── hooks/                # Custom React hooks
+├── lib/                  # Auth, email, env, portfolio data helpers
+├── tests/                # Vitest unit and component tests
+└── types/                # Shared TypeScript types
 public/
-└── profile.jpg
+├── cv.pdf                # CV fallback (replace with your own)
+└── profile.jpg           # Profile photo fallback (replace with your own)
 ```
 
 ## Customization
@@ -200,12 +219,15 @@ public/
 If you're using this as a base for your own portfolio, make sure to replace all personal content with your own:
 
 - **Personal details**: Edit `src/data/portfolio.json` with your own name, bio, experience, education, and skills
-- **Profile picture**: Replace `public/profile.jpg` with your own photo
+- **Profile picture**: Replace `public/profile.jpg` with your own photo (used as fallback when no image has been uploaded via the admin dashboard)
+- **CV / résumé**: Replace `public/cv.pdf` with your own CV (used as fallback when no path is set in the admin dashboard)
 - **Contact info & social links**: Update the relevant fields in `portfolio.json`
 - **Site metadata**: Set your name, URL, and description in `src/lib/site.ts`
 - **Global styles**: Adjust colours and fonts in `src/app/globals.css`
 - **Section components**: Tweak layout and copy in `src/components/sections/`
 - **Visual effects**: Fine-tune the Matrix rain and other effects in `src/components/effects/`
+
+> The admin dashboard lets you upload a profile photo (stored in Vercel Blob) and set a custom CV path. The files in `public/` act as static fallbacks — they are served automatically when those fields have not been configured yet.
 
 ## Usage
 

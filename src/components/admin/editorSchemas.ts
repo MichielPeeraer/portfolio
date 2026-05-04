@@ -100,7 +100,7 @@ export const buildAdminFormDefaults = (
     about: data.personal.about,
     status: Boolean(data.personal.status),
     statusLabel: data.personal.statusLabel ?? 'Open to opportunities',
-    cvPath: data.personal.cvPath ?? '/CV_Michiel_Peeraer.pdf',
+    cvPath: data.personal.cvPath ?? '/cv.pdf',
     profileImageUrl: data.personal.profileImageUrl ?? '',
     profileImageCurrentPathname: '',
     profileImagePendingPathnames: '[]',

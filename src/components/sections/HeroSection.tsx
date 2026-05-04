@@ -129,7 +129,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 justify-center items-center"
                 >
                     <a
-                        href={data.cvPath ?? '/CV_Michiel_Peeraer.pdf'}
+                        href={data.cvPath ?? '/cv.pdf'}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-green-400 text-black px-6 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
