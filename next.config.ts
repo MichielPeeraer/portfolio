@@ -100,6 +100,10 @@ const nextConfig: NextConfig = {
                 protocol: 'https',
                 hostname: 'duolingo-stats-card.vercel.app',
             },
+            {
+                protocol: 'https',
+                hostname: '*.public.blob.vercel-storage.com',
+            },
         ],
     },
 }

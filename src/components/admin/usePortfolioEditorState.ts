@@ -217,11 +217,18 @@ export const usePortfolioEditorState = (
         return false
     }
 
-    const persist = async (payload: PortfolioData) => {
+    const persist = async (
+        payload: PortfolioData,
+        blobPendingPathnames: string[]
+    ) => {
         const response = await fetch('/api/admin/portfolio', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ _version: state.version, ...payload }),
+            body: JSON.stringify({
+                _version: state.version,
+                _blobPendingPathnames: blobPendingPathnames,
+                ...payload,
+            }),
         })
 
         const result = (await response.json().catch(() => null)) as {
@@ -240,6 +247,27 @@ export const usePortfolioEditorState = (
 
     const onSubmitForm = async (formValues: AdminFormValues) => {
         dispatch({ type: 'SET_FORM_STATUS', payload: '' })
+
+        const blobPendingPathnames = (() => {
+            if (!formValues.profileImagePendingPathnames) {
+                return [] as string[]
+            }
+
+            try {
+                const parsed = JSON.parse(
+                    formValues.profileImagePendingPathnames
+                )
+                if (!Array.isArray(parsed)) {
+                    return [] as string[]
+                }
+
+                return parsed.filter(
+                    (value): value is string => typeof value === 'string'
+                )
+            } catch {
+                return [] as string[]
+            }
+        })()
 
         const existingSocialLinks =
             state.portfolioData.personal.contact.socialLinks
@@ -278,6 +306,8 @@ export const usePortfolioEditorState = (
                 status: formValues.status,
                 statusLabel: formValues.statusLabel.trim(),
                 cvPath: formValues.cvPath.trim(),
+                profileImageUrl:
+                    formValues.profileImageUrl?.trim() || undefined,
                 heroTypedLines: fromMultiline(formValues.heroTypedLinesText),
                 ogTechPills: fromMultiline(formValues.ogTechPillsText),
                 contact: {
@@ -302,7 +332,8 @@ export const usePortfolioEditorState = (
 
         try {
             const { response, result } = await persist(
-                parsed.data as PortfolioData
+                parsed.data as PortfolioData,
+                blobPendingPathnames
             )
 
             if (!response.ok) {
@@ -315,6 +346,12 @@ export const usePortfolioEditorState = (
             if (!syncFromApiResponse(result)) {
                 syncEditorState(parsed.data as PortfolioData)
             }
+            setFormValue('profileImageCurrentPathname', '', {
+                shouldDirty: false,
+            })
+            setFormValue('profileImagePendingPathnames', '[]', {
+                shouldDirty: false,
+            })
             toast.success('Quick form saved')
         } catch {
             toast.error('Failed to save quick form', {
@@ -454,7 +491,8 @@ export const usePortfolioEditorState = (
 
         try {
             const { response, result } = await persist(
-                parsedPortfolio.data as PortfolioData
+                parsedPortfolio.data as PortfolioData,
+                []
             )
 
             if (!response.ok) {

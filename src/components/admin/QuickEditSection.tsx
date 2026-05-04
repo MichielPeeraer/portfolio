@@ -5,6 +5,8 @@ import type {
     UseFormWatch,
     UseFormSetValue,
 } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import type { AdminFormValues } from '@/components/admin/editorSchemas'
 
 interface QuickEditSectionProps {
@@ -120,6 +122,133 @@ export function QuickEditSection({
     setValue,
 }: QuickEditSectionProps) {
     const status = watch('status')
+    const profileImageUrl = watch('profileImageUrl')
+    const profileImageCurrentPathname = watch('profileImageCurrentPathname')
+    const profileImagePendingPathnames = watch('profileImagePendingPathnames')
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const pendingPathnamesRef = useRef<string[]>([])
+    const [isUploading, setIsUploading] = useState(false)
+
+    const parsePendingPathnames = (value: string | undefined) => {
+        if (!value) {
+            return [] as string[]
+        }
+
+        try {
+            const parsed = JSON.parse(value)
+            if (!Array.isArray(parsed)) {
+                return [] as string[]
+            }
+
+            return parsed.filter(
+                (item): item is string => typeof item === 'string'
+            )
+        } catch {
+            return [] as string[]
+        }
+    }
+
+    const deletePendingBlobs = async (
+        pathnames: string[],
+        keepalive = false
+    ) => {
+        if (!pathnames.length) {
+            return
+        }
+
+        try {
+            await fetch('/api/admin/upload', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pathnames }),
+                keepalive,
+            })
+        } catch (error) {
+            console.error('[profile-upload] pending cleanup failed:', error)
+        }
+    }
+
+    useEffect(() => {
+        pendingPathnamesRef.current = parsePendingPathnames(
+            profileImagePendingPathnames
+        )
+    }, [profileImagePendingPathnames])
+
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            const pending = pendingPathnamesRef.current
+            if (!pending.length) {
+                return
+            }
+
+            void deletePendingBlobs(pending, true)
+        }
+
+        window.addEventListener('beforeunload', handleBeforeUnload)
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload)
+            const pending = pendingPathnamesRef.current
+            void deletePendingBlobs(pending)
+        }
+    }, [])
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const pendingPathnames = parsePendingPathnames(
+            profileImagePendingPathnames
+        )
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        setIsUploading(true)
+        try {
+            if (profileImageCurrentPathname) {
+                await deletePendingBlobs([profileImageCurrentPathname])
+            }
+
+            const res = await fetch('/api/admin/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            const json = (await res.json()) as {
+                url?: string
+                pathname?: string
+                error?: string
+            }
+            if (!res.ok || !json.url || !json.pathname) {
+                throw new Error(json.error ?? 'Upload failed')
+            }
+
+            const nextPendingPathnames = Array.from(
+                new Set([
+                    ...pendingPathnames.filter(
+                        (pathname) => pathname !== profileImageCurrentPathname
+                    ),
+                    json.pathname,
+                ])
+            )
+
+            setValue('profileImageUrl', json.url, { shouldDirty: true })
+            setValue('profileImageCurrentPathname', json.pathname, {
+                shouldDirty: true,
+            })
+            setValue(
+                'profileImagePendingPathnames',
+                JSON.stringify(nextPendingPathnames),
+                { shouldDirty: true }
+            )
+        } catch (err) {
+            console.error('[profile-upload]', err)
+        } finally {
+            setIsUploading(false)
+            // Reset so the same file can be re-selected if needed
+            if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+    }
+
     const inputClass =
         'w-full rounded-lg border border-green-900/70 bg-black/60 px-2.5 py-2 text-xs sm:px-3 sm:py-2.5 sm:text-sm text-green-100 outline-none transition placeholder:text-green-900 focus:border-green-500 focus:bg-black'
     const textareaClass = `${inputClass} min-h-[100px] sm:min-h-[120px] resize-y`
@@ -135,6 +264,63 @@ export function QuickEditSection({
                     title="Identity"
                     description="Core hero text and personal summary"
                 >
+                    {/* Profile image upload */}
+                    <Field
+                        label="Profile Photo"
+                        htmlFor="profileImageUpload"
+                        error={errors.profileImageUrl?.message}
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-green-900/70">
+                                <Image
+                                    src={profileImageUrl || '/profile.jpg'}
+                                    alt="Profile preview"
+                                    fill
+                                    className="object-cover grayscale"
+                                    unoptimized={!profileImageUrl}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5 min-w-0">
+                                <input
+                                    ref={fileInputRef}
+                                    id="profileImageUpload"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        fileInputRef.current?.click()
+                                    }
+                                    disabled={isUploading}
+                                    className="rounded-lg border border-green-900/70 bg-black/60 px-3 py-2 text-xs text-green-300 transition hover:border-green-500 hover:bg-black disabled:opacity-50"
+                                >
+                                    {isUploading ? (
+                                        <>
+                                            <LoadingSpinner /> Uploading…
+                                        </>
+                                    ) : (
+                                        'Choose image…'
+                                    )}
+                                </button>
+                                <p className="text-[10px] text-green-700 sm:text-[11px]">
+                                    JPEG, PNG or WebP · max 2 MB
+                                </p>
+                            </div>
+                        </div>
+                        {/* Hidden field so the URL is part of the form */}
+                        <input type="hidden" {...register('profileImageUrl')} />
+                        <input
+                            type="hidden"
+                            {...register('profileImageCurrentPathname')}
+                        />
+                        <input
+                            type="hidden"
+                            {...register('profileImagePendingPathnames')}
+                        />
+                    </Field>
                     <Field
                         label="Name"
                         htmlFor="name"

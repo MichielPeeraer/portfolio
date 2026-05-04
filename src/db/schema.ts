@@ -99,6 +99,7 @@ export const personalInfo = pgTable('personal_info', {
     duolingoEmbedUnoptimized: boolean('duolingo_embed_unoptimized')
         .notNull()
         .default(false),
+    profileImageUrl: text('profile_image_url'),
     version: integer('version').notNull().default(0),
 })
 

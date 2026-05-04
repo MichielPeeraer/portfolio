@@ -13,6 +13,7 @@ const personalSchema = z.object({
     status: z.boolean().optional(),
     statusLabel: z.string().trim().min(1).optional(),
     cvPath: z.string().trim().min(1).optional(),
+    profileImageUrl: z.string().trim().optional(),
     ogTechPills: z.array(z.string().trim().min(1)).optional(),
     heroTypedLines: z.array(z.string().trim().min(1)).optional(),
     contact: z.object({

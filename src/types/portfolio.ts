@@ -24,6 +24,7 @@ export interface PersonalInfo {
     status?: boolean
     statusLabel?: string
     cvPath?: string
+    profileImageUrl?: string
     ogTechPills?: string[]
     heroTypedLines?: string[]
     contact: ContactInfo

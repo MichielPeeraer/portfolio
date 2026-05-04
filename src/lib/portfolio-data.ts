@@ -131,6 +131,7 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
             status: p.status,
             statusLabel: p.statusLabel ?? undefined,
             cvPath: p.cvPath ?? undefined,
+            profileImageUrl: p.profileImageUrl ?? undefined,
             ogTechPills: pills.map((x: (typeof pills)[number]) => x.label),
             heroTypedLines: typedLines.map(
                 (x: (typeof typedLines)[number]) => x.text

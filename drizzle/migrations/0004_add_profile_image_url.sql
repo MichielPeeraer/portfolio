@@ -1,0 +1,1 @@
+ALTER TABLE "personal_info" ADD COLUMN "profile_image_url" text;

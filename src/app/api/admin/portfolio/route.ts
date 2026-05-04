@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
+import { del } from '@vercel/blob'
 import { z } from 'zod'
 import { createAuthOptions } from '@/lib/auth-options'
 import {
@@ -22,6 +23,29 @@ import {
     education,
     learningLanguages,
 } from '@/db/schema'
+
+const MANAGED_IMAGE_PREFIX = 'profile/'
+
+const normalizeBlobPathname = (value: string) => value.replace(/^\/+/, '')
+
+const toBlobPathnameFromUrl = (value: string | undefined) => {
+    if (!value) {
+        return null
+    }
+
+    try {
+        const url = new URL(value)
+        const pathname = normalizeBlobPathname(url.pathname)
+        return pathname.startsWith(MANAGED_IMAGE_PREFIX) ? pathname : null
+    } catch {
+        return null
+    }
+}
+
+const toManagedPathname = (value: string) => {
+    const normalized = normalizeBlobPathname(value)
+    return normalized.startsWith(MANAGED_IMAGE_PREFIX) ? normalized : null
+}
 
 const isAdmin = async () => {
     try {
@@ -81,7 +105,8 @@ export async function PUT(request: Request) {
 
     // Extract the optimistic-concurrency token before schema validation.
     // Zod strips unknown keys by default, so _version would be silently lost.
-    const { _version, ...portfolioPayload } = body as Record<string, unknown>
+    const { _version, _blobPendingPathnames, ...portfolioPayload } =
+        body as Record<string, unknown>
     const versionParsed = z.number().int().min(0).safeParse(_version)
     if (!versionParsed.success) {
         return NextResponse.json(
@@ -90,6 +115,13 @@ export async function PUT(request: Request) {
         )
     }
     const clientVersion = versionParsed.data
+
+    const blobPendingPathnames = Array.isArray(_blobPendingPathnames)
+        ? _blobPendingPathnames
+              .filter((value): value is string => typeof value === 'string')
+              .map((value) => toManagedPathname(value))
+              .filter((value): value is string => Boolean(value))
+        : []
 
     const parsed = portfolioSchema.safeParse(portfolioPayload)
     if (!parsed.success) {
@@ -103,15 +135,24 @@ export async function PUT(request: Request) {
 
     const nextVersion = clientVersion + 1
     let versionConflict = false
+    let previousProfileImagePathname: string | null = null
 
     await db.transaction(async (tx) => {
         // Atomic CAS: lock the row before reading the version to eliminate the
         // TOCTOU window between the version check and the DELETE/INSERT.
         const lockedRows = await tx
-            .select({ version: personalInfo.version })
+            .select({
+                version: personalInfo.version,
+                profileImageUrl: personalInfo.profileImageUrl,
+            })
             .from(personalInfo)
             .limit(1)
             .for('update')
+
+        previousProfileImagePathname = toBlobPathnameFromUrl(
+            lockedRows[0]?.profileImageUrl ?? undefined
+        )
+
         if ((lockedRows[0]?.version ?? 0) !== clientVersion) {
             versionConflict = true
             return
@@ -140,6 +181,7 @@ export async function PUT(request: Request) {
             status: d.personal.status ?? false,
             statusLabel: d.personal.statusLabel ?? null,
             cvPath: d.personal.cvPath ?? null,
+            profileImageUrl: d.personal.profileImageUrl ?? null,
             devPracticesLabel: d.devPracticesLabel ?? null,
             contactPhone: d.personal.contact.phone,
             contactEmail: d.personal.contact.email,
@@ -269,6 +311,32 @@ export async function PUT(request: Request) {
             },
             { status: 409 }
         )
+    }
+
+    const selectedProfilePathname = toBlobPathnameFromUrl(
+        d.personal.profileImageUrl
+    )
+    const pathnamesToDelete = new Set<string>()
+
+    for (const pendingPathname of blobPendingPathnames) {
+        if (pendingPathname !== selectedProfilePathname) {
+            pathnamesToDelete.add(pendingPathname)
+        }
+    }
+
+    if (
+        previousProfileImagePathname &&
+        previousProfileImagePathname !== selectedProfilePathname
+    ) {
+        pathnamesToDelete.add(previousProfileImagePathname)
+    }
+
+    if (pathnamesToDelete.size > 0) {
+        try {
+            await del(Array.from(pathnamesToDelete))
+        } catch (error) {
+            console.error('[admin-portfolio] Blob cleanup failed:', error)
+        }
     }
 
     revalidateTag(PORTFOLIO_DATA_TAG, 'max')
