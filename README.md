@@ -17,7 +17,7 @@ I wanted a personal portfolio that felt different from the usual clean-and-minim
 - **Protected Contact Form**: Vercel BotID verification before form submission
 - **SEO Ready**: Metadata, sitemap, robots.txt, and JSON-LD structured data
 - **Production Instrumentation**: Vercel Analytics and Speed Insights support
-- **Sections**: Hero, About, Experience, Skills, Education, Contact
+- **Sections**: Hero, About, Experience, Skills, Education, Learning, Contact
 - **Admin Dashboard**: Protected login at `/admin` to edit portfolio data
 
 ## Tech Stack
@@ -139,7 +139,13 @@ npm run db:migrate
 
 > **Tip — dev shortcut:** `npm run db:push` applies schema changes directly without generating migration files. Use this for fast local iteration; use `db:generate` + `db:migrate` for production-grade change tracking.
 
-3. Seed database with current `src/data/portfolio.json` and bootstrap admin user:
+3. Copy the example data file and fill it in with your own content:
+
+```bash
+cp src/data/portfolio.example.json src/data/portfolio.json
+```
+
+Then seed the database from it and bootstrap the admin user:
 
 ```bash
 npm run db:seed
@@ -202,7 +208,7 @@ src/
 │   ├── cards/            # Experience, Education, Skill cards
 │   ├── effects/          # Matrix rain, loader, toaster
 │   ├── layout/           # Navbar, footer, back-to-top
-│   ├── sections/         # Hero, About, Experience, Skills, Education, Contact
+│   ├── sections/         # Hero, About, Experience, Skills, Education, Learning, Contact
 │   └── ui/               # Shared UI primitives
 ├── db/                   # Drizzle schema, client, seed script
 ├── hooks/                # Custom React hooks
@@ -218,7 +224,7 @@ public/
 
 If you're using this as a base for your own portfolio, make sure to replace all personal content with your own:
 
-- **Personal details**: Edit `src/data/portfolio.json` with your own name, bio, experience, education, and skills
+- **Personal details**: Copy `src/data/portfolio.example.json` to `src/data/portfolio.json` (gitignored) and fill in your own name, bio, experience, education, skills, and learning embeds
 - **Profile picture**: Replace `public/profile.jpg` with your own photo (used as fallback when no image has been uploaded via the admin dashboard)
 - **CV / résumé**: Replace `public/cv.pdf` with your own CV (used as fallback when no path is set in the admin dashboard)
 - **Contact info & social links**: Update the relevant fields in `portfolio.json`
@@ -231,21 +237,21 @@ If you're using this as a base for your own portfolio, make sure to replace all 
 
 ## Usage
 
-| Command               | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `npm run dev`         | Start development server at `localhost:3000` |
-| `npm run build`       | Create an optimised production build         |
-| `npm start`           | Serve the production build                   |
-| `npm run test`        | Run unit & component tests (Vitest)          |
-| `npm run test:e2e`    | Run end-to-end tests (Playwright)            |
-| `npm run lint`        | Lint with ESLint                             |
-| `npm run format`      | Format all files with Prettier               |
-| `npm run typecheck`   | Type-check without emitting output           |
-| `npm run db:generate` | Generate Drizzle migration SQL files         |
-| `npm run db:migrate`  | Apply pending migrations to the database     |
-| `npm run db:push`     | Push schema directly (dev fast-path)         |
-| `npm run db:seed`     | Seed the database from `portfolio.json`      |
-| `npm run db:studio`   | Open Drizzle Studio (browser DB viewer)      |
+| Command               | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| `npm run dev`         | Start development server at `localhost:3000`     |
+| `npm run build`       | Create an optimised production build             |
+| `npm start`           | Serve the production build                       |
+| `npm run test`        | Run unit & component tests (Vitest)              |
+| `npm run test:e2e`    | Run end-to-end tests (Playwright)                |
+| `npm run lint`        | Lint with ESLint                                 |
+| `npm run format`      | Format all files with Prettier                   |
+| `npm run typecheck`   | Type-check without emitting output               |
+| `npm run db:generate` | Generate Drizzle migration SQL files             |
+| `npm run db:migrate`  | Apply pending migrations to the database         |
+| `npm run db:push`     | Push schema directly (dev fast-path)             |
+| `npm run db:seed`     | Seed the database from `src/data/portfolio.json` |
+| `npm run db:studio`   | Open Drizzle Studio (browser DB viewer)          |
 
 The admin dashboard is available at `/admin` after signing in via `/login` with the GitHub account configured in `ADMIN_GITHUB_LOGIN`.
 
