@@ -1,4 +1,6 @@
-import fallbackData from '@/data/portfolio.json'
+import fallbackData from '@/data/portfolio.example.json'
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { unstable_cache } from 'next/cache'
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import { asc } from 'drizzle-orm'
@@ -19,7 +21,38 @@ import {
 } from '@/db/schema'
 import type { PortfolioData } from '@/types'
 
-const fallbackPortfolio = fallbackData as PortfolioData
+const fallbackExamplePortfolio = fallbackData as PortfolioData
+const loadFallbackPortfolio = (): PortfolioData => {
+    const personalPortfolioPath = join(
+        process.cwd(),
+        'src',
+        'data',
+        'portfolio.json'
+    )
+
+    if (existsSync(personalPortfolioPath)) {
+        try {
+            const parsed = portfolioSchema.safeParse(
+                JSON.parse(readFileSync(personalPortfolioPath, 'utf8'))
+            )
+            if (parsed.success) {
+                return parsed.data as PortfolioData
+            }
+            console.warn(
+                '[portfolio-data] portfolio.json failed validation; using portfolio.example.json fallback'
+            )
+        } catch (error) {
+            console.warn(
+                '[portfolio-data] Failed reading portfolio.json; using portfolio.example.json fallback:',
+                error
+            )
+        }
+    }
+
+    return fallbackExamplePortfolio
+}
+
+const fallbackPortfolio = loadFallbackPortfolio()
 const parsePositiveInt = (value: string | undefined, fallback: number) => {
     const parsed = Number(value)
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback

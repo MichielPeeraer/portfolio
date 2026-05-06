@@ -1,7 +1,8 @@
 /**
  * Seed script — run with: npm run db:seed
  *
- * Reads src/data/portfolio.json and inserts all rows into the normalized
+ * Reads src/data/portfolio.json when present, otherwise falls back to
+ * src/data/portfolio.example.json, then inserts all rows into the normalized
  * Drizzle schema. Admin access is controlled entirely via env vars
  * (ADMIN_EMAIL / ADMIN_GITHUB_LOGIN) — no user pre-seeding needed.
  *
@@ -9,7 +10,7 @@
  * when DATABASE_URL points at a pgBouncer transaction-mode pooler.
  */
 
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
@@ -51,10 +52,24 @@ const client = postgres(connectionString, { max: 1, prepare: false })
 const db = drizzle(client)
 
 async function main() {
-    const portfolioPath = join(process.cwd(), 'src', 'data', 'portfolio.json')
+    const primaryPortfolioPath = join(
+        process.cwd(),
+        'src',
+        'data',
+        'portfolio.json'
+    )
+    const fallbackPortfolioPath = join(
+        process.cwd(),
+        'src',
+        'data',
+        'portfolio.example.json'
+    )
+    const portfolioPath = existsSync(primaryPortfolioPath)
+        ? primaryPortfolioPath
+        : fallbackPortfolioPath
     const d = JSON.parse(readFileSync(portfolioPath, 'utf8')) as PortfolioData
 
-    console.log('[seed] Seeding portfolio data…')
+    console.log(`[seed] Seeding portfolio data from ${portfolioPath}…`)
 
     await db.transaction(async (tx) => {
         // Clear all portfolio tables (cascade handles child rows)

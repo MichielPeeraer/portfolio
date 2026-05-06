@@ -139,13 +139,15 @@ npm run db:migrate
 
 > **Tip — dev shortcut:** `npm run db:push` applies schema changes directly without generating migration files. Use this for fast local iteration; use `db:generate` + `db:migrate` for production-grade change tracking.
 
-3. Copy the example data file and fill it in with your own content:
+3. Optionally create your private data file by copying the example:
 
 ```bash
 cp src/data/portfolio.example.json src/data/portfolio.json
 ```
 
-Then seed the database from it and bootstrap the admin user:
+If `src/data/portfolio.json` is missing, seeding falls back to `src/data/portfolio.example.json` automatically.
+
+Then seed the database and bootstrap the admin user:
 
 ```bash
 npm run db:seed
@@ -159,7 +161,10 @@ npm run db:seed
    Access is restricted to `ADMIN_GITHUB_LOGIN` (recommended), with
    `ADMIN_EMAIL` as fallback.
 
-The public site reads portfolio data from the normalized DB tables and falls back to `src/data/portfolio.json` if the DB is unavailable.
+The public site reads portfolio data from the normalized DB tables and falls back to local JSON if the DB is unavailable:
+
+- First: `src/data/portfolio.json` (private, gitignored)
+- Then: `src/data/portfolio.example.json` (tracked dummy data)
 
 > **Drizzle Studio:** run `npm run db:studio` to open a browser-based DB viewer/editor.
 
@@ -224,10 +229,10 @@ public/
 
 If you're using this as a base for your own portfolio, make sure to replace all personal content with your own:
 
-- **Personal details**: Copy `src/data/portfolio.example.json` to `src/data/portfolio.json` (gitignored) and fill in your own name, bio, experience, education, skills, and learning embeds
+- **Personal details**: Keep dummy content in `src/data/portfolio.example.json` (tracked). For private local data, create `src/data/portfolio.json` (gitignored) with your own name, bio, experience, education, skills, and learning embeds.
 - **Profile picture**: Replace `public/profile.jpg` with your own photo (used as fallback when no image has been uploaded via the admin dashboard)
 - **CV / résumé**: Replace `public/cv.pdf` with your own CV (used as fallback when no path is set in the admin dashboard)
-- **Contact info & social links**: Update the relevant fields in `portfolio.json`
+- **Contact info & social links**: Update the relevant fields in `src/data/portfolio.json` (or in `src/data/portfolio.example.json` if you are preparing public dummy data)
 - **Site metadata**: Set your name, URL, and description in `src/lib/site.ts`
 - **Global styles**: Adjust colours and fonts in `src/app/globals.css`
 - **Section components**: Tweak layout and copy in `src/components/sections/`

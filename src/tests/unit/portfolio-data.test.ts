@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import data from '@/data/portfolio.json'
+import data from '@/data/portfolio.example.json'
 import { portfolioSchema } from '@/lib/portfolio-schema'
 import type { PortfolioData } from '@/types'
 
 const portfolio = data as PortfolioData
 
-describe('portfolio.json', () => {
+describe('portfolio.example.json', () => {
     it('has required personal fields', () => {
         expect(portfolio.personal.name).toBeTruthy()
         expect(portfolio.personal.title).toBeTruthy()
@@ -57,7 +57,7 @@ describe('portfolio.json', () => {
         if (!result.success) {
             // Surface the first issue to make failures actionable
             throw new Error(
-                `portfolio.json failed schema validation: ${JSON.stringify(result.error.issues[0], null, 2)}`
+                `portfolio.example.json failed schema validation: ${JSON.stringify(result.error.issues[0], null, 2)}`
             )
         }
         expect(result.success).toBe(true)
