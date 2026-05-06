@@ -1,0 +1,128 @@
+{
+    "personal": {
+        "name": "Jane Doe",
+        "title": "Full-Stack TypeScript Developer",
+        "status": true,
+        "statusLabel": "Open to opportunities",
+        "cvPath": "/CV_Jane_Doe.pdf",
+        "ogTechPills": ["React", "TypeScript", "Next.js", "Node.js", "Python"],
+        "heroTypedLines": [
+            "Building scalable web apps",
+            "Turning ideas into products",
+            "Clean architecture, fast delivery"
+        ],
+        "about": "Full-stack developer with experience in modern web technologies. Passionate about clean code, scalable systems, and great user experiences.",
+        "contact": {
+            "phone": "+1 555 123 4567",
+            "email": "jane.doe@example.com",
+            "socialLinks": [
+                {
+                    "name": "GitHub",
+                    "icon": "github",
+                    "url": "https://github.com/janedoe"
+                },
+                {
+                    "name": "LinkedIn",
+                    "icon": "linkedin",
+                    "url": "https://linkedin.com/in/janedoe"
+                }
+            ]
+        }
+    },
+    "experience": [
+        {
+            "period": "01/2024 - Present",
+            "title": "Senior Full-Stack Developer",
+            "company": "Acme Corp",
+            "location": "New York, USA",
+            "points": [
+                "Built and maintained scalable web applications using React and Node.js",
+                "Led API design and integration across multiple services",
+                "Improved CI/CD pipeline reducing deploy time by 40%"
+            ]
+        },
+        {
+            "period": "06/2022 - 12/2023",
+            "title": "Frontend Developer",
+            "company": "Widgets Inc",
+            "location": "Remote",
+            "points": [
+                "Developed responsive UIs with React and TypeScript",
+                "Collaborated with design team to implement pixel-perfect interfaces",
+                "Wrote unit and integration tests with Vitest"
+            ]
+        }
+    ],
+    "skillCategories": [
+        {
+            "label": "Frontend",
+            "skills": [
+                { "label": "React.js", "icon": "react" },
+                { "label": "Next.js", "icon": "nextdotjs" },
+                { "label": "TypeScript", "icon": "typescript" },
+                { "label": "Tailwind CSS", "icon": "tailwindcss" }
+            ]
+        },
+        {
+            "label": "Backend",
+            "skills": [
+                { "label": "Node.js", "icon": "nodedotjs" },
+                { "label": "Express.js", "icon": "express" },
+                { "label": "Python", "icon": "python" }
+            ]
+        },
+        {
+            "label": "Databases & ORM",
+            "skills": [
+                { "label": "PostgreSQL", "icon": "postgresql" },
+                { "label": "MongoDB", "icon": "mongodb" },
+                { "label": "Drizzle ORM", "icon": "drizzle" }
+            ]
+        },
+        {
+            "label": "Tooling & DevOps",
+            "wide": true,
+            "skills": [
+                { "label": "Git / GitHub", "icon": "github" },
+                { "label": "Docker", "icon": "docker" },
+                { "label": "GitHub Actions", "icon": "githubactions" },
+                { "label": "Vitest", "icon": "vitest" },
+                { "label": "Vercel", "icon": "vercel" }
+            ]
+        }
+    ],
+    "devPracticesLabel": "Dev Practices",
+    "devPractices": [
+        "Agile methodologies",
+        "Component-Based Architecture",
+        "Performance Optimization",
+        "Clean Code & SOLID Principles"
+    ],
+    "education": [
+        {
+            "degree": "Bachelor: Computer Science",
+            "institution": "State University",
+            "location": "New York, USA",
+            "year": "2022",
+            "details": "Graduated with honors"
+        }
+    ],
+    "learning": {
+        "heading": "Continuous Learning",
+        "description": "Always exploring new technologies and sharpening fundamentals.",
+        "languages": ["Spanish", "French"],
+        "embeds": [
+            {
+                "src": "https://example.com/learning-embed-1",
+                "alt": "Learning platform progress",
+                "wide": false
+            },
+            {
+                "src": "https://example.com/learning-embed-2",
+                "alt": "Language learning stats",
+                "unoptimized": true,
+                "wide": false
+            }
+        ]
+    }
+}
