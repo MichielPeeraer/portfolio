@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import data from '@/data/portfolio.json'
+import data from '@/data/portfolio.example.json'
 import { usePortfolioEditorState } from '@/components/admin/usePortfolioEditorState'
 import type { PortfolioData } from '@/types'
 
