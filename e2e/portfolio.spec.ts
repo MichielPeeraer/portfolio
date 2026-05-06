@@ -36,6 +36,15 @@ const fastForwardFormMinFillTimer = async (page: Page) => {
     })
 }
 
+const waitForContactFormReady = async (page: Page) => {
+    await page.locator('#contact').scrollIntoViewIfNeeded()
+    // InViewMount + dynamic import can be delayed on busy CI workers.
+    await page.waitForSelector('input[name="firstname"]', {
+        state: 'visible',
+        timeout: 15000,
+    })
+}
+
 test.describe('Portfolio smoke tests', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/', { waitUntil: 'domcontentloaded' })
@@ -77,7 +86,7 @@ test.describe('Portfolio smoke tests', () => {
     })
 
     test('contact form renders required fields', async ({ page }) => {
-        await page.locator('#contact').scrollIntoViewIfNeeded()
+        await waitForContactFormReady(page)
         await expect(page.locator('input[name="firstname"]')).toBeVisible({
             timeout: 8000,
         })
@@ -101,7 +110,7 @@ test.describe('Portfolio smoke tests', () => {
             })
         })
 
-        await page.locator('#contact').scrollIntoViewIfNeeded()
+        await waitForContactFormReady(page)
         await page.locator('input[name="firstname"]').fill('Neo')
         await page.locator('input[name="lastname"]').fill('Anderson')
         await page.locator('input[name="email"]').fill('neo@zion.io')
@@ -141,7 +150,7 @@ test.describe('Portfolio smoke tests', () => {
             })
         })
 
-        await page.locator('#contact').scrollIntoViewIfNeeded()
+        await waitForContactFormReady(page)
         await page.locator('input[name="firstname"]').fill('Neo')
         await page.locator('input[name="lastname"]').fill('Anderson')
         await page.locator('input[name="email"]').fill('neo@zion.io')
