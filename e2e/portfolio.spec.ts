@@ -1,4 +1,32 @@
 import { test, expect, type Page } from '@playwright/test'
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+type PortfolioFixture = {
+    personal: {
+        name: string
+        cvPath?: string
+    }
+}
+
+const primaryPortfolioPath = join(
+    process.cwd(),
+    'src',
+    'data',
+    'portfolio.json'
+)
+const fallbackPortfolioPath = join(
+    process.cwd(),
+    'src',
+    'data',
+    'portfolio.example.json'
+)
+const portfolioPath = existsSync(primaryPortfolioPath)
+    ? primaryPortfolioPath
+    : fallbackPortfolioPath
+const portfolioData = JSON.parse(
+    readFileSync(portfolioPath, 'utf8')
+) as PortfolioFixture
 
 const fastForwardFormMinFillTimer = async (page: Page) => {
     await page.evaluate(() => {
@@ -14,7 +42,9 @@ test.describe('Portfolio smoke tests', () => {
     })
 
     test('page loads and shows hero name', async ({ page }) => {
-        await expect(page.locator('h1')).toContainText('Michiel Peeraer')
+        await expect(page.locator('h1')).toContainText(
+            portfolioData.personal.name
+        )
     })
 
     test('all main sections are present', async ({ page }) => {
@@ -40,7 +70,10 @@ test.describe('Portfolio smoke tests', () => {
     test('CV link is present', async ({ page }) => {
         const link = page.getByRole('link', { name: 'View CV' })
         await expect(link).toBeVisible()
-        await expect(link).toHaveAttribute('href', /CV_Michiel_Peeraer/)
+        await expect(link).toHaveAttribute(
+            'href',
+            portfolioData.personal.cvPath ?? '/cv.pdf'
+        )
     })
 
     test('contact form renders required fields', async ({ page }) => {

@@ -22,5 +22,14 @@ export default defineConfig({
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
+        env: {
+            ...process.env,
+            NEXTAUTH_SECRET:
+                process.env.NEXTAUTH_SECRET ?? 'playwright-e2e-nextauth-secret',
+            NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? 'http://localhost:3000',
+            ADMIN_EMAIL: process.env.ADMIN_EMAIL ?? 'admin@example.com',
+            ADMIN_GITHUB_LOGIN:
+                process.env.ADMIN_GITHUB_LOGIN ?? 'playwright-admin',
+        },
     },
 })
