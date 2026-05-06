@@ -82,11 +82,16 @@ export const sectionsFormSchema = z.object({
             .string()
             .trim()
             .min(1, 'At least one language is required'),
-        bootDevSrc: z.url('Boot.dev embed URL must be valid'),
-        bootDevAlt: z.string().trim().min(1, 'Boot.dev alt is required'),
-        duolingoSrc: z.url('Duolingo embed URL must be valid'),
-        duolingoAlt: z.string().trim().min(1, 'Duolingo alt is required'),
-        duolingoUnoptimized: z.boolean(),
+        embeds: z
+            .array(
+                z.object({
+                    src: z.url('Embed URL must be valid'),
+                    alt: z.string().trim().min(1, 'Embed alt is required'),
+                    unoptimized: z.boolean(),
+                    wide: z.boolean(),
+                })
+            )
+            .min(1, 'At least one learning embed is required'),
     }),
 })
 
@@ -144,11 +149,12 @@ export const buildSectionsDraft = (
         heading: data.learning.heading,
         description: data.learning.description,
         languagesText: data.learning.languages.join('\n'),
-        bootDevSrc: data.learning.bootDevEmbed.src,
-        bootDevAlt: data.learning.bootDevEmbed.alt,
-        duolingoSrc: data.learning.duolingoEmbed.src,
-        duolingoAlt: data.learning.duolingoEmbed.alt,
-        duolingoUnoptimized: Boolean(data.learning.duolingoEmbed.unoptimized),
+        embeds: data.learning.embeds.map((embed) => ({
+            src: embed.src,
+            alt: embed.alt,
+            unoptimized: Boolean(embed.unoptimized),
+            wide: Boolean(embed.wide),
+        })),
     },
 })
 

@@ -150,7 +150,7 @@ export function PortfolioEditor({
             <Panel
                 index={2}
                 label="Sections Editor"
-                badge="Experience, education & skills"
+                badge="Experience, education, skills & learning"
                 statusBadge={isSectionsDirty ? 'Unsaved' : undefined}
                 open={sectionsOpen}
                 onToggle={() => setSectionsOpen((o) => !o)}

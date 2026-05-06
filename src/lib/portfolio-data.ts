@@ -15,6 +15,7 @@ import {
     devPractices,
     education,
     learningLanguages,
+    learningEmbeds,
 } from '@/db/schema'
 import type { PortfolioData } from '@/types'
 
@@ -73,6 +74,7 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
         practicesRows,
         educationsRows,
         languagesRows,
+        embedsRows,
         experiencesRows,
         experiencePointsRows,
         skillCategoriesRows,
@@ -92,6 +94,10 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
                 .select()
                 .from(learningLanguages)
                 .orderBy(asc(learningLanguages.sortOrder)),
+            db
+                .select()
+                .from(learningEmbeds)
+                .orderBy(asc(learningEmbeds.sortOrder)),
             db.select().from(experience).orderBy(asc(experience.sortOrder)),
             db
                 .select()
@@ -122,6 +128,28 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
     }
 
     const p = personalRows[0]
+    const learningEmbedsList =
+        embedsRows.length > 0
+            ? embedsRows.map((embed: (typeof embedsRows)[number]) => ({
+                  src: embed.src,
+                  alt: embed.alt,
+                  unoptimized: embed.unoptimized,
+                  wide: embed.wide,
+              }))
+            : [
+                  {
+                      src: p.bootDevEmbedSrc,
+                      alt: p.bootDevEmbedAlt,
+                      unoptimized: false,
+                      wide: false,
+                  },
+                  {
+                      src: p.duolingoEmbedSrc,
+                      alt: p.duolingoEmbedAlt,
+                      unoptimized: p.duolingoEmbedUnoptimized ?? true,
+                      wide: false,
+                  },
+              ]
 
     const built: PortfolioData = {
         personal: {
@@ -186,15 +214,7 @@ const buildPortfolioFromDb = async (): Promise<PortfolioData> => {
             languages: languagesRows.map(
                 (x: (typeof languagesRows)[number]) => x.label
             ),
-            bootDevEmbed: {
-                src: p.bootDevEmbedSrc,
-                alt: p.bootDevEmbedAlt,
-            },
-            duolingoEmbed: {
-                src: p.duolingoEmbedSrc,
-                alt: p.duolingoEmbedAlt,
-                unoptimized: p.duolingoEmbedUnoptimized ?? true,
-            },
+            embeds: learningEmbedsList,
         },
     }
 

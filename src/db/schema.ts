@@ -180,6 +180,15 @@ export const learningLanguages = pgTable('learning_languages', {
     sortOrder: integer('sort_order').notNull(),
 })
 
+export const learningEmbeds = pgTable('learning_embeds', {
+    id: serial('id').primaryKey(),
+    src: text('src').notNull(),
+    alt: text('alt').notNull(),
+    unoptimized: boolean('unoptimized').notNull().default(false),
+    wide: boolean('wide').notNull().default(false),
+    sortOrder: integer('sort_order').notNull(),
+})
+
 /**
  * Distributed rate-limit buckets — one row per client key (IP).
  * The in-memory fallback is useless in serverless (fresh process per request);

@@ -198,14 +198,18 @@
         "heading": "Continuous Learning",
         "description": "Currently grinding through Boot.dev - back-end development, algorithms, and computer science fundamentals. Also building my language streak on Duolingo.",
         "languages": ["Spanish", "French", "German"],
-        "bootDevEmbed": {
-            "src": "https://api.boot.dev/v1/users/public/196f7e84-b6b7-4b3a-b28c-a0d5f98f60d2/thumbnail",
-            "alt": "Boot.dev progress"
-        },
-        "duolingoEmbed": {
-            "src": "https://duolingo-stats-card.vercel.app/api?username=MichielPee3&theme=dark",
-            "alt": "Duolingo Stats",
-            "unoptimized": true
-        }
+        "embeds": [
+            {
+                "src": "https://api.boot.dev/v1/users/public/196f7e84-b6b7-4b3a-b28c-a0d5f98f60d2/thumbnail",
+                "alt": "Boot.dev progress",
+                "wide": false
+            },
+            {
+                "src": "https://duolingo-stats-card.vercel.app/api?username=MichielPee3&theme=dark",
+                "alt": "Duolingo Stats",
+                "unoptimized": true,
+                "wide": false
+            }
+        ]
     }
 }

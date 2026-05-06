@@ -27,6 +27,7 @@ vi.mock('@/db/schema', () => ({
     devPractices: {},
     education: {},
     learningLanguages: {},
+    learningEmbeds: {},
     experiencePoints: {},
     skills: {},
     users: {},
@@ -89,12 +90,20 @@ const mockPortfolioData: PortfolioData = {
         heading: 'Currently Learning',
         description: 'New technologies',
         languages: ['Spanish', 'French'],
-        bootDevEmbed: { src: 'https://boot.dev', alt: 'Boot.dev' },
-        duolingoEmbed: {
-            src: 'https://duolingo.com',
-            alt: 'Duolingo',
-            unoptimized: false,
-        },
+        embeds: [
+            {
+                src: 'https://boot.dev',
+                alt: 'Boot.dev',
+                unoptimized: false,
+                wide: false,
+            },
+            {
+                src: 'https://duolingo.com',
+                alt: 'Duolingo',
+                unoptimized: false,
+                wide: false,
+            },
+        ],
     },
 }
 

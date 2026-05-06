@@ -57,14 +57,14 @@ const learningEmbedSchema = z.object({
     src: z.url(),
     alt: z.string().trim().min(1),
     unoptimized: z.boolean().optional(),
+    wide: z.boolean().optional(),
 })
 
 const learningSchema = z.object({
     heading: z.string().trim().min(1),
     description: z.string().trim().min(1),
     languages: z.array(z.string().trim().min(1)).min(1),
-    bootDevEmbed: learningEmbedSchema,
-    duolingoEmbed: learningEmbedSchema,
+    embeds: z.array(learningEmbedSchema).min(1),
 })
 
 export const portfolioSchema = z.object({

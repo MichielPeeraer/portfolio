@@ -25,6 +25,7 @@ import {
     devPractices,
     education,
     learningLanguages,
+    learningEmbeds,
 } from './schema'
 import type { PortfolioData } from '@/types'
 
@@ -67,7 +68,11 @@ async function main() {
             tx.delete(devPractices),
             tx.delete(education),
             tx.delete(learningLanguages),
+            tx.delete(learningEmbeds),
         ])
+
+        const primaryEmbed = d.learning.embeds[0]
+        const secondaryEmbed = d.learning.embeds[1] ?? primaryEmbed
 
         // Singleton personal info row
         await tx.insert(personalInfo).values({
@@ -82,12 +87,11 @@ async function main() {
             contactEmail: d.personal.contact.email,
             learningHeading: d.learning.heading,
             learningDescription: d.learning.description,
-            bootDevEmbedSrc: d.learning.bootDevEmbed.src,
-            bootDevEmbedAlt: d.learning.bootDevEmbed.alt,
-            duolingoEmbedSrc: d.learning.duolingoEmbed.src,
-            duolingoEmbedAlt: d.learning.duolingoEmbed.alt,
-            duolingoEmbedUnoptimized:
-                d.learning.duolingoEmbed.unoptimized ?? false,
+            bootDevEmbedSrc: primaryEmbed.src,
+            bootDevEmbedAlt: primaryEmbed.alt,
+            duolingoEmbedSrc: secondaryEmbed.src,
+            duolingoEmbedAlt: secondaryEmbed.alt,
+            duolingoEmbedUnoptimized: secondaryEmbed.unoptimized ?? false,
         })
 
         // All flat array tables in parallel
@@ -142,6 +146,18 @@ async function main() {
                 ? tx.insert(learningLanguages).values(
                       d.learning.languages.map((label, i) => ({
                           label,
+                          sortOrder: i,
+                      }))
+                  )
+                : Promise.resolve(),
+
+            d.learning.embeds.length
+                ? tx.insert(learningEmbeds).values(
+                      d.learning.embeds.map((embed, i) => ({
+                          src: embed.src,
+                          alt: embed.alt,
+                          unoptimized: embed.unoptimized ?? false,
+                          wide: embed.wide ?? false,
                           sortOrder: i,
                       }))
                   )

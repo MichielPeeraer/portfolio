@@ -460,16 +460,12 @@ export const usePortfolioEditorState = (
                 languages: fromMultiline(
                     parsedSections.data.learning.languagesText
                 ),
-                bootDevEmbed: {
-                    src: parsedSections.data.learning.bootDevSrc,
-                    alt: parsedSections.data.learning.bootDevAlt.trim(),
-                },
-                duolingoEmbed: {
-                    src: parsedSections.data.learning.duolingoSrc,
-                    alt: parsedSections.data.learning.duolingoAlt.trim(),
-                    unoptimized:
-                        parsedSections.data.learning.duolingoUnoptimized,
-                },
+                embeds: parsedSections.data.learning.embeds.map((embed) => ({
+                    src: embed.src,
+                    alt: embed.alt.trim(),
+                    unoptimized: embed.unoptimized,
+                    wide: embed.wide,
+                })),
             },
         }
 

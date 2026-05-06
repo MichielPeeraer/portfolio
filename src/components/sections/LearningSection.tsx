@@ -24,42 +24,38 @@ export default function LearningSection({ data }: LearningSectionProps) {
                     </p>
                 </Reveal>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <Reveal y={24} delay={0.2}>
-                        <div className="transition-transform duration-300 hover:-translate-y-1">
-                            <div className="crt-lines rounded-lg block w-full">
-                                <Image
-                                    src={data.bootDevEmbed.src}
-                                    alt={data.bootDevEmbed.alt}
-                                    width={500}
-                                    height={150}
-                                    sizes="(max-width: 767px) 100vw, 50vw"
-                                    className="rounded-lg grayscale block"
-                                    style={{ width: '100%', height: 'auto' }}
-                                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+                    {data.embeds.map((embed, index) => (
+                        <Reveal
+                            key={`${embed.src}-${index}`}
+                            y={24}
+                            delay={0.2 + index * 0.08}
+                            className={embed.wide ? 'sm:col-span-2' : undefined}
+                        >
+                            <div className="transition-transform duration-300 hover:-translate-y-1">
+                                <div className="crt-lines rounded-lg block w-full">
+                                    <Image
+                                        src={embed.src}
+                                        alt={embed.alt}
+                                        width={500}
+                                        height={150}
+                                        unoptimized={embed.unoptimized}
+                                        referrerPolicy="no-referrer"
+                                        sizes={
+                                            embed.wide
+                                                ? '(max-width: 639px) 100vw, 100vw'
+                                                : '(max-width: 639px) 100vw, 50vw'
+                                        }
+                                        className="rounded-lg grayscale block"
+                                        style={{
+                                            width: '100%',
+                                            height: 'auto',
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </Reveal>
-
-                    <Reveal y={24} delay={0.28}>
-                        <div className="transition-transform duration-300 hover:-translate-y-1">
-                            <div className="crt-lines rounded-lg block w-full">
-                                <Image
-                                    src={data.duolingoEmbed.src}
-                                    alt={data.duolingoEmbed.alt}
-                                    width={500}
-                                    height={150}
-                                    unoptimized={
-                                        data.duolingoEmbed.unoptimized ?? true
-                                    }
-                                    referrerPolicy="no-referrer"
-                                    sizes="(max-width: 767px) 100vw, 50vw"
-                                    className="rounded-lg grayscale block"
-                                    style={{ width: '100%', height: 'auto' }}
-                                />
-                            </div>
-                        </div>
-                    </Reveal>
+                        </Reveal>
+                    ))}
                 </div>
             </div>
         </section>

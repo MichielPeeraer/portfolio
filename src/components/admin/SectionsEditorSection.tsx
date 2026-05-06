@@ -209,7 +209,7 @@ export function SectionsEditorSection({
         'flex items-center gap-1.5 rounded-lg border border-green-700/70 px-3 py-1.5 text-xs uppercase tracking-[0.18em] text-green-400 transition hover:bg-green-900/30'
 
     const updateLearningField = (
-        field: keyof SectionsFormValues['learning'],
+        field: keyof Omit<SectionsFormValues['learning'], 'embeds'>,
         fieldValue: string | boolean
     ) => {
         setSectionsDraft((current) => ({
@@ -217,6 +217,22 @@ export function SectionsEditorSection({
             learning: {
                 ...current.learning,
                 [field]: fieldValue,
+            },
+        }))
+    }
+
+    const updateLearningEmbedField = (
+        index: number,
+        field: keyof SectionsFormValues['learning']['embeds'][number],
+        fieldValue: string | boolean
+    ) => {
+        setSectionsDraft((current) => ({
+            ...current,
+            learning: {
+                ...current.learning,
+                embeds: current.learning.embeds.map((embed, i) =>
+                    i === index ? { ...embed, [field]: fieldValue } : embed
+                ),
             },
         }))
     }
@@ -1044,19 +1060,45 @@ export function SectionsEditorSection({
                                 embeds
                             </p>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => setLearningOpen((open) => !open)}
-                            aria-expanded={learningOpen}
-                            aria-label={
-                                learningOpen
-                                    ? 'Collapse learning section'
-                                    : 'Expand learning section'
-                            }
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30"
-                        >
-                            <ToggleArrowIcon open={learningOpen} />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setLearningOpen((open) => !open)}
+                                aria-expanded={learningOpen}
+                                aria-label={
+                                    learningOpen
+                                        ? 'Collapse learning section'
+                                        : 'Expand learning section'
+                                }
+                                className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-800/70 text-green-400 transition hover:bg-green-900/30"
+                            >
+                                <ToggleArrowIcon open={learningOpen} />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setSectionsDraft((current) => ({
+                                        ...current,
+                                        learning: {
+                                            ...current.learning,
+                                            embeds: [
+                                                {
+                                                    src: '',
+                                                    alt: '',
+                                                    unoptimized: false,
+                                                    wide: false,
+                                                },
+                                                ...current.learning.embeds,
+                                            ],
+                                        },
+                                    }))
+                                }
+                                className={addButtonClass}
+                            >
+                                <PlusIcon />
+                                Add
+                            </button>
+                        </div>
                     </div>
 
                     {learningOpen ? (
@@ -1130,128 +1172,233 @@ export function SectionsEditorSection({
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                <div>
-                                    <label
-                                        htmlFor="learning-bootdev-src"
-                                        className={fieldLabelClass}
+                            {sectionsDraft.learning.embeds.map(
+                                (embed, index) => (
+                                    <div
+                                        key={`learning-embed-${index}`}
+                                        className={itemCardClass}
                                     >
-                                        Boot.dev Embed URL
-                                    </label>
-                                    <input
-                                        id="learning-bootdev-src"
-                                        name="learning.bootDevSrc"
-                                        autoComplete="url"
-                                        value={
-                                            sectionsDraft.learning.bootDevSrc
-                                        }
-                                        onChange={(event) =>
-                                            updateLearningField(
-                                                'bootDevSrc',
-                                                event.target.value
-                                            )
-                                        }
-                                        placeholder="Boot.dev embed URL"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="learning-bootdev-alt"
-                                        className={fieldLabelClass}
-                                    >
-                                        Boot.dev Alt Text
-                                    </label>
-                                    <input
-                                        id="learning-bootdev-alt"
-                                        name="learning.bootDevAlt"
-                                        autoComplete="off"
-                                        value={
-                                            sectionsDraft.learning.bootDevAlt
-                                        }
-                                        onChange={(event) =>
-                                            updateLearningField(
-                                                'bootDevAlt',
-                                                event.target.value
-                                            )
-                                        }
-                                        placeholder="Boot.dev alt text"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="learning-duolingo-src"
-                                        className={fieldLabelClass}
-                                    >
-                                        Duolingo Embed URL
-                                    </label>
-                                    <input
-                                        id="learning-duolingo-src"
-                                        name="learning.duolingoSrc"
-                                        autoComplete="url"
-                                        value={
-                                            sectionsDraft.learning.duolingoSrc
-                                        }
-                                        onChange={(event) =>
-                                            updateLearningField(
-                                                'duolingoSrc',
-                                                event.target.value
-                                            )
-                                        }
-                                        placeholder="Duolingo embed URL"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor="learning-duolingo-alt"
-                                        className={fieldLabelClass}
-                                    >
-                                        Duolingo Alt Text
-                                    </label>
-                                    <input
-                                        id="learning-duolingo-alt"
-                                        name="learning.duolingoAlt"
-                                        autoComplete="off"
-                                        value={
-                                            sectionsDraft.learning.duolingoAlt
-                                        }
-                                        onChange={(event) =>
-                                            updateLearningField(
-                                                'duolingoAlt',
-                                                event.target.value
-                                            )
-                                        }
-                                        placeholder="Duolingo alt text"
-                                        className={inputClass}
-                                    />
-                                </div>
-                            </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="rounded-full border border-green-900/60 bg-black/30 px-2 py-0.5 text-[10px] uppercase tracking-wider text-green-600">
+                                                Embed #{index + 1}
+                                            </span>
+                                            <div className="flex gap-1.5">
+                                                <button
+                                                    type="button"
+                                                    disabled={index === 0}
+                                                    onClick={() =>
+                                                        setSectionsDraft(
+                                                            (current) => ({
+                                                                ...current,
+                                                                learning: {
+                                                                    ...current.learning,
+                                                                    embeds: moveItem(
+                                                                        current
+                                                                            .learning
+                                                                            .embeds,
+                                                                        index,
+                                                                        index -
+                                                                            1
+                                                                    ),
+                                                                },
+                                                            })
+                                                        )
+                                                    }
+                                                    className={iconButtonClass}
+                                                >
+                                                    <ArrowUpIcon />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={
+                                                        index ===
+                                                        sectionsDraft.learning
+                                                            .embeds.length -
+                                                            1
+                                                    }
+                                                    onClick={() =>
+                                                        setSectionsDraft(
+                                                            (current) => ({
+                                                                ...current,
+                                                                learning: {
+                                                                    ...current.learning,
+                                                                    embeds: moveItem(
+                                                                        current
+                                                                            .learning
+                                                                            .embeds,
+                                                                        index,
+                                                                        index +
+                                                                            1
+                                                                    ),
+                                                                },
+                                                            })
+                                                        )
+                                                    }
+                                                    className={iconButtonClass}
+                                                >
+                                                    <ArrowDownIcon />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSectionsDraft(
+                                                            (current) => ({
+                                                                ...current,
+                                                                learning: {
+                                                                    ...current.learning,
+                                                                    embeds: [
+                                                                        ...current.learning.embeds.slice(
+                                                                            0,
+                                                                            index +
+                                                                                1
+                                                                        ),
+                                                                        {
+                                                                            ...embed,
+                                                                        },
+                                                                        ...current.learning.embeds.slice(
+                                                                            index +
+                                                                                1
+                                                                        ),
+                                                                    ],
+                                                                },
+                                                            })
+                                                        )
+                                                    }
+                                                    className={iconButtonClass}
+                                                    title="Duplicate item"
+                                                >
+                                                    <DuplicateIcon />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={
+                                                        sectionsDraft.learning
+                                                            .embeds.length <= 1
+                                                    }
+                                                    onClick={() =>
+                                                        setSectionsDraft(
+                                                            (current) => ({
+                                                                ...current,
+                                                                learning: {
+                                                                    ...current.learning,
+                                                                    embeds: current.learning.embeds.filter(
+                                                                        (
+                                                                            _,
+                                                                            itemIndex
+                                                                        ) =>
+                                                                            itemIndex !==
+                                                                            index
+                                                                    ),
+                                                                },
+                                                            })
+                                                        )
+                                                    }
+                                                    className={
+                                                        destructiveIconButtonClass
+                                                    }
+                                                >
+                                                    <TrashIcon />
+                                                </button>
+                                            </div>
+                                        </div>
 
-                            <label
-                                htmlFor="learning-duolingo-unoptimized"
-                                className="flex items-center gap-2 rounded-xl border border-green-900/60 bg-black/30 px-3 py-3 text-sm"
-                            >
-                                <input
-                                    id="learning-duolingo-unoptimized"
-                                    name="learning.duolingoUnoptimized"
-                                    autoComplete="off"
-                                    type="checkbox"
-                                    checked={
-                                        sectionsDraft.learning
-                                            .duolingoUnoptimized
-                                    }
-                                    onChange={(event) =>
-                                        updateLearningField(
-                                            'duolingoUnoptimized',
-                                            event.target.checked
-                                        )
-                                    }
-                                    className="accent-green-500"
-                                />
-                                Duolingo image unoptimized
-                            </label>
+                                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                            <div>
+                                                <label
+                                                    htmlFor={`learning-embed-src-${index}`}
+                                                    className={fieldLabelClass}
+                                                >
+                                                    Embed URL
+                                                </label>
+                                                <input
+                                                    id={`learning-embed-src-${index}`}
+                                                    name={`learning.embeds.${index}.src`}
+                                                    autoComplete="url"
+                                                    value={embed.src}
+                                                    onChange={(event) =>
+                                                        updateLearningEmbedField(
+                                                            index,
+                                                            'src',
+                                                            event.target.value
+                                                        )
+                                                    }
+                                                    placeholder="Embed image URL"
+                                                    className={inputClass}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label
+                                                    htmlFor={`learning-embed-alt-${index}`}
+                                                    className={fieldLabelClass}
+                                                >
+                                                    Alt Text
+                                                </label>
+                                                <input
+                                                    id={`learning-embed-alt-${index}`}
+                                                    name={`learning.embeds.${index}.alt`}
+                                                    autoComplete="off"
+                                                    value={embed.alt}
+                                                    onChange={(event) =>
+                                                        updateLearningEmbedField(
+                                                            index,
+                                                            'alt',
+                                                            event.target.value
+                                                        )
+                                                    }
+                                                    placeholder="Accessible alt text"
+                                                    className={inputClass}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                            <label
+                                                htmlFor={`learning-embed-unoptimized-${index}`}
+                                                className="flex items-center gap-2 rounded-xl border border-green-900/60 bg-black/30 px-3 py-3 text-sm"
+                                            >
+                                                <input
+                                                    id={`learning-embed-unoptimized-${index}`}
+                                                    name={`learning.embeds.${index}.unoptimized`}
+                                                    autoComplete="off"
+                                                    type="checkbox"
+                                                    checked={embed.unoptimized}
+                                                    onChange={(event) =>
+                                                        updateLearningEmbedField(
+                                                            index,
+                                                            'unoptimized',
+                                                            event.target.checked
+                                                        )
+                                                    }
+                                                    className="accent-green-500"
+                                                />
+                                                Unoptimized image
+                                            </label>
+
+                                            <label
+                                                htmlFor={`learning-embed-wide-${index}`}
+                                                className="flex items-center gap-2 rounded-xl border border-green-900/60 bg-black/30 px-3 py-3 text-sm"
+                                            >
+                                                <input
+                                                    id={`learning-embed-wide-${index}`}
+                                                    name={`learning.embeds.${index}.wide`}
+                                                    autoComplete="off"
+                                                    type="checkbox"
+                                                    checked={embed.wide}
+                                                    onChange={(event) =>
+                                                        updateLearningEmbedField(
+                                                            index,
+                                                            'wide',
+                                                            event.target.checked
+                                                        )
+                                                    }
+                                                    className="accent-green-500"
+                                                />
+                                                Wide layout
+                                            </label>
+                                        </div>
+                                    </div>
+                                )
+                            )}
                         </div>
                     ) : null}
                 </div>

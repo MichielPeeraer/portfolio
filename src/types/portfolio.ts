@@ -34,14 +34,14 @@ export interface LearningEmbed {
     src: string
     alt: string
     unoptimized?: boolean
+    wide?: boolean
 }
 
 export interface LearningInfo {
     heading: string
     description: string
     languages: string[]
-    bootDevEmbed: LearningEmbed
-    duolingoEmbed: LearningEmbed
+    embeds: LearningEmbed[]
 }
 
 export interface PortfolioData {
