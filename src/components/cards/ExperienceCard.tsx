@@ -30,11 +30,13 @@ export default function ExperienceCard({
                         {experience.period}
                     </span>
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-2 list-disc pl-5 marker:text-green-400">
                     {experience.points.map((point) => (
-                        <li key={point} className="flex items-start space-x-3">
-                            <span className="text-green-400 mt-1">▸</span>
-                            <span className="text-green-100">{point}</span>
+                        <li
+                            key={point}
+                            className="text-green-100 leading-relaxed"
+                        >
+                            {point}
                         </li>
                     ))}
                 </ul>

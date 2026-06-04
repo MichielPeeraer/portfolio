@@ -221,7 +221,7 @@ export default function ContactForm() {
 
                 <div>
                     <label
-                        htmlFor="phone"
+                        htmlFor="phone-input"
                         className="block text-sm text-green-300 mb-2"
                     >
                         Phone
@@ -231,8 +231,6 @@ export default function ContactForm() {
                         name="phone"
                         render={({ field }) => (
                             <PhoneInput
-                                id="phone"
-                                name={field.name}
                                 international
                                 defaultCountry="BE"
                                 countryCallingCodeEditable={false}
@@ -240,15 +238,19 @@ export default function ContactForm() {
                                     id: 'phone-country',
                                     name: 'phoneCountry',
                                 }}
+                                numberInputProps={{
+                                    id: 'phone-input',
+                                    name: field.name,
+                                    autoComplete: 'tel',
+                                    'aria-invalid': Boolean(errors.phone),
+                                    'aria-describedby': errors.phone
+                                        ? 'phone-error'
+                                        : undefined,
+                                }}
                                 value={field.value}
                                 onChange={field.onChange}
                                 onBlur={field.onBlur}
                                 placeholder="Hardline number (optional)"
-                                autoComplete="tel"
-                                aria-invalid={Boolean(errors.phone)}
-                                aria-describedby={
-                                    errors.phone ? 'phone-error' : undefined
-                                }
                                 className="matrix-phone-input"
                             />
                         )}
