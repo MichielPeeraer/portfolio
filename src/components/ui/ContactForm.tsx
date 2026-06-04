@@ -221,7 +221,7 @@ export default function ContactForm() {
 
                 <div>
                     <label
-                        htmlFor="phone-input"
+                        htmlFor="phone"
                         className="block text-sm text-green-300 mb-2"
                     >
                         Phone
@@ -231,6 +231,7 @@ export default function ContactForm() {
                         name="phone"
                         render={({ field }) => (
                             <PhoneInput
+                                id="phone"
                                 international
                                 defaultCountry="BE"
                                 countryCallingCodeEditable={false}
@@ -239,7 +240,6 @@ export default function ContactForm() {
                                     name: 'phoneCountry',
                                 }}
                                 numberInputProps={{
-                                    id: 'phone-input',
                                     name: field.name,
                                     autoComplete: 'tel',
                                     'aria-invalid': Boolean(errors.phone),
