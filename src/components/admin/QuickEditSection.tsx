@@ -273,7 +273,7 @@ export function QuickEditSection({
                         <div className="flex items-center gap-3">
                             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-green-900/70">
                                 <Image
-                                    src={profileImageUrl || '/profile.jpg'}
+                                    src={profileImageUrl || '/profile.png'}
                                     alt="Profile preview"
                                     fill
                                     className="object-cover grayscale"

@@ -4,6 +4,8 @@ import { join } from 'path'
 import { getPortfolioData } from '@/lib/portfolio-data'
 import { siteConfig } from '@/lib/site'
 
+const PROFILE_FALLBACK_PATH = join(process.cwd(), 'public', 'profile.png')
+
 export const runtime = 'nodejs'
 export const alt = `${siteConfig.name} – Full-Stack TypeScript Developer`
 export const size = { width: 1200, height: 630 }
@@ -13,8 +15,15 @@ export default async function Image() {
     const data = await getPortfolioData()
     const tech = data.personal.ogTechPills ?? []
     const links = data.personal.contact.socialLinks ?? []
-    const profileImg = readFileSync(join(process.cwd(), 'public/profile.jpg'))
-    const profileSrc = `data:image/jpeg;base64,${profileImg.toString('base64')}`
+    let profileSrc: string | null = null
+
+    try {
+        const profileImg = readFileSync(PROFILE_FALLBACK_PATH)
+        profileSrc = `data:image/png;base64,${profileImg.toString('base64')}`
+    } catch {
+        profileSrc = null
+    }
+
     const socialLinkLabels = ['GitHub', 'LinkedIn'].flatMap((name) => {
         const url = links.find((link) => link.name === name)?.url
         if (!url) {
@@ -39,7 +48,6 @@ export default async function Image() {
                 position: 'relative',
             }}
         >
-            {/* Dot grid background */}
             <div
                 style={{
                     position: 'absolute',
@@ -272,17 +280,37 @@ export default async function Image() {
                                 overflow: 'hidden',
                             }}
                         >
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={profileSrc}
-                                width={244}
-                                height={244}
-                                alt=""
-                                style={{
-                                    borderRadius: '50%',
-                                    objectFit: 'cover',
-                                }}
-                            />
+                            {profileSrc ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img
+                                    src={profileSrc}
+                                    width={244}
+                                    height={244}
+                                    alt=""
+                                    style={{
+                                        borderRadius: '50%',
+                                        objectFit: 'cover',
+                                    }}
+                                />
+                            ) : (
+                                <div
+                                    style={{
+                                        width: '244px',
+                                        height: '244px',
+                                        borderRadius: '50%',
+                                        background:
+                                            'radial-gradient(circle at 35% 30%, #166534, #052e16 58%, #000000)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#86efac',
+                                        fontSize: '72px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {data.personal.name.charAt(0).toUpperCase()}
+                                </div>
+                            )}
                             <div
                                 style={{
                                     position: 'absolute',
