@@ -7,7 +7,20 @@ export const adminFormSchema = z.object({
     about: z.string().trim().min(20, 'About should be at least 20 characters'),
     status: z.boolean(),
     statusLabel: z.string().trim().min(1, 'Status text is required'),
-    cvPath: z.string().trim().min(1, 'CV path is required'),
+    cvPath: z
+        .string()
+        .trim()
+        .url('CV URL must be valid')
+        .refine((value) => {
+            try {
+                const parsed = new URL(value)
+                return (
+                    parsed.protocol === 'http:' || parsed.protocol === 'https:'
+                )
+            } catch {
+                return false
+            }
+        }, 'CV URL must start with http:// or https://'),
     profileImageUrl: z.string().trim().optional(),
     profileImageCurrentPathname: z.string().trim().optional(),
     profileImagePendingPathnames: z.string().trim().optional(),
@@ -105,7 +118,7 @@ export const buildAdminFormDefaults = (
     about: data.personal.about,
     status: Boolean(data.personal.status),
     statusLabel: data.personal.statusLabel ?? 'Open to opportunities',
-    cvPath: data.personal.cvPath ?? '/cv.pdf',
+    cvPath: data.personal.cvPath ?? '',
     profileImageUrl: data.personal.profileImageUrl ?? '',
     profileImageCurrentPathname: '',
     profileImagePendingPathnames: '[]',

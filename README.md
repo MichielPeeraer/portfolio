@@ -61,23 +61,24 @@ For full functionality (admin dashboard, contact form, database) see the [Enviro
 
 Copy `.env.example` to `.env.local` and set these values:
 
-| Variable                | Required | Description                                                                       |
-| ----------------------- | -------- | --------------------------------------------------------------------------------- |
-| `DATABASE_URL`          | ✅       | Pooled connection string (port 6543)                                              |
-| `DATABASE_URL_UNPOOLED` | ✅       | Direct connection string (port 5432) — used for migrations and seeding            |
-| `NEXTAUTH_URL`          | ✅       | Full base URL of the app (e.g. `http://localhost:3000`)                           |
-| `NEXTAUTH_SECRET`       | ✅       | Random secret for signing JWTs                                                    |
-| `ADMIN_EMAIL`           | ✅       | Email address allowed to sign in as admin                                         |
-| `ADMIN_GITHUB_LOGIN`    | ✅       | GitHub username allowed to sign in as admin                                       |
-| `GITHUB_ID`             | ✅       | GitHub OAuth App client ID                                                        |
-| `GITHUB_SECRET`         | ✅       | GitHub OAuth App client secret                                                    |
-| `SMTP_HOST`             | ✅       | SMTP server hostname                                                              |
-| `SMTP_PORT`             | ✅       | SMTP server port (e.g. `465`)                                                     |
-| `SMTP_USER`             | ✅       | SMTP login username                                                               |
-| `SMTP_PASS`             | ✅       | SMTP password / app password                                                      |
-| `NEXT_PUBLIC_SITE_URL`  | ✅       | Public site URL used for canonical links and OpenGraph                            |
-| `CRON_SECRET`           | ⚠️ opt   | Bearer token to protect `/api/cron/ping-db`; if unset the endpoint is unprotected |
-| `BLOB_READ_WRITE_TOKEN` | ⚠️ opt   | Vercel Blob read/write token — required for profile photo uploads                 |
+| Variable                | Required | Description                                                                                      |
+| ----------------------- | -------- | ------------------------------------------------------------------------------------------------ |
+| `DATABASE_URL`          | ✅       | Pooled connection string (port 6543)                                                             |
+| `DATABASE_URL_UNPOOLED` | ✅       | Direct connection string (port 5432) — used for migrations and seeding                           |
+| `NEXTAUTH_URL`          | ✅       | Full base URL of the app (e.g. `http://localhost:3000`)                                          |
+| `NEXTAUTH_SECRET`       | ✅       | Random secret for signing JWTs                                                                   |
+| `ADMIN_EMAIL`           | ✅       | Email address allowed to sign in as admin                                                        |
+| `ADMIN_GITHUB_LOGIN`    | ✅       | GitHub username allowed to sign in as admin                                                      |
+| `GITHUB_ID`             | ✅       | GitHub OAuth App client ID                                                                       |
+| `GITHUB_SECRET`         | ✅       | GitHub OAuth App client secret                                                                   |
+| `SMTP_HOST`             | ✅       | SMTP server hostname                                                                             |
+| `SMTP_PORT`             | ✅       | SMTP server port (e.g. `465`)                                                                    |
+| `SMTP_USER`             | ✅       | SMTP login username                                                                              |
+| `SMTP_PASS`             | ✅       | SMTP password / app password                                                                     |
+| `NEXT_PUBLIC_SITE_URL`  | ✅       | Public site URL used for canonical links and OpenGraph                                           |
+| `CRON_SECRET`           | ⚠️ opt   | Bearer token to protect `/api/cron/ping-db`; if unset the endpoint is unprotected                |
+| `REVALIDATE_SECRET`     | ⚠️ opt   | Shared secret for `/api/revalidate/portfolio` (required if you use on-demand cache revalidation) |
+| `BLOB_READ_WRITE_TOKEN` | ⚠️ opt   | Vercel Blob read/write token — required for profile photo uploads                                |
 
 Optional performance tuning (rarely needed):
 

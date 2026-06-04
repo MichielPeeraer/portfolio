@@ -23,11 +23,12 @@ export const useContactSubmission = ({
     reset,
 }: UseContactSubmissionOptions) => {
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const startedAtRef = useRef<number>(Date.now())
+    const startedAtRef = useRef<number | null>(null)
     const trackedStartRef = useRef(false)
 
     const markFormStarted = useCallback((isDirty: boolean) => {
         if (isDirty && !trackedStartRef.current) {
+            startedAtRef.current = Date.now()
             track('contact_form_started')
             trackedStartRef.current = true
         }
@@ -47,7 +48,8 @@ export const useContactSubmission = ({
                 return
             }
 
-            if (Date.now() - startedAtRef.current < MIN_FILL_DURATION_MS) {
+            const startedAt = startedAtRef.current ?? Date.now()
+            if (Date.now() - startedAt < MIN_FILL_DURATION_MS) {
                 const tooFastMessage =
                     'Please wait a moment before submitting the form.'
                 toast.error('Transmission failed', {

@@ -43,3 +43,12 @@ export const getContactEnv = () => {
         adminEmail: requireEnv('ADMIN_EMAIL', 'contact email delivery'),
     }
 }
+
+export const getRevalidateEnv = () => {
+    return {
+        revalidateSecret: requireEnv(
+            'REVALIDATE_SECRET',
+            'on-demand revalidation'
+        ),
+    }
+}

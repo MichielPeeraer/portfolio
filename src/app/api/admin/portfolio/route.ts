@@ -26,6 +26,9 @@ import {
 } from '@/db/schema'
 
 const MANAGED_IMAGE_PREFIX = 'profile/'
+const NO_STORE_HEADERS = {
+    'Cache-Control': 'no-store',
+}
 
 const normalizeBlobPathname = (value: string) => value.replace(/^\/+/, '')
 
@@ -66,7 +69,10 @@ const isAdmin = async () => {
 
 export async function GET() {
     if (!(await isAdmin())) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        return NextResponse.json(
+            { error: 'Unauthorized' },
+            { status: 401, headers: NO_STORE_HEADERS }
+        )
     }
 
     try {
@@ -78,12 +84,15 @@ export async function GET() {
                 .limit(1),
         ])
         const version = versionRows[0]?.version ?? 0
-        return NextResponse.json({ data, version })
+        return NextResponse.json(
+            { data, version },
+            { headers: NO_STORE_HEADERS }
+        )
     } catch (error) {
         console.error('[admin-portfolio] Failed to load DB data:', error)
         return NextResponse.json(
             { error: 'Database temporarily unavailable.' },
-            { status: 503 }
+            { status: 503, headers: NO_STORE_HEADERS }
         )
     }
 }

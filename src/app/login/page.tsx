@@ -69,7 +69,7 @@ export default function LoginPage() {
                                         className="h-4 w-4 animate-spin"
                                         aria-hidden="true"
                                     />
-                                    Signing in...
+                                    Signing in
                                 </>
                             ) : (
                                 <>

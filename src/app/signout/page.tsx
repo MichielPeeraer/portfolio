@@ -38,7 +38,7 @@ export default function SignOutPage() {
                                         className="h-4 w-4 animate-spin"
                                         aria-hidden="true"
                                     />
-                                    Signing out...
+                                    Signing out
                                 </>
                             ) : (
                                 'Confirm sign out'

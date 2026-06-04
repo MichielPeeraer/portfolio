@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
@@ -12,12 +12,37 @@ interface HeroSectionProps {
     data: PersonalInfo
 }
 
+const PROFILE_FALLBACK_SRC = '/profile.png'
+
 export default function HeroSection({ data }: HeroSectionProps) {
     const canAnimate = useMatrixLoaderReady()
     const typedLines = useMemo(
         () => data.heroTypedLines ?? [],
         [data.heroTypedLines]
     )
+    const cvUrl = useMemo(() => {
+        const value = data.cvPath?.trim()
+        if (!value) {
+            return null
+        }
+
+        try {
+            const parsed = new URL(value)
+            const isHttp =
+                parsed.protocol === 'http:' || parsed.protocol === 'https:'
+            return isHttp ? parsed.toString() : null
+        } catch {
+            return null
+        }
+    }, [data.cvPath])
+    const primaryProfileImageSrc =
+        data.profileImageUrl?.trim() || PROFILE_FALLBACK_SRC
+    const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null)
+    const profileImageSrc =
+        failedImageSrc === primaryProfileImageSrc
+            ? PROFILE_FALLBACK_SRC
+            : primaryProfileImageSrc
+
     const typedText = useTypewriter({
         lines: typedLines,
         enabled: canAnimate,
@@ -42,11 +67,16 @@ export default function HeroSection({ data }: HeroSectionProps) {
                 >
                     <div className="crt-lines rounded-full w-32 h-32 sm:w-48 sm:h-48 mx-auto">
                         <Image
-                            src={data.profileImageUrl || '/profile.jpg'}
+                            src={profileImageSrc}
                             alt={`Profile photo of ${data.name}`}
                             width={200}
                             height={200}
                             priority
+                            onError={() => {
+                                if (profileImageSrc !== PROFILE_FALLBACK_SRC) {
+                                    setFailedImageSrc(primaryProfileImageSrc)
+                                }
+                            }}
                             className="rounded-full border-2 border-green-400 w-full h-full object-cover grayscale"
                         />
                     </div>
@@ -128,18 +158,20 @@ export default function HeroSection({ data }: HeroSectionProps) {
                     }}
                     className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 justify-center items-center"
                 >
-                    <a
-                        href={data.cvPath ?? '/cv.pdf'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-green-400 text-black px-6 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                    >
-                        <ExternalLink
-                            size={16}
-                            className="inline mr-2 -mt-0.5"
-                        />
-                        View CV
-                    </a>
+                    {cvUrl ? (
+                        <a
+                            href={cvUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-green-400 text-black px-6 py-3 rounded font-semibold transition-all duration-200 hover:bg-green-300 hover:-translate-y-0.5 hover:shadow-[0_0_28px_rgba(74,222,128,0.35)] focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                        >
+                            <ExternalLink
+                                size={16}
+                                className="inline mr-2 -mt-0.5"
+                            />
+                            View CV
+                        </a>
+                    ) : null}
                     <div className="flex space-x-6">
                         {data.contact.socialLinks
                             .filter((link) => link.name !== 'Website')

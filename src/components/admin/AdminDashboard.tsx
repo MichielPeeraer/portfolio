@@ -41,7 +41,7 @@ export function AdminDashboard() {
     useEffect(() => {
         let active = true
 
-        fetch('/api/admin/portfolio')
+        fetch('/api/admin/portfolio', { cache: 'no-store' })
             .then((res) =>
                 res
                     .json()

@@ -430,7 +430,7 @@ export function QuickEditSection({
                                     id="cvPath"
                                     {...register('cvPath')}
                                     autoComplete="off"
-                                    placeholder="https://docs.google.com/... or /CV_Name.pdf"
+                                    placeholder="https://drive.google.com/... or any public https:// URL"
                                     className={inputClass}
                                 />
                             </Field>
