@@ -4,7 +4,7 @@
         "title": "Full-Stack TypeScript Developer",
         "status": true,
         "statusLabel": "Open to opportunities",
-        "cvPath": "/CV_Jane_Doe.pdf",
+        "cvPath": "https://example.com/CV_Jane_Doe.pdf",
         "ogTechPills": ["React", "TypeScript", "Next.js", "Node.js", "Python"],
         "heroTypedLines": [
             "Building scalable web apps",

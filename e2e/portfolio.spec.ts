@@ -28,6 +28,20 @@ const portfolioData = JSON.parse(
     readFileSync(portfolioPath, 'utf8')
 ) as PortfolioFixture
 
+const getExpectedExternalCvUrl = (value?: string) => {
+    const trimmed = value?.trim()
+    if (!trimmed) return null
+
+    try {
+        const parsed = new URL(trimmed)
+        const isHttp =
+            parsed.protocol === 'http:' || parsed.protocol === 'https:'
+        return isHttp ? parsed.toString() : null
+    } catch {
+        return null
+    }
+}
+
 const fastForwardFormMinFillTimer = async (page: Page) => {
     await page.evaluate(() => {
         const originalNow = Date.now
@@ -78,11 +92,17 @@ test.describe('Portfolio smoke tests', () => {
 
     test('CV link is present', async ({ page }) => {
         const link = page.getByRole('link', { name: 'View CV' })
-        await expect(link).toBeVisible()
-        await expect(link).toHaveAttribute(
-            'href',
-            portfolioData.personal.cvPath ?? '/cv.pdf'
+        const expectedCvUrl = getExpectedExternalCvUrl(
+            portfolioData.personal.cvPath
         )
+
+        if (expectedCvUrl) {
+            await expect(link).toBeVisible()
+            await expect(link).toHaveAttribute('href', expectedCvUrl)
+            return
+        }
+
+        await expect(link).toHaveCount(0)
     })
 
     test('contact form renders required fields', async ({ page }) => {
