@@ -1,4 +1,4 @@
-# Michiel Peeraer Portfolio
+# My Portfolio
 
 [![CI](https://github.com/MichielPeeraer/portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/MichielPeeraer/portfolio/actions/workflows/ci.yml)
 
